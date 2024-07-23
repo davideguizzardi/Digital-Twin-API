@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from routers import getEntityRouter,getAutomationRouter,getServiceRouter,getConfigurationRouter,getVirtualRouter,getDeviceRouter
+from routers import getEntityRouter,getAutomationRouter,getServiceRouter,getConfigurationRouter,getVirtualRouter,getDeviceRouter,getHistoryRouter
 from homeassistant_functions import initializeToken
 
 import uvicorn
@@ -13,6 +13,7 @@ def create_api():
 
     entity_router=getEntityRouter()
     device_route=getDeviceRouter()
+    history_router=getHistoryRouter()
     automation_router=getAutomationRouter()
     service_router=getServiceRouter()
     configuration_router=getConfigurationRouter()
@@ -20,6 +21,7 @@ def create_api():
     
     api.include_router(entity_router)
     api.include_router(device_route)
+    api.include_router(history_router)
     api.include_router(automation_router)
     api.include_router(service_router)
     api.include_router(configuration_router)

@@ -35,10 +35,21 @@
 			"power_consumption": 5,
 			"default_duration": 4435
 		},
-		"unavailable":{
+		"paused":{
 			"id": 3,
+			"name": "paused",
+			"power_consumption": 2
+		},
+		"unavailable":{
+			"id": 4,
 			"name": "unavailable",
 			"power_consumption": 0
+		},
+		"on":{
+			"id": 5,
+			"name": "on",
+			"power_consumption": 5,
+			"default_duration": 4435
 		}
 	},
 	"fan":{

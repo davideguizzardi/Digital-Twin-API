@@ -2,22 +2,23 @@ from requests import get,post
 from random import randint
 from schemas import Service_In
 from urllib.parse import urlencode
-import json,datetime,time
+import json,datetime,time,configparser
+from dateutil import tz,parser
 
 base_url="http://homeassistant.local:8123/api"
-url_entities=base_url+"/states"
-url_template=base_url+"/template"
-url_events=base_url+"/events"
-url_history=base_url+"/history/period"
-url_services=base_url+"/services"
-url_automation_config = base_url+"/config/automation/config/"
-url_device_config = base_url+"/config/device/config/"
 headers = {}
+
+def buildError(response):
+    return {"status_code":response.status_code,"data":response.text}
 
 def initializeToken():
     global headers
-    file=open("./data/token.txt")
-    token=file.read()
+    global base_url
+    parser=configparser.ConfigParser()
+    parser.read("./data/configuration.txt")
+    base_url=parser["HomeAssistant"]["server_url"] if 'server_url' in parser["HomeAssistant"] else base_url
+
+    token = parser["HomeAssistant"]['token'] if 'token' in parser["HomeAssistant"] else ""
     headers = {
     "Authorization": "Bearer "+token,
     "content-type": "application/json",
@@ -29,13 +30,20 @@ def getEntities(skip_services=False):
         Ritorna la lista di tutte le entità di HA
         '''
         start_time = time.time()
-        response = get(url_entities, headers=headers)
+        response = get(base_url+"/states", headers=headers)
+        if response.status_code!=200:
+            return buildError(response)
+        
         entity_list=response.json()
         for entity in entity_list:
             device = getDeviceId(entity["entity_id"])
             entity["device_id"]=device
             if not skip_services:
-                services=getServicesByEntity(entity["entity_id"])
+                resp=getServicesByEntity(entity["entity_id"])
+                if resp["status_code"]!=200:
+                    return buildError(resp)
+        
+                services=resp["data"]
                 entity["services"]=services
 
             #Sposto i campi 
@@ -50,7 +58,7 @@ def getEntities(skip_services=False):
             entity["attributes"].pop("friendly_name",None)
             entity["attributes"].pop("supported_color_modes",None)
         print("Time to get all entities:"+str((time.time()-start_time)*1000)+" ms")
-        return entity_list
+        return {"status_code":200,"data":entity_list}
 
 def getDevices(skip_services=False):
         '''
@@ -58,7 +66,10 @@ def getDevices(skip_services=False):
         '''
         dev_list = {}
         start_time = time.time()
-        response = get(url_entities, headers=headers)
+        response = get(base_url+"/states", headers=headers)
+        if response.status_code!=200:
+            return buildError(response)
+        
         entity_list=response.json()
         for entity in entity_list:
             device = getDeviceId(entity["entity_id"])
@@ -84,31 +95,45 @@ def getDevices(skip_services=False):
             device_info=getDeviceInfo(device)
             t.update(device_info)
         print("Time to get all entities:"+str((time.time()-start_time)*1000)+" ms")
-        return dev_list
+        return {"status_code":200,"data":dev_list}
 
 def getEntity(entity_id:str):
     '''Ritorna l'entità con l'entity_id passato'''
-    response = get(url_entities+"/"+entity_id, headers=headers)
-    return response.json()
+    response = get(base_url+"/states"+"/"+entity_id, headers=headers)
+    if response.status_code!=200:
+        return buildError(response)
+    return {"status_code":200,"data":response.json()}
 
 
 def getHistory(entity_id:str,start_timestamp:datetime.datetime |None, end_timestamp:datetime.datetime |None):
     '''Ritorna la storia dei valori assunti durante le ultime 24 ore dell'entità specificata '''
     params={"filter_entity_id":entity_id}
     if(end_timestamp):
-        params.update({"end_time":end_timestamp.astimezone().replace(microsecond=0).isoformat()})
+        params.update({"end_time":end_timestamp.replace(microsecond=0).isoformat()})
     params=urlencode(params,doseq=True)+"&minimal_response&no_attributes"
-    url=url_history+"/"+start_timestamp.astimezone().replace(microsecond=0).isoformat() if start_timestamp else url_history
+    url=base_url+"/history/period"+"/"+start_timestamp.replace(microsecond=0).isoformat() if start_timestamp else base_url+"/history/period"
     response=get(url=url,headers=headers,params=params)
+    if response.status_code!=200:
+        return buildError(response)
     state_list=response.json()
     if(response.status_code==200):
+        state_list=state_list[0] if len(state_list)>0 else []
+
         file = open("./data/entities_consumption_map.json")
         consumption_map=json.load(file)
         modes=consumption_map[entity_id.split(".")[0]]
-        for state_data in state_list[0]:
-            state_consumption=modes[state_data["state"]]["power_consumption"]
+
+        for state_data in state_list:
+            temp_date=parser.parse(state_data["last_changed"])
+            temp_date=temp_date.astimezone(tz.tzlocal())
+            state_data["last_changed"]=temp_date.isoformat()
+            if state_data["state"] in modes:
+                state_consumption=modes[state_data["state"]]["power_consumption"]
+            else:
+                state_consumption=0
             state_data.update({"power_consumption":state_consumption})
-    return state_list
+        file.close()
+    return {"status_code":200,"data":state_list}
 
 
 def getServicesByEntity(entity_id:str):
@@ -118,7 +143,10 @@ def getServicesByEntity(entity_id:str):
     '''
 
     #estraggo i dati dell'entita per avere le supported_features
-    response = get(url_entities+"/"+entity_id, headers=headers) 
+    response = get(base_url+"/states"+"/"+entity_id, headers=headers)
+    if response.status_code!=200:
+        return buildError(response)
+    
     entity=response.json()
     entity_supported_features=entity["attributes"].get("supported_features")
 
@@ -131,7 +159,10 @@ def getServicesByEntity(entity_id:str):
 
     #Estraggo tutti i servizi del dominio dell'entità richiesta
     domain=entity_id.split('.')[0]
-    response = get(url_services, headers=headers)
+    response = get(base_url+"/services", headers=headers)
+    if response.status_code!=200:
+        return buildError(response)
+    
     supported_services={}
     if domain!="":
         x=json.loads(response.text)
@@ -184,7 +215,7 @@ def getServicesByEntity(entity_id:str):
     for service_key in supported_services:
         supported_services[service_key].pop("target",None)
 
-    return supported_services
+    return {"status_code":200,"data":supported_services}
 
 
 def getAutomations():
@@ -192,37 +223,44 @@ def getAutomations():
     ids=[]
     automations=[]
 
-    response = get(url_entities, headers=headers)
+    response = get(base_url+"/states", headers=headers)
+    if response.status_code!=200:
+        return buildError(response)
     x=json.loads(response.text)
     for state in x:
         if state["entity_id"].startswith("automation"):
             ids.append(state["attributes"]["id"])
 
     for id in ids:
-        response = get(url_automation_config+id,headers=headers)
+        response = get(base_url+"/config/automation/config/"+id,headers=headers)
         automations.append(response.json())
-    return automations
+    return {"status_code":200,"data":automations}
 
 
 def callService(service:Service_In):
     '''Esegue il servizio specificato, sull'entità specificata e con i parametri specificati'''
     domain=service.entity_id.split('.')[0]
-    url = url_services+"/"+domain+"/"+service.service
+    url = base_url+"/services"+"/"+domain+"/"+service.service
     data = {"entity_id": service.entity_id}
     data.update(service.data) #fondo i due dizionari 
     response = post(url, headers=headers, json=data)
-    return response.json() if response.status_code==200 else response.text
+    if response.status_code!=200:
+        return buildError(response)
+    return {"status_code":200,"data":response.json()}
 
 
 def getServicesByDomain(domain="",keys_only=False):
     '''Ritorna tutti i servizi disponibili per uno specifico dominio.'''
-    response = get(url_services, headers=headers)
+    response = get(base_url+"/services", headers=headers)
+
+    if response.status_code!=200:
+        return buildError(response)
     if domain!="":
         x=json.loads(response.text)
         for obj in x:
             if obj["domain"]==domain:
                 return obj["services"].keys() if keys_only else json.dumps(obj)
-    return response.text
+    return {"status_code":200,"data":response.text}
 
 
     
@@ -243,14 +281,14 @@ def createAutomation(name:str,description:str,triggers:list,conditions:list,acti
     "action": actions,
     "mode": "single"
     }
-    response = post(url_automation_config+str(id), headers=headers, json=data)
+    response = post(base_url+"/config/automation/config/"+str(id), headers=headers, json=data)
     return (id,response.text)
 
 
 def getDeviceId(entity_id:str):
     '''Dato l'id di un'entità ritorna l'id del dispositivo a cui tale entità è associata'''
     templ="{{device_id('"+entity_id+"')}}"
-    response = post(url_template, headers=headers, json={"template":templ})
+    response = post(base_url+"/template", headers=headers, json={"template":templ})
     return response.text
 
 def getDeviceInfo(device_id:str):
@@ -262,7 +300,7 @@ def getDeviceInfo(device_id:str):
         if data.index(value) !=len(data)-1:
             templ=templ+','
     templ=templ+'}'
-    response = post(url_template, headers=headers, json={"template":templ})
+    response = post(base_url+"/template", headers=headers, json={"template":templ})
     obj=json.loads(response.text)
     return obj
 
@@ -270,7 +308,7 @@ def getDeviceInfo(device_id:str):
 def getDeviceModel(device_id:str):
     '''Dato l'id di un'entità ritorna l'id del dispositivo a cui tale entità è associata'''
     templ="{{device_attr('"+device_id+"','model')}}"
-    response = post(url_template, headers=headers, json={"template":templ})
+    response = post(base_url+"/template", headers=headers, json={"template":templ})
     return response.text
 
 
