@@ -25,7 +25,7 @@ def initializeToken():
     }
 
 
-def getEntities(skip_services=False):
+def getEntities(skip_services=False,only_main=False):
         '''
         Ritorna la lista di tutte le entità di HA
         '''
@@ -35,7 +35,11 @@ def getEntities(skip_services=False):
             return buildError(response)
         
         entity_list=response.json()
+        res_list=[]
         for entity in entity_list:
+            if only_main:
+                if not isMainEntity(entity["entity_id"],entity["attributes"].get("friendly_name")):
+                    continue
             device = getDeviceId(entity["entity_id"])
             entity["device_id"]=device
             if not skip_services:
@@ -57,12 +61,13 @@ def getEntities(skip_services=False):
             #entity["attributes"].pop("supported_features",None)
             entity["attributes"].pop("friendly_name",None)
             entity["attributes"].pop("supported_color_modes",None)
+            res_list.append(entity)
         print("Time to get all entities:"+str((time.time()-start_time)*1000)+" ms")
-        return {"status_code":200,"data":entity_list}
+        return {"status_code":200,"data":res_list}
 
 def getDevices(skip_services=False):
         '''
-        Ritorna la lista di tutte le entità di HA
+        Ritorna la lista di tutte le entità di HA raggruppate per dispositivo
         '''
         dev_list = {}
         start_time = time.time()
@@ -80,6 +85,8 @@ def getDevices(skip_services=False):
 
             #Sposto i campi 
             entity["friendly_name"]=entity["attributes"].get("friendly_name")
+            
+            entity["is_main_entity"]=isMainEntity(entity["entity_id"],entity["friendly_name"])
 
             #Rimuovo i campi non necessari
             entity.pop("context",None)
@@ -290,6 +297,17 @@ def getDeviceId(entity_id:str):
     templ="{{device_id('"+entity_id+"')}}"
     response = post(base_url+"/template", headers=headers, json={"template":templ})
     return response.text
+
+def isMainEntity(entity_id:str,entity_name:str)->bool:
+    if entity_name==None:
+        return False
+    
+    templ="{{device_attr(device_id('"+entity_id+"'),'name')}}"
+    response = post(base_url+"/template", headers=headers, json={"template":templ})
+    if response.status_code!=200:
+        return False
+    else:
+        return response.text.replace(" ","")==entity_name.replace(" ","")
 
 def getDeviceInfo(device_id:str):
     '''Dato l'id di un'entità ritorna l'id del dispositivo a cui tale entità è associata'''
