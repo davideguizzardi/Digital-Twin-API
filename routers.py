@@ -209,7 +209,7 @@ def getConfigurationRouter():
     def Initialize_Database():
         return {"success":initialize_database()}
     
-    @configuration_router.get("/",response_model=list[Configuration_Value])
+    @configuration_router.get("",response_model=list[Configuration_Value])
     def Get_Configuration_Values():
         return get_all_configuration_values()
     
@@ -217,7 +217,7 @@ def getConfigurationRouter():
     def Get_Configuration_Value_By_Key(key):
         return get_configuration_value_by_key(key)
     
-    @configuration_router.put("/",response_model=Operation_Out)
+    @configuration_router.put("",response_model=Operation_Out)
     def Add_Configuration_Values(values_list:Configuration_Value_List):
         return {"success":add_configuration_values([tuple(d.__dict__.values()) for d in values_list.data])}
     
@@ -230,7 +230,7 @@ def getConfigurationRouter():
 def getMapConfigurationRouter():
     map_configuration_router=APIRouter(tags=["Configuration/map"],prefix="/configuration/map")
 
-    @map_configuration_router.get("/",response_model=list[Map_Entity])
+    @map_configuration_router.get("",response_model=list[Map_Entity])
     def Get_Map_Entitites():
         return get_all_map_entities()
     
@@ -238,7 +238,7 @@ def getMapConfigurationRouter():
     def Get_Single_Map_Entity(entity_id:str):
         return get_map_entity(entity_id)
     
-    @map_configuration_router.put("/",response_model=Operation_Out)
+    @map_configuration_router.put("",response_model=Operation_Out)
     def Add_Map_Entity(entities_list:Map_Entity_List):
         return {"success":add_map_entities([tuple(d.__dict__.values()) for d in entities_list.data])}
     
@@ -285,7 +285,7 @@ def getVirtualRouter():
 def getHomeRouter():
     home_router=APIRouter(tags=["Home"],prefix="/home")
 
-    @home_router.get("/")
+    @home_router.get("")
     def Get_Home_Context():
         res=getEntities(skip_services=True,only_main=True)
         if res["status_code"]!=200:
