@@ -5,6 +5,7 @@ class Service_In(BaseModel):
     entity_id:str
     service: str
     data:dict | None
+    user:str | None
 
 class History_In(BaseModel):
     entity_id:str
@@ -24,6 +25,23 @@ class Map_Entity(BaseModel):
 class Map_Entity_List(BaseModel):
     data:list[Map_Entity]
 
+class User_Log(BaseModel):
+     user:str
+     service:str
+     target:str
+     payload:str
+     timestamp:int
+
+class User_Log_List(BaseModel):
+    data:list[User_Log]
+
+class Configuration_Value(BaseModel):
+    key:str
+    value:str
+    unit:str | None =None
+
+class Configuration_Value_List(BaseModel):
+    data:list[Configuration_Value]
 
 triggers={
     "device_trigger":{

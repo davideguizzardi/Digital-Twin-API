@@ -1,4 +1,4 @@
-data/token.txt
+data/configuration.txt
 __pycache__/database_functions.cpython-312.pyc
 __pycache__/homeassistant_functions.cpython-312.pyc
 __pycache__/routers.cpython-312.pyc

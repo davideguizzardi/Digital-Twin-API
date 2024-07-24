@@ -1,1848 +1,562 @@
-[
-	{
-		"entity_id": "sensor.temperatura_camera",
-		"state": "20",
-		"attributes": {
-			"persistent": true,
-			"available": true,
-			"device_class": "temperature",
-			"unit_of_measurement": "C"
+{
+	"home_context":{
+		"active_devices": 1,
+		"power_usage": 5,
+		"power_usage_unit": "W",
+		"emissions": 2.155,
+		"emissions_unit": "gCO2/h"
+	  },
+	"hourly_total_consumption":{
+		"22/07/2024 00-01": {
+		  "power_consumption": 0,
+		  "power_consumption_unit": "Wh"
 		},
-		"services": {},
-		"friendly_name": "Temperatura camera"
-	},
-	{
-		"entity_id": "light.luce_colore",
-		"state": "on",
-		"attributes": {
-			"min_color_temp_kelvin": 2000,
-			"max_color_temp_kelvin": 6535,
-			"min_mireds": 153,
-			"max_mireds": 500,
-			"color_mode": "color_temp",
-			"brightness": 97,
-			"color_temp_kelvin": 4219,
-			"color_temp": 237,
-			"hs_color": [
-				26.739,
-				31.043
-			],
-			"rgb_color": [
-				255,
-				211,
-				175
-			],
-			"xy_color": [
-				0.408,
-				0.362
-			],
-			"persistent": true,
-			"available": true,
-			"supported_features": 19
+		"22/07/2024 01-02": {
+		  "power_consumption": 0,
+		  "power_consumption_unit": "Wh"
 		},
-		"services": {
-			"turn_on": {
-				"name": "Turn on",
-				"description": "Turn on one or more lights and adjust properties of the light, even when they are turned on already.",
-				"fields": {
-					"rgb_color": {
-						"filter": {
-							"attribute": {
-								"supported_color_modes": [
-									"hs",
-									"xy",
-									"rgb",
-									"rgbw",
-									"rgbww"
-								]
-							}
-						},
-						"selector": {
-							"color_rgb": null
-						},
-						"name": "Color",
-						"description": "The color in RGB format. A list of three integers between 0 and 255 representing the values of red, green, and blue."
-					},
-					"rgbw_color": {
-						"filter": {
-							"attribute": {
-								"supported_color_modes": [
-									"hs",
-									"xy",
-									"rgb",
-									"rgbw",
-									"rgbww"
-								]
-							}
-						},
-						"advanced": true,
-						"example": "[255, 100, 100, 50]",
-						"selector": {
-							"object": null
-						},
-						"name": "RGBW-color",
-						"description": "The color in RGBW format. A list of four integers between 0 and 255 representing the values of red, green, blue, and white."
-					},
-					"rgbww_color": {
-						"filter": {
-							"attribute": {
-								"supported_color_modes": [
-									"hs",
-									"xy",
-									"rgb",
-									"rgbw",
-									"rgbww"
-								]
-							}
-						},
-						"advanced": true,
-						"example": "[255, 100, 100, 50, 70]",
-						"selector": {
-							"object": null
-						},
-						"name": "RGBWW-color",
-						"description": "The color in RGBWW format. A list of five integers between 0 and 255 representing the values of red, green, blue, cold white, and warm white."
-					},
-					"color_name": {
-						"filter": {
-							"attribute": {
-								"supported_color_modes": [
-									"hs",
-									"xy",
-									"rgb",
-									"rgbw",
-									"rgbww"
-								]
-							}
-						},
-						"advanced": true,
-						"selector": {
-							"select": {
-								"translation_key": "color_name",
-								"options": [
-									"homeassistant",
-									"aliceblue",
-									"antiquewhite",
-									"aqua",
-									"aquamarine",
-									"azure",
-									"beige",
-									"bisque",
-									"blanchedalmond",
-									"blue",
-									"blueviolet",
-									"brown",
-									"burlywood",
-									"cadetblue",
-									"chartreuse",
-									"chocolate",
-									"coral",
-									"cornflowerblue",
-									"cornsilk",
-									"crimson",
-									"cyan",
-									"darkblue",
-									"darkcyan",
-									"darkgoldenrod",
-									"darkgray",
-									"darkgreen",
-									"darkgrey",
-									"darkkhaki",
-									"darkmagenta",
-									"darkolivegreen",
-									"darkorange",
-									"darkorchid",
-									"darkred",
-									"darksalmon",
-									"darkseagreen",
-									"darkslateblue",
-									"darkslategray",
-									"darkslategrey",
-									"darkturquoise",
-									"darkviolet",
-									"deeppink",
-									"deepskyblue",
-									"dimgray",
-									"dimgrey",
-									"dodgerblue",
-									"firebrick",
-									"floralwhite",
-									"forestgreen",
-									"fuchsia",
-									"gainsboro",
-									"ghostwhite",
-									"gold",
-									"goldenrod",
-									"gray",
-									"green",
-									"greenyellow",
-									"grey",
-									"honeydew",
-									"hotpink",
-									"indianred",
-									"indigo",
-									"ivory",
-									"khaki",
-									"lavender",
-									"lavenderblush",
-									"lawngreen",
-									"lemonchiffon",
-									"lightblue",
-									"lightcoral",
-									"lightcyan",
-									"lightgoldenrodyellow",
-									"lightgray",
-									"lightgreen",
-									"lightgrey",
-									"lightpink",
-									"lightsalmon",
-									"lightseagreen",
-									"lightskyblue",
-									"lightslategray",
-									"lightslategrey",
-									"lightsteelblue",
-									"lightyellow",
-									"lime",
-									"limegreen",
-									"linen",
-									"magenta",
-									"maroon",
-									"mediumaquamarine",
-									"mediumblue",
-									"mediumorchid",
-									"mediumpurple",
-									"mediumseagreen",
-									"mediumslateblue",
-									"mediumspringgreen",
-									"mediumturquoise",
-									"mediumvioletred",
-									"midnightblue",
-									"mintcream",
-									"mistyrose",
-									"moccasin",
-									"navajowhite",
-									"navy",
-									"navyblue",
-									"oldlace",
-									"olive",
-									"olivedrab",
-									"orange",
-									"orangered",
-									"orchid",
-									"palegoldenrod",
-									"palegreen",
-									"paleturquoise",
-									"palevioletred",
-									"papayawhip",
-									"peachpuff",
-									"peru",
-									"pink",
-									"plum",
-									"powderblue",
-									"purple",
-									"red",
-									"rosybrown",
-									"royalblue",
-									"saddlebrown",
-									"salmon",
-									"sandybrown",
-									"seagreen",
-									"seashell",
-									"sienna",
-									"silver",
-									"skyblue",
-									"slateblue",
-									"slategray",
-									"slategrey",
-									"snow",
-									"springgreen",
-									"steelblue",
-									"tan",
-									"teal",
-									"thistle",
-									"tomato",
-									"turquoise",
-									"violet",
-									"wheat",
-									"white",
-									"whitesmoke",
-									"yellow",
-									"yellowgreen"
-								]
-							}
-						},
-						"name": "Color name",
-						"description": "A human-readable color name."
-					},
-					"hs_color": {
-						"filter": {
-							"attribute": {
-								"supported_color_modes": [
-									"hs",
-									"xy",
-									"rgb",
-									"rgbw",
-									"rgbww"
-								]
-							}
-						},
-						"advanced": true,
-						"example": "[300, 70]",
-						"selector": {
-							"object": null
-						},
-						"name": "Hue/Sat color",
-						"description": "Color in hue/sat format. A list of two integers. Hue is 0-360 and Sat is 0-100."
-					},
-					"xy_color": {
-						"filter": {
-							"attribute": {
-								"supported_color_modes": [
-									"hs",
-									"xy",
-									"rgb",
-									"rgbw",
-									"rgbww"
-								]
-							}
-						},
-						"advanced": true,
-						"example": "[0.52, 0.43]",
-						"selector": {
-							"object": null
-						},
-						"name": "XY-color",
-						"description": "Color in XY-format. A list of two decimal numbers between 0 and 1."
-					},
-					"color_temp": {
-						"filter": {
-							"attribute": {
-								"supported_color_modes": [
-									"color_temp",
-									"hs",
-									"xy",
-									"rgb",
-									"rgbw",
-									"rgbww"
-								]
-							}
-						},
-						"selector": {
-							"color_temp": {
-								"unit": "mired",
-								"min": 153,
-								"max": 500
-							}
-						},
-						"name": "Color temperature",
-						"description": "Color temperature in mireds."
-					},
-					"kelvin": {
-						"filter": {
-							"attribute": {
-								"supported_color_modes": [
-									"color_temp",
-									"hs",
-									"xy",
-									"rgb",
-									"rgbw",
-									"rgbww"
-								]
-							}
-						},
-						"advanced": true,
-						"selector": {
-							"color_temp": {
-								"unit": "kelvin",
-								"min": 2000,
-								"max": 6500
-							}
-						},
-						"name": "Color temperature",
-						"description": "Color temperature in Kelvin."
-					},
-					"brightness": {
-						"filter": {
-							"attribute": {
-								"supported_color_modes": [
-									"brightness",
-									"color_temp",
-									"hs",
-									"xy",
-									"rgb",
-									"rgbw",
-									"rgbww"
-								]
-							}
-						},
-						"advanced": true,
-						"selector": {
-							"number": {
-								"min": 0,
-								"max": 255
-							}
-						},
-						"name": "Brightness value",
-						"description": "Number indicating brightness, where 0 turns the light off, 1 is the minimum brightness, and 255 is the maximum brightness."
-					},
-					"brightness_pct": {
-						"filter": {
-							"attribute": {
-								"supported_color_modes": [
-									"brightness",
-									"color_temp",
-									"hs",
-									"xy",
-									"rgb",
-									"rgbw",
-									"rgbww"
-								]
-							}
-						},
-						"selector": {
-							"number": {
-								"min": 0,
-								"max": 100,
-								"unit_of_measurement": "%"
-							}
-						},
-						"name": "Brightness",
-						"description": "Number indicating the percentage of full brightness, where 0 turns the light off, 1 is the minimum brightness, and 100 is the maximum brightness."
-					},
-					"brightness_step": {
-						"filter": {
-							"attribute": {
-								"supported_color_modes": [
-									"brightness",
-									"color_temp",
-									"hs",
-									"xy",
-									"rgb",
-									"rgbw",
-									"rgbww"
-								]
-							}
-						},
-						"advanced": true,
-						"selector": {
-							"number": {
-								"min": -225,
-								"max": 255
-							}
-						},
-						"name": "Brightness step value",
-						"description": "Change brightness by an amount."
-					},
-					"brightness_step_pct": {
-						"filter": {
-							"attribute": {
-								"supported_color_modes": [
-									"brightness",
-									"color_temp",
-									"hs",
-									"xy",
-									"rgb",
-									"rgbw",
-									"rgbww"
-								]
-							}
-						},
-						"selector": {
-							"number": {
-								"min": -100,
-								"max": 100,
-								"unit_of_measurement": "%"
-							}
-						},
-						"name": "Brightness step",
-						"description": "Change brightness by a percentage."
-					},
-					"profile": {
-						"advanced": true,
-						"example": "relax",
-						"selector": {
-							"text": null
-						},
-						"name": "Profile",
-						"description": "Name of a light profile to use."
-					}
+		"22/07/2024 02-03": {
+		  "power_consumption": 0,
+		  "power_consumption_unit": "Wh"
+		},
+		"22/07/2024 03-04": {
+		  "power_consumption": 0,
+		  "power_consumption_unit": "Wh"
+		},
+		"22/07/2024 04-05": {
+		  "power_consumption": 0,
+		  "power_consumption_unit": "Wh"
+		},
+		"22/07/2024 05-06": {
+		  "power_consumption": 0,
+		  "power_consumption_unit": "Wh"
+		},
+		"22/07/2024 06-07": {
+		  "power_consumption": 0,
+		  "power_consumption_unit": "Wh"
+		},
+		"22/07/2024 07-08": {
+		  "power_consumption": 0.08333333333333333,
+		  "power_consumption_unit": "Wh"
+		},
+		"22/07/2024 08-09": {
+		  "power_consumption": 4.150000000000002,
+		  "power_consumption_unit": "Wh"
+		},
+		"22/07/2024 09-10": {
+		  "power_consumption": 4.8,
+		  "power_consumption_unit": "Wh"
+		},
+		"22/07/2024 10-11": {
+		  "power_consumption": 4.7,
+		  "power_consumption_unit": "Wh"
+		},
+		"22/07/2024 11-12": {
+		  "power_consumption": 3.3333333333333326,
+		  "power_consumption_unit": "Wh"
+		},
+		"22/07/2024 12-13": {
+		  "power_consumption": 2.5500000000000007,
+		  "power_consumption_unit": "Wh"
+		},
+		"22/07/2024 13-14": {
+		  "power_consumption": 4.999999999999999,
+		  "power_consumption_unit": "Wh"
+		},
+		"22/07/2024 14-15": {
+		  "power_consumption": 3.8666666666666685,
+		  "power_consumption_unit": "Wh"
+		},
+		"22/07/2024 15-16": {
+		  "power_consumption": 3.3499999999999988,
+		  "power_consumption_unit": "Wh"
+		},
+		"22/07/2024 16-17": {
+		  "power_consumption": 2.0000000000000027,
+		  "power_consumption_unit": "Wh"
+		},
+		"22/07/2024 17-18": {
+		  "power_consumption": 2.0000000000000027,
+		  "power_consumption_unit": "Wh"
+		},
+		"22/07/2024 18-19": {
+		  "power_consumption": 4.65,
+		  "power_consumption_unit": "Wh"
+		},
+		"22/07/2024 19-20": {
+		  "power_consumption": 4.049999999999999,
+		  "power_consumption_unit": "Wh"
+		},
+		"22/07/2024 20-21": {
+		  "power_consumption": 1.5166666666666662,
+		  "power_consumption_unit": "Wh"
+		},
+		"22/07/2024 21-22": {
+		  "power_consumption": 4.416666666666668,
+		  "power_consumption_unit": "Wh"
+		},
+		"22/07/2024 22-23": {
+		  "power_consumption": 4.916666666666666,
+		  "power_consumption_unit": "Wh"
+		},
+		"22/07/2024 23-00": {
+		  "power_consumption": 0,
+		  "power_consumption_unit": "Wh"
+		},
+		"23/07/2024 00-01": {
+		  "power_consumption": 0,
+		  "power_consumption_unit": "Wh"
+		},
+		"23/07/2024 01-02": {
+		  "power_consumption": 0,
+		  "power_consumption_unit": "Wh"
+		},
+		"23/07/2024 02-03": {
+		  "power_consumption": 0,
+		  "power_consumption_unit": "Wh"
+		},
+		"23/07/2024 03-04": {
+		  "power_consumption": 0,
+		  "power_consumption_unit": "Wh"
+		},
+		"23/07/2024 04-05": {
+		  "power_consumption": 0,
+		  "power_consumption_unit": "Wh"
+		},
+		"23/07/2024 05-06": {
+		  "power_consumption": 0,
+		  "power_consumption_unit": "Wh"
+		},
+		"23/07/2024 06-07": {
+		  "power_consumption": 0,
+		  "power_consumption_unit": "Wh"
+		},
+		"23/07/2024 07-08": {
+		  "power_consumption": 0,
+		  "power_consumption_unit": "Wh"
+		},
+		"23/07/2024 08-09": {
+		  "power_consumption": 2.4666666666666672,
+		  "power_consumption_unit": "Wh"
+		},
+		"23/07/2024 09-10": {
+		  "power_consumption": 4.833333333333333,
+		  "power_consumption_unit": "Wh"
+		},
+		"23/07/2024 10-11": {
+		  "power_consumption": 3.1333333333333306,
+		  "power_consumption_unit": "Wh"
+		},
+		"23/07/2024 11-12": {
+		  "power_consumption": 2.1500000000000026,
+		  "power_consumption_unit": "Wh"
+		},
+		"23/07/2024 12-13": {
+		  "power_consumption": 2.0000000000000027,
+		  "power_consumption_unit": "Wh"
+		},
+		"23/07/2024 13-14": {
+		  "power_consumption": 1.466666666666668,
+		  "power_consumption_unit": "Wh"
+		},
+		"23/07/2024 14-15": {
+		  "power_consumption": 0,
+		  "power_consumption_unit": "Wh"
+		},
+		"23/07/2024 15-16": {
+		  "power_consumption": 0,
+		  "power_consumption_unit": "Wh"
+		},
+		"23/07/2024 16-17": {
+		  "power_consumption": 1.7333333333333354,
+		  "power_consumption_unit": "Wh"
+		},
+		"23/07/2024 17-18": {
+		  "power_consumption": 3.600000000000002,
+		  "power_consumption_unit": "Wh"
+		},
+		"23/07/2024 18-19": {
+		  "power_consumption": 4.999999999999999,
+		  "power_consumption_unit": "Wh"
+		},
+		"23/07/2024 19-20": {
+		  "power_consumption": 0.5499999999999999,
+		  "power_consumption_unit": "Wh"
+		},
+		"23/07/2024 20-21": {
+		  "power_consumption": 4.416666666666668,
+		  "power_consumption_unit": "Wh"
+		},
+		"23/07/2024 21-22": {
+		  "power_consumption": 4.916666666666666,
+		  "power_consumption_unit": "Wh"
+		},
+		"23/07/2024 22-23": {
+		  "power_consumption": 0.8333333333333334,
+		  "power_consumption_unit": "Wh"
+		},
+		"23/07/2024 23-00": {
+		  "power_consumption": 0,
+		  "power_consumption_unit": "Wh"
+		}
+	  },
+	"daily_total_consumption":{
+		"22/07/2024": {
+		  "power_consumption": 55.351272363333344,
+		  "power_consumption_unit": "Wh",
+		  "use_time": 561.8488908666668,
+		  "use_time_unit": "min"
+		},
+		"23/07/2024": {
+		  "power_consumption": 37.0750165311111,
+		  "power_consumption_unit": "Wh",
+		  "use_time": 329.0256967333333,
+		  "use_time_unit": "min"
+		}
+	  },
+	"entities_context":[
+	{
+	  "entity_id": "media_player.test",
+	  "state": "playing",
+	  "attributes": {
+		"volume_level": 0.18110236525535583,
+		"is_volume_muted": false,
+		"media_content_id": "Bluetooth Audio",
+		"media_content_type": "music",
+		"media_duration": 138.881,
+		"media_position": 66.666,
+		"media_position_updated_at": "2024-07-24T09:50:26.351634+00:00",
+		"media_title": "Profezia (Visual)",
+		"media_artist": "Leon Faun",
+		"app_id": "89EA58C1",
+		"app_name": "Bluetooth Audio",
+		"entity_picture_local": null,
+		"device_class": "speaker",
+		"supported_features": 152461
+	  },
+	  "device_id": "b714325f87b0a129c2259599b5fce872",
+	  "services": {
+		"turn_on": {
+		  "name": "Turn on",
+		  "description": "Turns on the power of the media player.",
+		  "fields": {}
+		},
+		"turn_off": {
+		  "name": "Turn off",
+		  "description": "Turns off the power of the media player.",
+		  "fields": {}
+		},
+		"volume_up": {
+		  "name": "Turn up volume",
+		  "description": "Turns up the volume.",
+		  "fields": {}
+		},
+		"volume_down": {
+		  "name": "Turn down volume",
+		  "description": "Turns down the volume.",
+		  "fields": {}
+		},
+		"media_play": {
+		  "name": "Play",
+		  "description": "Starts playing.",
+		  "fields": {}
+		},
+		"media_pause": {
+		  "name": "Pause",
+		  "description": "Pauses.",
+		  "fields": {}
+		},
+		"media_stop": {
+		  "name": "Stop",
+		  "description": "Stops playing.",
+		  "fields": {}
+		},
+		"volume_set": {
+		  "name": "Set volume",
+		  "description": "Sets the volume level.",
+		  "fields": {
+			"volume_level": {
+			  "required": true,
+			  "selector": {
+				"number": {
+				  "min": 0,
+				  "max": 1,
+				  "step": 0.01
 				}
-			},
-			"turn_off": {
-				"name": "Turn off",
-				"description": "Turn off one or more lights.",
-				"fields": {}
-			},
-			"toggle": {
-				"name": "Toggle",
-				"description": "Toggles one or more lights, from on to off, or, off to on, based on their current state.",
-				"fields": {
-					"rgb_color": {
-						"filter": {
-							"attribute": {
-								"supported_color_modes": [
-									"hs",
-									"xy",
-									"rgb",
-									"rgbw",
-									"rgbww"
-								]
-							}
-						},
-						"advanced": true,
-						"example": "[255, 100, 100]",
-						"selector": {
-							"color_rgb": null
-						},
-						"name": "Color",
-						"description": "The color in RGB format. A list of three integers between 0 and 255 representing the values of red, green, and blue."
-					},
-					"color_name": {
-						"filter": {
-							"attribute": {
-								"supported_color_modes": [
-									"hs",
-									"xy",
-									"rgb",
-									"rgbw",
-									"rgbww"
-								]
-							}
-						},
-						"advanced": true,
-						"selector": {
-							"select": {
-								"translation_key": "color_name",
-								"options": [
-									"homeassistant",
-									"aliceblue",
-									"antiquewhite",
-									"aqua",
-									"aquamarine",
-									"azure",
-									"beige",
-									"bisque",
-									"blanchedalmond",
-									"blue",
-									"blueviolet",
-									"brown",
-									"burlywood",
-									"cadetblue",
-									"chartreuse",
-									"chocolate",
-									"coral",
-									"cornflowerblue",
-									"cornsilk",
-									"crimson",
-									"cyan",
-									"darkblue",
-									"darkcyan",
-									"darkgoldenrod",
-									"darkgray",
-									"darkgreen",
-									"darkgrey",
-									"darkkhaki",
-									"darkmagenta",
-									"darkolivegreen",
-									"darkorange",
-									"darkorchid",
-									"darkred",
-									"darksalmon",
-									"darkseagreen",
-									"darkslateblue",
-									"darkslategray",
-									"darkslategrey",
-									"darkturquoise",
-									"darkviolet",
-									"deeppink",
-									"deepskyblue",
-									"dimgray",
-									"dimgrey",
-									"dodgerblue",
-									"firebrick",
-									"floralwhite",
-									"forestgreen",
-									"fuchsia",
-									"gainsboro",
-									"ghostwhite",
-									"gold",
-									"goldenrod",
-									"gray",
-									"green",
-									"greenyellow",
-									"grey",
-									"honeydew",
-									"hotpink",
-									"indianred",
-									"indigo",
-									"ivory",
-									"khaki",
-									"lavender",
-									"lavenderblush",
-									"lawngreen",
-									"lemonchiffon",
-									"lightblue",
-									"lightcoral",
-									"lightcyan",
-									"lightgoldenrodyellow",
-									"lightgray",
-									"lightgreen",
-									"lightgrey",
-									"lightpink",
-									"lightsalmon",
-									"lightseagreen",
-									"lightskyblue",
-									"lightslategray",
-									"lightslategrey",
-									"lightsteelblue",
-									"lightyellow",
-									"lime",
-									"limegreen",
-									"linen",
-									"magenta",
-									"maroon",
-									"mediumaquamarine",
-									"mediumblue",
-									"mediumorchid",
-									"mediumpurple",
-									"mediumseagreen",
-									"mediumslateblue",
-									"mediumspringgreen",
-									"mediumturquoise",
-									"mediumvioletred",
-									"midnightblue",
-									"mintcream",
-									"mistyrose",
-									"moccasin",
-									"navajowhite",
-									"navy",
-									"navyblue",
-									"oldlace",
-									"olive",
-									"olivedrab",
-									"orange",
-									"orangered",
-									"orchid",
-									"palegoldenrod",
-									"palegreen",
-									"paleturquoise",
-									"palevioletred",
-									"papayawhip",
-									"peachpuff",
-									"peru",
-									"pink",
-									"plum",
-									"powderblue",
-									"purple",
-									"red",
-									"rosybrown",
-									"royalblue",
-									"saddlebrown",
-									"salmon",
-									"sandybrown",
-									"seagreen",
-									"seashell",
-									"sienna",
-									"silver",
-									"skyblue",
-									"slateblue",
-									"slategray",
-									"slategrey",
-									"snow",
-									"springgreen",
-									"steelblue",
-									"tan",
-									"teal",
-									"thistle",
-									"tomato",
-									"turquoise",
-									"violet",
-									"wheat",
-									"white",
-									"whitesmoke",
-									"yellow",
-									"yellowgreen"
-								]
-							}
-						},
-						"name": "Color name",
-						"description": "A human-readable color name."
-					},
-					"hs_color": {
-						"filter": {
-							"attribute": {
-								"supported_color_modes": [
-									"hs",
-									"xy",
-									"rgb",
-									"rgbw",
-									"rgbww"
-								]
-							}
-						},
-						"advanced": true,
-						"example": "[300, 70]",
-						"selector": {
-							"object": null
-						},
-						"name": "Hue/Sat color",
-						"description": "Color in hue/sat format. A list of two integers. Hue is 0-360 and Sat is 0-100."
-					},
-					"xy_color": {
-						"filter": {
-							"attribute": {
-								"supported_color_modes": [
-									"hs",
-									"xy",
-									"rgb",
-									"rgbw",
-									"rgbww"
-								]
-							}
-						},
-						"advanced": true,
-						"example": "[0.52, 0.43]",
-						"selector": {
-							"object": null
-						},
-						"name": "XY-color",
-						"description": "Color in XY-format. A list of two decimal numbers between 0 and 1."
-					},
-					"color_temp": {
-						"filter": {
-							"attribute": {
-								"supported_color_modes": [
-									"color_temp",
-									"hs",
-									"xy",
-									"rgb",
-									"rgbw",
-									"rgbww"
-								]
-							}
-						},
-						"advanced": true,
-						"selector": {
-							"color_temp": null
-						},
-						"name": "Color temperature",
-						"description": "Color temperature in mireds."
-					},
-					"kelvin": {
-						"filter": {
-							"attribute": {
-								"supported_color_modes": [
-									"color_temp",
-									"hs",
-									"xy",
-									"rgb",
-									"rgbw",
-									"rgbww"
-								]
-							}
-						},
-						"advanced": true,
-						"selector": {
-							"color_temp": {
-								"unit": "kelvin",
-								"min": 2000,
-								"max": 6500
-							}
-						},
-						"name": "Color temperature",
-						"description": "Color temperature in Kelvin."
-					},
-					"brightness": {
-						"filter": {
-							"attribute": {
-								"supported_color_modes": [
-									"brightness",
-									"color_temp",
-									"hs",
-									"xy",
-									"rgb",
-									"rgbw",
-									"rgbww"
-								]
-							}
-						},
-						"advanced": true,
-						"selector": {
-							"number": {
-								"min": 0,
-								"max": 255
-							}
-						},
-						"name": "Brightness value",
-						"description": "Number indicating brightness, where 0 turns the light off, 1 is the minimum brightness, and 255 is the maximum brightness."
-					},
-					"brightness_pct": {
-						"filter": {
-							"attribute": {
-								"supported_color_modes": [
-									"brightness",
-									"color_temp",
-									"hs",
-									"xy",
-									"rgb",
-									"rgbw",
-									"rgbww"
-								]
-							}
-						},
-						"selector": {
-							"number": {
-								"min": 0,
-								"max": 100,
-								"unit_of_measurement": "%"
-							}
-						},
-						"name": "Brightness",
-						"description": "Number indicating the percentage of full brightness, where 0 turns the light off, 1 is the minimum brightness, and 100 is the maximum brightness."
-					},
-					"profile": {
-						"advanced": true,
-						"example": "relax",
-						"selector": {
-							"text": null
-						},
-						"name": "Profile",
-						"description": "Name of a light profile to use."
-					}
-				}
+			  },
+			  "name": "Level",
+			  "description": "The volume. 0 is inaudible, 1 is the maximum volume."
 			}
+		  }
 		},
-		"friendly_name": "Luce colore"
-	},
-	{
-		"entity_id": "light.luce_luminosita",
-		"state": "off",
-		"attributes": {
-			"color_mode": null,
-			"brightness": 138,
-			"persistent": true,
-			"available": true,
-			"supported_features": 1
-		},
-		"services": {
-			"turn_on": {
-				"name": "Turn on",
-				"description": "Turn on one or more lights and adjust properties of the light, even when they are turned on already.",
-				"fields": {
-					"brightness": {
-						"filter": {
-							"attribute": {
-								"supported_color_modes": [
-									"brightness",
-									"color_temp",
-									"hs",
-									"xy",
-									"rgb",
-									"rgbw",
-									"rgbww"
-								]
-							}
-						},
-						"advanced": true,
-						"selector": {
-							"number": {
-								"min": 0,
-								"max": 255
-							}
-						},
-						"name": "Brightness value",
-						"description": "Number indicating brightness, where 0 turns the light off, 1 is the minimum brightness, and 255 is the maximum brightness."
-					},
-					"brightness_pct": {
-						"filter": {
-							"attribute": {
-								"supported_color_modes": [
-									"brightness",
-									"color_temp",
-									"hs",
-									"xy",
-									"rgb",
-									"rgbw",
-									"rgbww"
-								]
-							}
-						},
-						"selector": {
-							"number": {
-								"min": 0,
-								"max": 100,
-								"unit_of_measurement": "%"
-							}
-						},
-						"name": "Brightness",
-						"description": "Number indicating the percentage of full brightness, where 0 turns the light off, 1 is the minimum brightness, and 100 is the maximum brightness."
-					},
-					"brightness_step": {
-						"filter": {
-							"attribute": {
-								"supported_color_modes": [
-									"brightness",
-									"color_temp",
-									"hs",
-									"xy",
-									"rgb",
-									"rgbw",
-									"rgbww"
-								]
-							}
-						},
-						"advanced": true,
-						"selector": {
-							"number": {
-								"min": -225,
-								"max": 255
-							}
-						},
-						"name": "Brightness step value",
-						"description": "Change brightness by an amount."
-					},
-					"brightness_step_pct": {
-						"filter": {
-							"attribute": {
-								"supported_color_modes": [
-									"brightness",
-									"color_temp",
-									"hs",
-									"xy",
-									"rgb",
-									"rgbw",
-									"rgbww"
-								]
-							}
-						},
-						"selector": {
-							"number": {
-								"min": -100,
-								"max": 100,
-								"unit_of_measurement": "%"
-							}
-						},
-						"name": "Brightness step",
-						"description": "Change brightness by a percentage."
-					},
-					"profile": {
-						"advanced": true,
-						"example": "relax",
-						"selector": {
-							"text": null
-						},
-						"name": "Profile",
-						"description": "Name of a light profile to use."
-					}
-				}
-			},
-			"turn_off": {
-				"name": "Turn off",
-				"description": "Turn off one or more lights.",
-				"fields": {}
-			},
-			"toggle": {
-				"name": "Toggle",
-				"description": "Toggles one or more lights, from on to off, or, off to on, based on their current state.",
-				"fields": {
-					"brightness": {
-						"filter": {
-							"attribute": {
-								"supported_color_modes": [
-									"brightness",
-									"color_temp",
-									"hs",
-									"xy",
-									"rgb",
-									"rgbw",
-									"rgbww"
-								]
-							}
-						},
-						"advanced": true,
-						"selector": {
-							"number": {
-								"min": 0,
-								"max": 255
-							}
-						},
-						"name": "Brightness value",
-						"description": "Number indicating brightness, where 0 turns the light off, 1 is the minimum brightness, and 255 is the maximum brightness."
-					},
-					"brightness_pct": {
-						"filter": {
-							"attribute": {
-								"supported_color_modes": [
-									"brightness",
-									"color_temp",
-									"hs",
-									"xy",
-									"rgb",
-									"rgbw",
-									"rgbww"
-								]
-							}
-						},
-						"selector": {
-							"number": {
-								"min": 0,
-								"max": 100,
-								"unit_of_measurement": "%"
-							}
-						},
-						"name": "Brightness",
-						"description": "Number indicating the percentage of full brightness, where 0 turns the light off, 1 is the minimum brightness, and 100 is the maximum brightness."
-					},
-					"profile": {
-						"advanced": true,
-						"example": "relax",
-						"selector": {
-							"text": null
-						},
-						"name": "Profile",
-						"description": "Name of a light profile to use."
-					}
-				}
+		"volume_mute": {
+		  "name": "Mute/unmute volume",
+		  "description": "Mutes or unmutes the media player.",
+		  "fields": {
+			"is_volume_muted": {
+			  "required": true,
+			  "selector": {
+				"boolean": null
+			  },
+			  "name": "Muted",
+			  "description": "Defines whether or not it is muted."
 			}
+		  }
 		},
-		"friendly_name": "Luce luminosita"
-	},
-	{
-		"entity_id": "fan.ventilatore",
-		"state": "off",
-		"attributes": {
-			"preset_modes": [],
-			"direction": "forward",
-			"oscillating": true,
-			"percentage": 0,
-			"percentage_step": 33.333333333333339,
-			"preset_mode": null,
-			"persistent": true,
-			"available": true,
-			"supported_features": 7
-		},
-		"services": {
-			"turn_on": {
-				"name": "Turn on",
-				"description": "Turns fan on.",
-				"fields": {
-					"percentage": {
-						"filter": {
-							"supported_features": [
-								1
-							]
-						},
-						"selector": {
-							"number": {
-								"min": 0,
-								"max": 100,
-								"unit_of_measurement": "%"
-							}
-						},
-						"name": "Percentage",
-						"description": "Speed of the fan."
-					}
+		"play_media": {
+		  "name": "Play media",
+		  "description": "Starts playing specified media.",
+		  "fields": {
+			"media_content_id": {
+			  "required": true,
+			  "example": "https://home-assistant.io/images/cast/splash.png",
+			  "selector": {
+				"text": null
+			  },
+			  "name": "Content ID",
+			  "description": "The ID of the content to play. Platform dependent."
+			},
+			"media_content_type": {
+			  "required": true,
+			  "example": "music",
+			  "selector": {
+				"text": null
+			  },
+			  "name": "Content type",
+			  "description": "The type of the content to play. Such as image, music, tv show, video, episode, channel, or playlist."
+			},
+			"enqueue": {
+			  "filter": {
+				"supported_features": [
+				  2097152
+				]
+			  },
+			  "required": false,
+			  "selector": {
+				"select": {
+				  "options": [
+					"play",
+					"next",
+					"add",
+					"replace"
+				  ],
+				  "translation_key": "enqueue"
 				}
+			  },
+			  "name": "Enqueue",
+			  "description": "If the content should be played now or be added to the queue."
 			},
-			"turn_off": {
-				"name": "Turn off",
-				"description": "Turns fan off.",
-				"fields": {}
-			},
-			"toggle": {
-				"name": "Toggle",
-				"description": "Toggles the fan on/off.",
-				"fields": {}
-			},
-			"increase_speed": {
-				"name": "Increase speed",
-				"description": "Increases the speed of the fan.",
-				"fields": {
-					"percentage_step": {
-						"advanced": true,
-						"required": false,
-						"selector": {
-							"number": {
-								"min": 0,
-								"max": 100,
-								"unit_of_measurement": "%"
-							}
-						},
-						"name": "Increment",
-						"description": "Increases the speed by a percentage step."
-					}
-				}
-			},
-			"decrease_speed": {
-				"name": "Decrease speed",
-				"description": "Decreases the speed of the fan.",
-				"fields": {
-					"percentage_step": {
-						"advanced": true,
-						"required": false,
-						"selector": {
-							"number": {
-								"min": 0,
-								"max": 100,
-								"unit_of_measurement": "%"
-							}
-						},
-						"name": "Decrement",
-						"description": "Decreases the speed by a percentage step."
-					}
-				}
-			},
-			"oscillate": {
-				"name": "Oscillate",
-				"description": "Controls oscillatation of the fan.",
-				"fields": {
-					"oscillating": {
-						"required": true,
-						"selector": {
-							"boolean": null
-						},
-						"name": "Oscillating",
-						"description": "Turn on/off oscillation."
-					}
-				}
-			},
-			"set_direction": {
-				"name": "Set direction",
-				"description": "Sets the fan rotation direction.",
-				"fields": {
-					"direction": {
-						"required": true,
-						"selector": {
-							"select": {
-								"options": [
-									"forward",
-									"reverse"
-								],
-								"translation_key": "direction"
-							}
-						},
-						"name": "Direction",
-						"description": "Direction to rotate."
-					}
-				}
-			},
-			"set_percentage": {
-				"name": "Set speed",
-				"description": "Sets the fan speed.",
-				"fields": {
-					"percentage": {
-						"required": true,
-						"selector": {
-							"number": {
-								"min": 0,
-								"max": 100,
-								"unit_of_measurement": "%"
-							}
-						},
-						"name": "Percentage",
-						"description": "Speed of the fan."
-					}
-				}
+			"announce": {
+			  "filter": {
+				"supported_features": [
+				  1048576
+				]
+			  },
+			  "required": false,
+			  "example": "true",
+			  "selector": {
+				"boolean": null
+			  },
+			  "name": "Announce",
+			  "description": "If the media should be played as an announcement."
 			}
-		},
-		"friendly_name": "Ventilatore"
+		  }
+		}
+	  },
+	  "friendly_name": "Test"
 	},
 	{
-		"entity_id": "sun.sun",
-		"state": "above_horizon",
-		"attributes": {
-			"next_dawn": "2024-07-06T02:56:45.614003+00:00",
-			"next_dusk": "2024-07-05T19:50:12.597647+00:00",
-			"next_midnight": "2024-07-05T23:23:29+00:00",
-			"next_noon": "2024-07-05T11:23:13+00:00",
-			"next_rising": "2024-07-06T03:35:26.346961+00:00",
-			"next_setting": "2024-07-05T19:11:32.321594+00:00",
-			"elevation": 43.81,
-			"azimuth": 102.9,
-			"rising": true
+	  "entity_id": "media_player.lg_webos_smart_tv",
+	  "state": "off",
+	  "attributes": {
+		"source_list": [
+		  "AV",
+		  "Accessibilità",
+		  "Apple TV",
+		  "Attività",
+		  "Browser Web",
+		  "CHILI",
+		  "Canali TV",
+		  "Component",
+		  "Connettore dispositivo",
+		  "DAZN",
+		  "Disney+",
+		  "Foto e video",
+		  "Guida TV",
+		  "HDMI 1",
+		  "HDMI 2",
+		  "HDMI 3",
+		  "LG Content Store",
+		  "Manuale d'uso",
+		  "Musica",
+		  "NOW",
+		  "Netflix",
+		  "Notifiche",
+		  "Prime Video",
+		  "Rakuten TV",
+		  "Registrazioni",
+		  "Riproduzione audio Bluetooth",
+		  "Screen Share",
+		  "Servizio remoto LG",
+		  "TIMVISION",
+		  "TV Cast",
+		  "Viki: Asian Dramas, Movies and More",
+		  "YouTube"
+		],
+		"assumed_state": true,
+		"device_class": "tv",
+		"supported_features": 24381
+	  },
+	  "device_id": "f7051bea7c90bcbbf71ee0335cfcf488",
+	  "services": {
+		"turn_off": {
+		  "name": "Turn off",
+		  "description": "Turns off the power of the media player.",
+		  "fields": {}
 		},
-		"services": {},
-		"friendly_name": "Sun"
-	},
-	{
-		"entity_id": "sensor.sun_next_dawn",
-		"state": "2024-07-06T02:56:45+00:00",
-		"attributes": {
-			"device_class": "timestamp"
+		"volume_up": {
+		  "name": "Turn up volume",
+		  "description": "Turns up the volume.",
+		  "fields": {}
 		},
-		"services": {},
-		"friendly_name": "Sun Prossima alba"
-	},
-	{
-		"entity_id": "sensor.sun_next_dusk",
-		"state": "2024-07-05T19:50:12+00:00",
-		"attributes": {
-			"device_class": "timestamp"
+		"volume_down": {
+		  "name": "Turn down volume",
+		  "description": "Turns down the volume.",
+		  "fields": {}
 		},
-		"services": {},
-		"friendly_name": "Sun Prossimo crepuscolo"
-	},
-	{
-		"entity_id": "sensor.sun_next_midnight",
-		"state": "2024-07-05T23:23:29+00:00",
-		"attributes": {
-			"device_class": "timestamp"
+		"media_play": {
+		  "name": "Play",
+		  "description": "Starts playing.",
+		  "fields": {}
 		},
-		"services": {},
-		"friendly_name": "Sun Prossima mezzanotte"
-	},
-	{
-		"entity_id": "sensor.sun_next_noon",
-		"state": "2024-07-05T11:23:13+00:00",
-		"attributes": {
-			"device_class": "timestamp"
+		"media_pause": {
+		  "name": "Pause",
+		  "description": "Pauses.",
+		  "fields": {}
 		},
-		"services": {},
-		"friendly_name": "Sun Prossimo mezzogiorno"
-	},
-	{
-		"entity_id": "sensor.sun_next_rising",
-		"state": "2024-07-06T03:35:26+00:00",
-		"attributes": {
-			"device_class": "timestamp"
+		"media_stop": {
+		  "name": "Stop",
+		  "description": "Stops playing.",
+		  "fields": {}
 		},
-		"services": {},
-		"friendly_name": "Sun Prossima levata"
-	},
-	{
-		"entity_id": "sensor.sun_next_setting",
-		"state": "2024-07-05T19:11:32+00:00",
-		"attributes": {
-			"device_class": "timestamp"
+		"media_next_track": {
+		  "name": "Next",
+		  "description": "Selects the next track.",
+		  "fields": {}
 		},
-		"services": {},
-		"friendly_name": "Sun Prossimo tramonto"
-	},
-	{
-		"entity_id": "device_tracker.oneplus_di_davide",
-		"state": "not_home",
-		"attributes": {
-			"source_type": "gps",
-			"latitude": 46.03213,
-			"longitude": 10.34881,
-			"gps_accuracy": 39,
-			"altitude": 443,
-			"course": 0,
-			"speed": 0,
-			"vertical_accuracy": 1
+		"media_previous_track": {
+		  "name": "Previous",
+		  "description": "Selects the previous track.",
+		  "fields": {}
 		},
-		"services": {
-			"see": {
-				"name": "See",
-				"description": "Records a seen tracked device.",
-				"fields": {
-					"mac": {
-						"example": "FF:FF:FF:FF:FF:FF",
-						"selector": {
-							"text": null
-						},
-						"name": "MAC address",
-						"description": "MAC address of the device."
-					},
-					"dev_id": {
-						"example": "phonedave",
-						"selector": {
-							"text": null
-						},
-						"name": "Device ID",
-						"description": "ID of the device (find the ID in `known_devices.yaml`)."
-					},
-					"host_name": {
-						"example": "Dave",
-						"selector": {
-							"text": null
-						},
-						"name": "Hostname",
-						"description": "Hostname of the device."
-					},
-					"location_name": {
-						"example": "home",
-						"selector": {
-							"text": null
-						},
-						"name": "Location",
-						"description": "Name of the location where the device is located. The options are: `home`, `not_home`, or the name of the zone."
-					},
-					"gps": {
-						"example": "[51.509802, -0.086692]",
-						"selector": {
-							"object": null
-						},
-						"name": "GPS coordinates",
-						"description": "GPS coordinates where the device is located, specified by latitude and longitude (for example: [51.513845, -0.100539])."
-					},
-					"gps_accuracy": {
-						"selector": {
-							"number": {
-								"min": 0,
-								"mode": "box",
-								"unit_of_measurement": "m"
-							}
-						},
-						"name": "GPS accuracy",
-						"description": "Accuracy of the GPS coordinates."
-					},
-					"battery": {
-						"selector": {
-							"number": {
-								"min": 0,
-								"max": 100,
-								"unit_of_measurement": "%"
-							}
-						},
-						"name": "Battery level",
-						"description": "Battery level of the device."
-					}
+		"volume_set": {
+		  "name": "Set volume",
+		  "description": "Sets the volume level.",
+		  "fields": {
+			"volume_level": {
+			  "required": true,
+			  "selector": {
+				"number": {
+				  "min": 0,
+				  "max": 1,
+				  "step": 0.01
 				}
+			  },
+			  "name": "Level",
+			  "description": "The volume. 0 is inaudible, 1 is the maximum volume."
 			}
+		  }
 		},
-		"friendly_name": "OnePlus di Davide "
-	},
-	{
-		"entity_id": "sensor.oneplus_di_davide_battery_level",
-		"state": "41",
-		"attributes": {
-			"unit_of_measurement": "%",
-			"device_class": "battery",
-			"icon": "mdi:battery-40"
-		},
-		"services": {},
-		"friendly_name": "OnePlus di Davide  Battery level"
-	},
-	{
-		"entity_id": "sensor.oneplus_di_davide_battery_state",
-		"state": "not_charging",
-		"attributes": {
-			"options": [
-				"charging",
-				"discharging",
-				"full",
-				"not_charging"
-			],
-			"device_class": "enum",
-			"icon": "mdi:battery"
-		},
-		"services": {},
-		"friendly_name": "OnePlus di Davide  Battery state"
-	},
-	{
-		"entity_id": "sensor.oneplus_di_davide_charger_type",
-		"state": "none",
-		"attributes": {
-			"options": [
-				"ac",
-				"usb",
-				"wireless",
-				"dock",
-				"none"
-			],
-			"device_class": "enum",
-			"icon": "mdi:battery"
-		},
-		"services": {},
-		"friendly_name": "OnePlus di Davide  Charger type"
-	},
-	{
-		"entity_id": "weather.forecast_casa",
-		"state": "partlycloudy",
-		"attributes": {
-			"temperature": 24.6,
-			"dew_point": 19.5,
-			"temperature_unit": "°C",
-			"humidity": 72,
-			"cloud_coverage": 13.3,
-			"pressure": 1017.5,
-			"pressure_unit": "hPa",
-			"wind_bearing": 250.9,
-			"wind_speed": 6.5,
-			"wind_speed_unit": "km/h",
-			"visibility_unit": "km",
-			"precipitation_unit": "mm",
-			"attribution": "Weather forecast from met.no, delivered by the Norwegian Meteorological Institute.",
-			"supported_features": 3
-		},
-		"services": {
-			"get_forecast": {
-				"name": "Get forecast",
-				"description": "Get weather forecast.",
-				"fields": {
-					"type": {
-						"required": true,
-						"selector": {
-							"select": {
-								"options": [
-									"daily",
-									"hourly",
-									"twice_daily"
-								],
-								"translation_key": "forecast_type"
-							}
-						},
-						"name": "Forecast type",
-						"description": "Forecast type: daily, hourly or twice daily."
-					}
-				},
-				"response": {
-					"optional": false
-				}
-			},
-			"get_forecasts": {
-				"name": "Get forecasts",
-				"description": "Get weather forecasts.",
-				"fields": {
-					"type": {
-						"required": true,
-						"selector": {
-							"select": {
-								"options": [
-									"daily",
-									"hourly",
-									"twice_daily"
-								],
-								"translation_key": "forecast_type"
-							}
-						},
-						"name": "Forecast type",
-						"description": "Forecast type: daily, hourly or twice daily."
-					}
-				},
-				"response": {
-					"optional": false
-				}
+		"volume_mute": {
+		  "name": "Mute/unmute volume",
+		  "description": "Mutes or unmutes the media player.",
+		  "fields": {
+			"is_volume_muted": {
+			  "required": true,
+			  "selector": {
+				"boolean": null
+			  },
+			  "name": "Muted",
+			  "description": "Defines whether or not it is muted."
 			}
+		  }
 		},
-		"friendly_name": "Forecast Casa"
-	},
-	{
-		"entity_id": "button.luce_camera_davide_riavvia",
-		"state": "unavailable",
-		"attributes": {
-			"restored": true,
-			"device_class": "restart",
-			"supported_features": 0
-		},
-		"services": {},
-		"friendly_name": "Riavvia"
-	},
-	{
-		"entity_id": "button.luce_camera_davide_identifica",
-		"state": "unavailable",
-		"attributes": {
-			"restored": true,
-			"device_class": "identify",
-			"supported_features": 0
-		},
-		"services": {},
-		"friendly_name": "Identifica"
-	},
-	{
-		"entity_id": "light.luce_camera_davide",
-		"state": "off",
-		"attributes": {
-			"restored": true,
-			"effect_list": [
-				"effect_pulse",
-				"effect_stop"
-			],
-			"supported_features": 36
-		},
-		"services": {
-			"turn_on": {
-				"name": "Turn on",
-				"description": "Turn on one or more lights and adjust properties of the light, even when they are turned on already.",
-				"fields": {
-					"transition": {
-						"filter": {
-							"supported_features": [
-								32
-							]
-						},
-						"selector": {
-							"number": {
-								"min": 0,
-								"max": 300,
-								"unit_of_measurement": "seconds"
-							}
-						},
-						"name": "Transition",
-						"description": "Duration it takes to get to next state."
-					},
-					"brightness": {
-						"filter": {
-							"attribute": {
-								"supported_color_modes": [
-									"brightness",
-									"color_temp",
-									"hs",
-									"xy",
-									"rgb",
-									"rgbw",
-									"rgbww"
-								]
-							}
-						},
-						"advanced": true,
-						"selector": {
-							"number": {
-								"min": 0,
-								"max": 255
-							}
-						},
-						"name": "Brightness value",
-						"description": "Number indicating brightness, where 0 turns the light off, 1 is the minimum brightness, and 255 is the maximum brightness."
-					},
-					"brightness_pct": {
-						"filter": {
-							"attribute": {
-								"supported_color_modes": [
-									"brightness",
-									"color_temp",
-									"hs",
-									"xy",
-									"rgb",
-									"rgbw",
-									"rgbww"
-								]
-							}
-						},
-						"selector": {
-							"number": {
-								"min": 0,
-								"max": 100,
-								"unit_of_measurement": "%"
-							}
-						},
-						"name": "Brightness",
-						"description": "Number indicating the percentage of full brightness, where 0 turns the light off, 1 is the minimum brightness, and 100 is the maximum brightness."
-					},
-					"brightness_step": {
-						"filter": {
-							"attribute": {
-								"supported_color_modes": [
-									"brightness",
-									"color_temp",
-									"hs",
-									"xy",
-									"rgb",
-									"rgbw",
-									"rgbww"
-								]
-							}
-						},
-						"advanced": true,
-						"selector": {
-							"number": {
-								"min": -225,
-								"max": 255
-							}
-						},
-						"name": "Brightness step value",
-						"description": "Change brightness by an amount."
-					},
-					"brightness_step_pct": {
-						"filter": {
-							"attribute": {
-								"supported_color_modes": [
-									"brightness",
-									"color_temp",
-									"hs",
-									"xy",
-									"rgb",
-									"rgbw",
-									"rgbww"
-								]
-							}
-						},
-						"selector": {
-							"number": {
-								"min": -100,
-								"max": 100,
-								"unit_of_measurement": "%"
-							}
-						},
-						"name": "Brightness step",
-						"description": "Change brightness by a percentage."
-					},
-					"profile": {
-						"advanced": true,
-						"example": "relax",
-						"selector": {
-							"text": null
-						},
-						"name": "Profile",
-						"description": "Name of a light profile to use."
-					},
-					"effect": {
-						"filter": {
-							"supported_features": [
-								4
-							]
-						},
-						"selector": {
-							"text": null
-						},
-						"name": "Effect",
-						"description": "Light effect."
-					}
-				}
-			},
-			"turn_off": {
-				"name": "Turn off",
-				"description": "Turn off one or more lights.",
-				"fields": {
-					"transition": {
-						"filter": {
-							"supported_features": [
-								32
-							]
-						},
-						"selector": {
-							"number": {
-								"min": 0,
-								"max": 300,
-								"unit_of_measurement": "seconds"
-							}
-						},
-						"name": "Transition",
-						"description": "Duration it takes to get to next state."
-					}
-				}
-			},
-			"toggle": {
-				"name": "Toggle",
-				"description": "Toggles one or more lights, from on to off, or, off to on, based on their current state.",
-				"fields": {
-					"transition": {
-						"filter": {
-							"supported_features": [
-								32
-							]
-						},
-						"selector": {
-							"number": {
-								"min": 0,
-								"max": 300,
-								"unit_of_measurement": "seconds"
-							}
-						},
-						"name": "Transition",
-						"description": "Duration it takes to get to next state."
-					},
-					"brightness": {
-						"filter": {
-							"attribute": {
-								"supported_color_modes": [
-									"brightness",
-									"color_temp",
-									"hs",
-									"xy",
-									"rgb",
-									"rgbw",
-									"rgbww"
-								]
-							}
-						},
-						"advanced": true,
-						"selector": {
-							"number": {
-								"min": 0,
-								"max": 255
-							}
-						},
-						"name": "Brightness value",
-						"description": "Number indicating brightness, where 0 turns the light off, 1 is the minimum brightness, and 255 is the maximum brightness."
-					},
-					"brightness_pct": {
-						"filter": {
-							"attribute": {
-								"supported_color_modes": [
-									"brightness",
-									"color_temp",
-									"hs",
-									"xy",
-									"rgb",
-									"rgbw",
-									"rgbww"
-								]
-							}
-						},
-						"selector": {
-							"number": {
-								"min": 0,
-								"max": 100,
-								"unit_of_measurement": "%"
-							}
-						},
-						"name": "Brightness",
-						"description": "Number indicating the percentage of full brightness, where 0 turns the light off, 1 is the minimum brightness, and 100 is the maximum brightness."
-					},
-					"profile": {
-						"advanced": true,
-						"example": "relax",
-						"selector": {
-							"text": null
-						},
-						"name": "Profile",
-						"description": "Name of a light profile to use."
-					},
-					"effect": {
-						"filter": {
-							"supported_features": [
-								4
-							]
-						},
-						"selector": {
-							"text": null
-						},
-						"name": "Effect",
-						"description": "Light effect."
-					}
-				}
+		"select_source": {
+		  "name": "Select source",
+		  "description": "Sends the media player the command to change input source.",
+		  "fields": {
+			"source": {
+			  "required": true,
+			  "example": "video1",
+			  "selector": {
+				"text": null
+			  },
+			  "name": "Source",
+			  "description": "Name of the source to switch to. Platform dependent."
 			}
+		  }
 		},
-		"friendly_name": "Luce Camera Davide"
-	},
-	{
-    "entity_id": "media_player.camera_davide",
-    "state": "unavailable",
-    "attributes": {
-      "restored": true,
-      "device_class": "speaker",
-      "supported_features": 152461
-    },
-    "services": {
-      "turn_on": {
-        "name": "Turn on",
-        "description": "Turns on the power of the media player.",
-        "fields": {}
-      },
-      "turn_off": {
-        "name": "Turn off",
-        "description": "Turns off the power of the media player.",
-        "fields": {}
-      },
-      "volume_up": {
-        "name": "Turn up volume",
-        "description": "Turns up the volume.",
-        "fields": {}
-      },
-      "volume_down": {
-        "name": "Turn down volume",
-        "description": "Turns down the volume.",
-        "fields": {}
-      },
-      "media_play": {
-        "name": "Play",
-        "description": "Starts playing.",
-        "fields": {}
-      },
-      "media_pause": {
-        "name": "Pause",
-        "description": "Pauses.",
-        "fields": {}
-      },
-      "media_stop": {
-        "name": "Stop",
-        "description": "Stops playing.",
-        "fields": {}
-      },
-      "volume_set": {
-        "name": "Set volume",
-        "description": "Sets the volume level.",
-        "fields": {
-          "volume_level": {
-            "required": true,
-            "selector": {
-              "number": {
-                "min": 0,
-                "max": 1,
-                "step": 0.01
-              }
-            },
-            "name": "Level",
-            "description": "The volume. 0 is inaudible, 1 is the maximum volume."
-          }
-        }
-      },
-      "volume_mute": {
-        "name": "Mute/unmute volume",
-        "description": "Mutes or unmutes the media player.",
-        "fields": {
-          "is_volume_muted": {
-            "required": true,
-            "selector": {
-              "boolean": null
-            },
-            "name": "Muted",
-            "description": "Defines whether or not it is muted."
-          }
-        }
-      },
-      "play_media": {
-        "name": "Play media",
-        "description": "Starts playing specified media.",
-        "fields": {
-          "media_content_id": {
-            "required": true,
-            "example": "https://home-assistant.io/images/cast/splash.png",
-            "selector": {
-              "text": null
-            },
-            "name": "Content ID",
-            "description": "The ID of the content to play. Platform dependent."
-          },
-          "media_content_type": {
-            "required": true,
-            "example": "music",
-            "selector": {
-              "text": null
-            },
-            "name": "Content type",
-            "description": "The type of the content to play. Such as image, music, tv show, video, episode, channel, or playlist."
-          },
-          "enqueue": {
-            "filter": {
-              "supported_features": [
-                2097152
-              ]
-            },
-            "required": false,
-            "selector": {
-              "select": {
-                "options": [
-                  "play",
-                  "next",
-                  "add",
-                  "replace"
-                ],
-                "translation_key": "enqueue"
-              }
-            },
-            "name": "Enqueue",
-            "description": "If the content should be played now or be added to the queue."
-          },
-          "announce": {
-            "filter": {
-              "supported_features": [
-                1048576
-              ]
-            },
-            "required": false,
-            "example": "true",
-            "selector": {
-              "boolean": null
-            },
-            "name": "Announce",
-            "description": "If the media should be played as an announcement."
-          }
-        }
-      }
-    },
-    "friendly_name": "Home mini Camera Davide"
-  }
-]
+		"play_media": {
+		  "name": "Play media",
+		  "description": "Starts playing specified media.",
+		  "fields": {
+			"media_content_id": {
+			  "required": true,
+			  "example": "https://home-assistant.io/images/cast/splash.png",
+			  "selector": {
+				"text": null
+			  },
+			  "name": "Content ID",
+			  "description": "The ID of the content to play. Platform dependent."
+			},
+			"media_content_type": {
+			  "required": true,
+			  "example": "music",
+			  "selector": {
+				"text": null
+			  },
+			  "name": "Content type",
+			  "description": "The type of the content to play. Such as image, music, tv show, video, episode, channel, or playlist."
+			},
+			"enqueue": {
+			  "filter": {
+				"supported_features": [
+				  2097152
+				]
+			  },
+			  "required": false,
+			  "selector": {
+				"select": {
+				  "options": [
+					"play",
+					"next",
+					"add",
+					"replace"
+				  ],
+				  "translation_key": "enqueue"
+				}
+			  },
+			  "name": "Enqueue",
+			  "description": "If the content should be played now or be added to the queue."
+			},
+			"announce": {
+			  "filter": {
+				"supported_features": [
+				  1048576
+				]
+			  },
+			  "required": false,
+			  "example": "true",
+			  "selector": {
+				"boolean": null
+			  },
+			  "name": "Announce",
+			  "description": "If the media should be played as an announcement."
+			}
+		  }
+		}
+	  },
+	  "friendly_name": "LG webOS Smart TV"
+	}
+  ]
+}

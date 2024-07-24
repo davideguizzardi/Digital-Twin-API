@@ -1,3 +1,6 @@
 [HomeAssistant]
 server_url= http://192.168.178.143:8123/api
 token = token
+
+[ApiConfiguration]
+w_to_gco2=0.431
