@@ -43,6 +43,9 @@ class Configuration_Value(BaseModel):
 class Configuration_Value_List(BaseModel):
     data:list[Configuration_Value]
 
+class Energy_Plan_Calendar(BaseModel):
+    data:list[list[int]]
+
 triggers={
     "device_trigger":{
         "platform":"device",#costante non cambiare

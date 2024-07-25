@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from routers import (
     getEntityRouter,getAutomationRouter,getServiceRouter,
     getConfigurationRouter,getMapConfigurationRouter,getVirtualRouter,
-    getDeviceRouter,getHistoryRouter,getHomeRouter
+    getDeviceRouter,getHistoryRouter,getHomeRouter,getEnergyCalendarConfigurationRouter
     )
 from homeassistant_functions import initializeToken
 
@@ -23,6 +23,7 @@ def create_api():
     service_router=getServiceRouter()
     configuration_router=getConfigurationRouter()
     map_configuration_router=getMapConfigurationRouter()
+    energy_calendar_router=getEnergyCalendarConfigurationRouter()
     virtual_router=getVirtualRouter()
     
     api.include_router(entity_router)
@@ -33,6 +34,7 @@ def create_api():
     api.include_router(service_router)
     api.include_router(configuration_router)
     api.include_router(map_configuration_router)
+    api.include_router(energy_calendar_router)
     api.include_router(virtual_router)
 
     api.add_middleware(
@@ -48,7 +50,7 @@ def create_api():
 def main():
     initializeToken()
     api = create_api()
-    uvicorn.run(api)
+    uvicorn.run(api, host="0.0.0.0")
 
 if __name__ == "__main__":
     main()

@@ -112,9 +112,9 @@ def getEntity(entity_id:str):
     return {"status_code":200,"data":response.json()}
 
 
-def getHistory(entity_id:str,start_timestamp:datetime.datetime |None, end_timestamp:datetime.datetime |None):
+def getHistory(entities_id:str,start_timestamp:datetime.datetime |None, end_timestamp:datetime.datetime |None):
     '''Ritorna la storia dei valori assunti durante le ultime 24 ore dell'entità specificata '''
-    params={"filter_entity_id":entity_id}
+    params={"filter_entity_id":entities_id}
     if(end_timestamp):
         params.update({"end_time":end_timestamp.replace(microsecond=0).isoformat()})
     params=urlencode(params,doseq=True)+"&minimal_response&no_attributes"
@@ -122,25 +122,27 @@ def getHistory(entity_id:str,start_timestamp:datetime.datetime |None, end_timest
     response=get(url=url,headers=headers,params=params)
     if response.status_code!=200:
         return buildError(response)
+    
     state_list=response.json()
-    if(response.status_code==200):
-        state_list=state_list[0] if len(state_list)>0 else []
-
-        file = open("./data/entities_consumption_map.json")
-        consumption_map=json.load(file)
+    file = open("./data/entities_consumption_map.json")
+    consumption_map=json.load(file)
+    res={}
+    for entity_state in state_list:
+        entity_id=entity_state[0]["entity_id"]
         modes=consumption_map[entity_id.split(".")[0]]
 
-        for state_data in state_list:
-            temp_date=parser.parse(state_data["last_changed"])
+        for entity_data in entity_state:
+            temp_date=parser.parse(entity_data["last_changed"])
             temp_date=temp_date.astimezone(tz.tzlocal())
-            state_data["last_changed"]=temp_date.isoformat()
-            if state_data["state"] in modes:
-                state_consumption=modes[state_data["state"]]["power_consumption"]
+            entity_data["last_changed"]=temp_date.isoformat()
+            if entity_data["state"] in modes:
+                state_consumption=modes[entity_data["state"]]["power_consumption"]
             else:
                 state_consumption=0
-            state_data.update({"power_consumption":state_consumption})
-        file.close()
-    return {"status_code":200,"data":state_list}
+            entity_data.update({"power_consumption":state_consumption})
+        res[entity_id]=entity_state
+    file.close()
+    return {"status_code":200,"data":res}
 
 
 def getServicesByEntity(entity_id:str):

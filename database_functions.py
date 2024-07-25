@@ -16,7 +16,8 @@ def create_tables():
     query_list=[
         'CREATE TABLE "Configuration" ("key" TEXT NOT NULL,"value" TEXT NOT NULL,"unit"	TEXT,PRIMARY KEY("key"));',
         'CREATE TABLE "Map_config" ("entity_id" TEXT NOT NULL,"x" INTEGER NOT NULL,"y" INTEGER NOT NULL,"floor" INTEGER NOT NULL,PRIMARY KEY("entity_id"));',
-        'CREATE TABLE "Service_logs" ("user"	TEXT NOT NULL,"service"	TEXT NOT NULL,"target"	TEXT,"payload"	TEXT,"timestamp"	INTEGER NOT NULL);'
+        'CREATE TABLE "Service_logs" ("user"	TEXT NOT NULL,"service"	TEXT NOT NULL,"target"	TEXT,"payload"	TEXT,"timestamp"	INTEGER NOT NULL);',
+        'CREATE TABLE "Energy_Timeslot" ("day"	INTEGER,"hour"	INTEGER,"slot"	INTEGER);'
     ]
     con=sqlite3.connect(DB_PATH)
     cur=con.cursor()
@@ -144,4 +145,50 @@ def delete_configuration_value(key:int):
     success=True if cur.rowcount>0 else False
     con.close()
     return success
+
+
+def add_energy_slots(slots_list:list):
+    con=sqlite3.connect(DB_PATH)
+    cur=con.cursor()
+    cur.executemany("INSERT or REPLACE into Energy_Timeslot(day,hour,slot) VALUES (?,?,?)",slots_list)
+    con.commit()
+    success=True if cur.rowcount>0 else False
+    con.close()
+    return success
+
+def get_all_energy_slots():
+    con=sqlite3.connect(DB_PATH)
+    cur=con.cursor()
+    res=cur.execute("SELECT * FROM Energy_Timeslot ORDER by day ASC, hour ASC")
+    res=res.fetchall()
+    con.close()
+    return res
+
+def get_energy_slot_by_day(day:int):
+    con=sqlite3.connect(DB_PATH)
+    cur=con.cursor()
+    cur.row_factory=row_to_dict
+    res=cur.execute("SELECT * FROM Energy_Timeslot WHERE day="+str(day)+" ORDER by day ASC, hour ASC")
+    res=res.fetchall()
+    con.close()
+    return res
+
+def get_energy_slot_by_slot(slot:int):
+    con=sqlite3.connect(DB_PATH)
+    cur=con.cursor()
+    cur.row_factory=row_to_dict
+    res=cur.execute("SELECT * FROM Energy_Timeslot WHERE slot="+str(slot))
+    res=res.fetchall()
+    con.close()
+    return res
+
+def delete_energy_slots():
+    con=sqlite3.connect(DB_PATH)
+    cur=con.cursor()
+    cur.execute("DELETE FROM Energy_Timeslot")
+    con.commit()
+    success=True if cur.rowcount>0 else False
+    con.close()
+    return success
+
 
