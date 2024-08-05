@@ -131,8 +131,16 @@ def getHistoryRouter():
             return res
             #return createStateArray(list,start_timestamp,end_timestamp)
         
-    @history_router.get("/total")
-    def Get_Total_Consumption(entities:str,start_timestamp:datetime.date,end_timestamp:datetime.date,group:str):
+    
+
+    return history_router
+
+
+def getConsumptionRouter():
+    consumption_router=APIRouter(tags=["Consumption"],prefix="/consumption")
+
+    @consumption_router.get("/entity")
+    def Get_Entities_Consumption(entities:str,start_timestamp:datetime.date,end_timestamp:datetime.date,group:str):
 
         start_timestamp=datetime.datetime.combine(start_timestamp, datetime.time.min).astimezone(tz.tzlocal())
         end_timestamp=datetime.datetime.combine(end_timestamp,  datetime.time(23, 59)).astimezone(tz.tzlocal())
@@ -166,9 +174,24 @@ def getHistoryRouter():
                 res[entity_id]=temp
             return res
         
+    @consumption_router.get("/total")
+    def Get_Total_Consumption(start_timestamp:datetime.date,end_timestamp:datetime.date,group:str):
+        res=getEntities(True,False)
+        if res["status_code"]!=200:
+            raise HTTPException(status_code=res["status_code"],detail=res["data"])
         
+        domainsToFilter=["light","media_player","fan"] #domains of entities that could consume energy, sensors and buttons are supposed to consume 0
+        entities_list=[x["entity_id"] for x in res["data"] if x["entity_id"].split(".")[0] in domainsToFilter]
+        entities_list=",".join(entities_list)
+        consumption_history=Get_Entities_Consumption(entities_list,start_timestamp,end_timestamp,group)
+        result=defaultdict(lambda:{"power_consumption":0,"power_consumption_unit":"Wh"})
+        for key1 in consumption_history.keys():
+            for key2 in consumption_history[key1].keys():
+                result[key2]["power_consumption"]+=consumption_history[key1][key2]["power_consumption"]
+        return result
     
-    return history_router
+    return consumption_router
+
 
 
 

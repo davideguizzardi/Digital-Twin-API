@@ -129,7 +129,7 @@ def getHistory(entities_id:str,start_timestamp:datetime.datetime |None, end_time
     res={}
     for entity_state in state_list:
         entity_id=entity_state[0]["entity_id"]
-        modes=consumption_map[entity_id.split(".")[0]]
+        modes=consumption_map.get(entity_id.split(".")[0],[])
 
         for entity_data in entity_state:
             temp_date=parser.parse(entity_data["last_changed"])
