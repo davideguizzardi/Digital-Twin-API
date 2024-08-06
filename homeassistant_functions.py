@@ -40,8 +40,9 @@ def getEntities(skip_services=False,only_main=False):
             if only_main:
                 if not isMainEntity(entity["entity_id"],entity["attributes"].get("friendly_name")):
                     continue
-            device = getDeviceId(entity["entity_id"])
-            entity["device_id"]=device
+            #device = getDeviceId(entity["entity_id"])
+            #entity["device_id"]=device
+
             if not skip_services:
                 resp=getServicesByEntity(entity["entity_id"])
                 if resp["status_code"]!=200:
@@ -55,6 +56,8 @@ def getEntities(skip_services=False,only_main=False):
 
             if entity["attributes"].get("unit_of_measurement"):
                 entity["state"]+=entity["attributes"]["unit_of_measurement"]
+            
+            entity["device_class"]=entity["attributes"].get("device_class") if entity["attributes"].get("device_class") else entity["entity_id"].split(".")[0]
 
             #Rimuovo i campi non necessari
             entity.pop("context",None)
@@ -64,6 +67,7 @@ def getEntities(skip_services=False,only_main=False):
             #entity["attributes"].pop("supported_features",None)
             entity["attributes"].pop("friendly_name",None)
             entity["attributes"].pop("supported_color_modes",None)
+            entity["attributes"].pop("device_class",None)
             res_list.append(entity)
         print("Time to get all entities:"+str((time.time()-start_time)*1000)+" ms")
         return {"status_code":200,"data":res_list}
