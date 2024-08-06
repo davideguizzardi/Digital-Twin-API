@@ -14,9 +14,11 @@ from schemas import (
     Map_Entity,User_Log,User_Log_List,Configuration_Value,
     Configuration_Value_List,Energy_Plan_Calendar)
 
-import datetime,json,configparser
+import datetime,json,configparser,logging
 from dateutil import parser,tz
 from collections import defaultdict
+
+logger = logging.getLogger('uvicorn.error')
 
 
 def getEntityRouter():
@@ -62,6 +64,7 @@ def createStateArray(entity_id:str,list:list,start_timestamp:datetime,end_timest
                 res.append({
                     "date":temp_date.strftime("%d/%m/%Y %H:%M:%S"),
                     "state":list[i]["state"],
+                    "unit_of_measurement":list[i]["unit_of_measurement"],
                     "power_consumption":list[i]["power_consumption"]*power_consumption_factor})
                 temp_date=temp_date+datetime.timedelta(minutes=time_delta)
         #estendo l'ultimo blocco fino alla fine dell'intervallo richiesto in quanto home assistant fornisce solo i blocchi con dei cambi
@@ -71,6 +74,7 @@ def createStateArray(entity_id:str,list:list,start_timestamp:datetime,end_timest
             res.append({
                 "date":temp_date.strftime("%d/%m/%Y %H:%M:%S"),
                 "state":list[-1]["state"],
+                "unit_of_measurement":list[-1]["unit_of_measurement"],
                 "power_consumption":list[-1]["power_consumption"]*power_consumption_factor})
             temp_date=temp_date+datetime.timedelta(minutes=time_delta)
         return {entity_id:res}
@@ -111,6 +115,7 @@ def getHistoryRouter():
 
     @history_router.get("/daily")
     def Get_Entity_History(entities:str,start_timestamp:datetime.datetime=datetime.date.today()):
+        start_program=datetime.datetime.now()
         start_timestamp=start_timestamp.astimezone(tz.tzlocal())
         end_timestamp=start_timestamp+datetime.timedelta(days=1)
         if end_timestamp>datetime.datetime.now(tz.tzlocal()):
@@ -128,6 +133,7 @@ def getHistoryRouter():
                 res_pool=pool.starmap(createStateArray,args)
             for el in res_pool:
                 res.update(el)
+            logger.debug(f"Get_Entity_History for {len(entities.split(","))} entities, time_range={(end_timestamp-start_timestamp).days} days      elapsed_time={(datetime.datetime.now()-start_program).total_seconds()}[s]")
             return res
             #return createStateArray(list,start_timestamp,end_timestamp)
         
@@ -141,27 +147,28 @@ def getConsumptionRouter():
 
     @consumption_router.get("/entity")
     def Get_Entities_Consumption(entities:str,start_timestamp:datetime.date,end_timestamp:datetime.date,group:str):
-
+        start_call=datetime.datetime.now()
         start_timestamp=datetime.datetime.combine(start_timestamp, datetime.time.min).astimezone(tz.tzlocal())
         end_timestamp=datetime.datetime.combine(end_timestamp,  datetime.time(23, 59)).astimezone(tz.tzlocal())
+
+        if end_timestamp>datetime.datetime.now(tz.tzlocal()):
+            end_timestamp=datetime.datetime.now(tz.tzlocal())
 
         response=getHistory(entities_id=entities,start_timestamp=start_timestamp,end_timestamp=end_timestamp)
         if response["status_code"]!=200:
             raise HTTPException(status_code=response["status_code"],detail=response["data"])
         
         entities_states=response["data"]
+        res={}
 
         if group.lower()=="hourly":
             res_pool={}
-            res={}
             with Pool(len(entities_states)) as pool:
                 args=[(entity_id,entities_states[entity_id],start_timestamp,end_timestamp) for entity_id in entities_states]
                 res_pool=pool.starmap(computeHourlyTotalConsumption,args)
             for el in res_pool:
                 res.update(el)
-            return res
         else:         
-            res={}
             delta=(end_timestamp-start_timestamp).days
             for id in entities_states:
                 temp_date=start_timestamp
@@ -172,22 +179,34 @@ def getConsumptionRouter():
                     temp[temp_date.strftime("%d/%m/%Y")]=computeDailyTotalConsumption(temp_list,temp_date)
                     temp_date=temp_date+datetime.timedelta(days=1)
                 res[entity_id]=temp
-            return res
+        
+        logger.debug(f"Get_Entities_Consumption for {len(entities.split(","))} entities, time_range={(end_timestamp-start_timestamp).days} days, split={group}      elapsed_time={(datetime.datetime.now()-start_call).total_seconds()}[s]")
+        return res
         
     @consumption_router.get("/total")
     def Get_Total_Consumption(start_timestamp:datetime.date,end_timestamp:datetime.date,group:str):
+        start_call=datetime.datetime.now() #used for debug purposes
+
+        ## Getting the list of all the entities of the house
         res=getEntities(True,False)
         if res["status_code"]!=200:
             raise HTTPException(status_code=res["status_code"],detail=res["data"])
         
+        ## Filtering only those entities that could produce some consumption data
         domainsToFilter=["light","media_player","fan"] #domains of entities that could consume energy, sensors and buttons are supposed to consume 0
         entities_list=[x["entity_id"] for x in res["data"] if x["entity_id"].split(".")[0] in domainsToFilter]
         entities_list=",".join(entities_list)
+
+        ## Producing consumption of each entitiy grouped by the value of group 
         consumption_history=Get_Entities_Consumption(entities_list,start_timestamp,end_timestamp,group)
         result=defaultdict(lambda:{"power_consumption":0,"power_consumption_unit":"Wh"})
+
+        ## Merging all the values together
         for key1 in consumption_history.keys():
             for key2 in consumption_history[key1].keys():
                 result[key2]["power_consumption"]+=consumption_history[key1][key2]["power_consumption"]
+
+        logger.debug(f"Get_Total_Consumption for {len(entities_list.split(","))} entities, time_range={(end_timestamp-start_timestamp).days} days, split={group}      elapsed_time={(datetime.datetime.now()-start_call).total_seconds()}[s]")
         return result
     
     return consumption_router

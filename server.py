@@ -46,7 +46,7 @@ def create_api():
 def main():
     initializeToken()
     api = create_api()
-    uvicorn.run(api, host="0.0.0.0")
+    uvicorn.run(api, host="0.0.0.0",log_level="debug")
 
 if __name__ == "__main__":
     main()

@@ -53,6 +53,9 @@ def getEntities(skip_services=False,only_main=False):
             #Sposto i campi 
             entity["friendly_name"]=entity["attributes"].get("friendly_name")
 
+            if entity["attributes"].get("unit_of_measurement"):
+                entity["state"]+=entity["attributes"]["unit_of_measurement"]
+
             #Rimuovo i campi non necessari
             entity.pop("context",None)
             entity.pop("last_changed",None)
@@ -117,7 +120,8 @@ def getHistory(entities_id:str,start_timestamp:datetime.datetime |None, end_time
     params={"filter_entity_id":entities_id}
     if(end_timestamp):
         params.update({"end_time":end_timestamp.replace(microsecond=0).isoformat()})
-    params=urlencode(params,doseq=True)+"&minimal_response&no_attributes"
+    params=urlencode(params,doseq=True)+"&minimal_response"
+    #params=urlencode(params,doseq=True)+"&minimal_response&no_attributes"
     url=base_url+"/history/period"+"/"+start_timestamp.replace(microsecond=0).isoformat() if start_timestamp else base_url+"/history/period"
     response=get(url=url,headers=headers,params=params)
     if response.status_code!=200:
@@ -129,6 +133,10 @@ def getHistory(entities_id:str,start_timestamp:datetime.datetime |None, end_time
     res={}
     for entity_state in state_list:
         entity_id=entity_state[0]["entity_id"]
+        unit=""
+        if entity_state[0]["attributes"].get("unit_of_measurement"):
+            unit=entity_state[0]["attributes"].get("unit_of_measurement")
+        
         modes=consumption_map.get(entity_id.split(".")[0],[])
 
         for entity_data in entity_state:
@@ -139,7 +147,7 @@ def getHistory(entities_id:str,start_timestamp:datetime.datetime |None, end_time
                 state_consumption=modes[entity_data["state"]]["power_consumption"]
             else:
                 state_consumption=0
-            entity_data.update({"power_consumption":state_consumption})
+            entity_data.update({"unit_of_measurement":unit,"power_consumption":state_consumption})
         res[entity_id]=entity_state
     file.close()
     return {"status_code":200,"data":res}
