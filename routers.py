@@ -16,6 +16,7 @@ from schemas import (
 
 import datetime,json,configparser,logging
 from dateutil import parser,tz
+from dateutil.relativedelta import relativedelta
 from collections import defaultdict
 
 logger = logging.getLogger('uvicorn.error')
@@ -86,9 +87,10 @@ def computeHourlyTotalConsumption(entity_id,states,start_timestamp,end_timestamp
         date=datetime.datetime.strptime(state["date"],"%d/%m/%Y %H:%M:%S")
         key=date.strftime("%d/%m/%Y %H-")+(date+datetime.timedelta(hours=1)).strftime("%H") #es 10/07/2024 00-01
         res[key]["power_consumption"]+=state["power_consumption"]
-    return {entity_id:dict(res)}
+        res[key]["date"]=key
+    return {entity_id:list(dict(res).values())}
 
-def computeDailyTotalConsumption(list:list,day:datetime.date)->list:
+def computeTotalConsumption(list:list,day:datetime.date,date_format:str)->list:
         sum=0
         use_time=0 
         time_delta=60
@@ -96,7 +98,7 @@ def computeDailyTotalConsumption(list:list,day:datetime.date)->list:
         for i in range(len(list)):
             start_block=parser.parse(list[i]["last_changed"]).astimezone(tz.tzlocal())
             if i+1==len(list):
-                end_block=datetime.datetime.combine(day+datetime.timedelta(days=1), datetime.time.min).astimezone(tz.tzlocal())
+                end_block=datetime.datetime.combine(start_block+datetime.timedelta(days=1), datetime.time.min).astimezone(tz.tzlocal())
             else:
                 end_block=parser.parse(list[i+1]["last_changed"]).astimezone(tz.tzlocal())
             delta=(end_block-start_block).total_seconds() #calcolo la durata dell'intervallo
@@ -104,7 +106,7 @@ def computeDailyTotalConsumption(list:list,day:datetime.date)->list:
                 use_time=use_time+delta/60
             delta=delta/3600 #lo converto in ore
             sum=sum+list[i]["power_consumption"]*delta #calcolo il kWh spesi
-        return {"power_consumption":sum,"power_consumption_unit":"Wh","use_time":use_time,"use_time_unit":"min"}
+        return {"power_consumption":sum,"power_consumption_unit":"Wh","use_time":use_time,"use_time_unit":"min","date":day.strftime(date_format)}
         
 
         
@@ -146,7 +148,7 @@ def getConsumptionRouter():
     consumption_router=APIRouter(tags=["Consumption"],prefix="/consumption")
 
     @consumption_router.get("/entity")
-    def Get_Entities_Consumption(entities:str,start_timestamp:datetime.date,end_timestamp:datetime.date,group:str):
+    def Get_Entities_Consumption(entities:str,start_timestamp:datetime.date=datetime.date.today(),end_timestamp:datetime.date=datetime.date.today(),group:str="hourly"):
         start_call=datetime.datetime.now()
         start_timestamp=datetime.datetime.combine(start_timestamp, datetime.time.min).astimezone(tz.tzlocal())
         end_timestamp=datetime.datetime.combine(end_timestamp,  datetime.time(23, 59)).astimezone(tz.tzlocal())
@@ -158,6 +160,9 @@ def getConsumptionRouter():
         if response["status_code"]!=200:
             raise HTTPException(status_code=response["status_code"],detail=response["data"])
         
+        if not response["data"]:
+            raise HTTPException(status_code=404,detail="Data not found")
+        
         entities_states=response["data"]
         res={}
 
@@ -168,23 +173,43 @@ def getConsumptionRouter():
                 res_pool=pool.starmap(computeHourlyTotalConsumption,args)
             for el in res_pool:
                 res.update(el)
-        else:         
+
+        elif group.lower()=="daily":         
             delta=(end_timestamp-start_timestamp).days
             for id in entities_states:
                 temp_date=start_timestamp
-                temp={}
-                entity_id=id
+                temp=[]
                 for i in range(delta+1):                   
                     temp_list=[x for x in entities_states[id] if x["last_changed"].startswith(temp_date.strftime("%Y-%m-%d"))]
-                    temp[temp_date.strftime("%d/%m/%Y")]=computeDailyTotalConsumption(temp_list,temp_date)
+                    temp.append(computeTotalConsumption(temp_list,temp_date,date_format="%d/%m/%Y"))
                     temp_date=temp_date+datetime.timedelta(days=1)
-                res[entity_id]=temp
+                res[id]=temp
+
+        elif group.lower()=="monthly":
+            delta =(end_timestamp.year - start_timestamp.year) * 12 + end_timestamp.month - start_timestamp.month
+            for id in entities_states:
+                temp_date=start_timestamp
+                temp=[]
+                for i in range(delta+1):                
+                    temp_list=[x for x in entities_states[id] if x["last_changed"].startswith(temp_date.strftime("%Y-%m"))]
+                    temp.append(computeTotalConsumption(temp_list,temp_date,date_format="%m/%Y"))
+                    temp_date=temp_date+relativedelta(months=+1)
+                res[id]=temp
+        
+        elif group.lower()=="entity":
+            temp_date=start_timestamp
+            temp=[]
+            for id in entities_states:
+                element=computeTotalConsumption(entities_states[id],end_timestamp,date_format="%d/%m/%Y")
+                element["entity"]=id
+                temp.append(element)
+            return temp
         
         logger.debug(f"Get_Entities_Consumption for {len(entities.split(","))} entities, time_range={(end_timestamp-start_timestamp).days} days, split={group}      elapsed_time={(datetime.datetime.now()-start_call).total_seconds()}[s]")
         return res
         
     @consumption_router.get("/total")
-    def Get_Total_Consumption(start_timestamp:datetime.date,end_timestamp:datetime.date,group:str):
+    def Get_Total_Consumption(start_timestamp:datetime.date=datetime.date.today(),end_timestamp:datetime.date=datetime.date.today(),group:str="hourly"):
         start_call=datetime.datetime.now() #used for debug purposes
 
         ## Getting the list of all the entities of the house
@@ -199,15 +224,19 @@ def getConsumptionRouter():
 
         ## Producing consumption of each entitiy grouped by the value of group 
         consumption_history=Get_Entities_Consumption(entities_list,start_timestamp,end_timestamp,group)
+        if group=="entity":
+            return sorted(consumption_history,key=lambda x: x['power_consumption'],reverse=True)
+        
         result=defaultdict(lambda:{"power_consumption":0,"power_consumption_unit":"Wh"})
 
         ## Merging all the values together
         for key1 in consumption_history.keys():
-            for key2 in consumption_history[key1].keys():
-                result[key2]["power_consumption"]+=consumption_history[key1][key2]["power_consumption"]
+            for element in consumption_history[key1]:
+                result[element["date"]]["power_consumption"]+=element["power_consumption"]
+                result[element["date"]]["date"]=element["date"]
 
         logger.debug(f"Get_Total_Consumption for {len(entities_list.split(","))} entities, time_range={(end_timestamp-start_timestamp).days} days, split={group}      elapsed_time={(datetime.datetime.now()-start_call).total_seconds()}[s]")
-        return result
+        return list(dict(result).values())
     
     return consumption_router
 
