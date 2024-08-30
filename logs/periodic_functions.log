@@ -1,0 +1,10 @@
+INFO-22/08/2024 10:21:18: Running the script to get daily appliances consumption and usage time...
+INFO-22/08/2024 10:21:18: Asking HA for history, from:22/08/2024 00:00 to:22/08/2024 23:59, for 4 entities
+INFO-22/08/2024 10:21:18: Computing Hourly consumption, Daily consumption and mean use for entity light.luce_camera_davide
+INFO-22/08/2024 10:21:18: Computing Hourly consumption, Daily consumption and mean use for entity media_player.test
+INFO-22/08/2024 10:21:18: Computing Hourly consumption, Daily consumption and mean use for entity media_player.chromecast_tv
+INFO-22/08/2024 10:21:18: Retrieving saved data on appliances usage...
+INFO-22/08/2024 10:21:18: Appliances usage data updated successfully!
+INFO-22/08/2024 10:21:18: Daily consumption data updated successfully!
+INFO-22/08/2024 10:21:18: Hourly consumption data updated successfully!
+INFO-22/08/2024 10:21:18: Updating consumption and use data of 3 entities ended, elapsed time:0.178864[s]
