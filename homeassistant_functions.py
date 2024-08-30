@@ -24,8 +24,41 @@ def initializeToken():
     "content-type": "application/json",
     }
 
+def extractEntityData(entity,skip_services=False):
+    device = getDeviceId(entity["entity_id"])
+    entity["device_id"]=device
 
-def getEntities(skip_services=False,only_main=False):
+    if not skip_services:
+        resp=getServicesByEntity(entity["entity_id"])
+        if resp["status_code"]!=200:
+            return buildError(resp)
+
+        services=resp["data"]
+        entity["services"]=services
+
+    #Sposto i campi 
+    entity["friendly_name"]=entity["attributes"].get("friendly_name")
+
+    if entity["attributes"].get("unit_of_measurement"):
+        entity["unit_of_measurement"]=entity["attributes"]["unit_of_measurement"]
+        #entity["state"]+=entity["attributes"]["unit_of_measurement"]
+
+    entity["entity_class"]=entity["attributes"].get("device_class") if entity["attributes"].get("device_class") else entity["entity_id"].split(".")[0]
+
+    #Rimuovo i campi non necessari
+    entity.pop("context",None)
+    entity.pop("last_changed",None)
+    entity.pop("last_reported",None)
+    entity.pop("last_updated",None)
+    #entity["attributes"].pop("supported_features",None)
+    entity["attributes"].pop("friendly_name",None)
+    entity["attributes"].pop("supported_color_modes",None)
+    entity["attributes"].pop("device_class",None)
+    entity["attributes"].pop("unit_of_measurement",None)
+    return entity
+
+
+def getEntities(skip_services=False):
         '''
         Ritorna la lista di tutte le entità di HA
         '''
@@ -37,40 +70,39 @@ def getEntities(skip_services=False,only_main=False):
         entity_list=response.json()
         res_list=[]
         for entity in entity_list:
-            if only_main:
-                if not isMainEntity(entity["entity_id"],entity["attributes"].get("friendly_name")):
-                    continue
-            #device = getDeviceId(entity["entity_id"])
-            #entity["device_id"]=device
-
-            if not skip_services:
-                resp=getServicesByEntity(entity["entity_id"])
-                if resp["status_code"]!=200:
-                    return buildError(resp)
-        
-                services=resp["data"]
-                entity["services"]=services
-
-            #Sposto i campi 
-            entity["friendly_name"]=entity["attributes"].get("friendly_name")
-
-            if entity["attributes"].get("unit_of_measurement"):
-                entity["state"]+=entity["attributes"]["unit_of_measurement"]
-            
-            entity["device_class"]=entity["attributes"].get("device_class") if entity["attributes"].get("device_class") else entity["entity_id"].split(".")[0]
-
-            #Rimuovo i campi non necessari
-            entity.pop("context",None)
-            entity.pop("last_changed",None)
-            entity.pop("last_reported",None)
-            entity.pop("last_updated",None)
-            #entity["attributes"].pop("supported_features",None)
-            entity["attributes"].pop("friendly_name",None)
-            entity["attributes"].pop("supported_color_modes",None)
-            entity["attributes"].pop("device_class",None)
-            res_list.append(entity)
+            res_list.append(extractEntityData(entity,skip_services))
         print("Time to get all entities:"+str((time.time()-start_time)*1000)+" ms")
         return {"status_code":200,"data":res_list}
+
+
+def getDevicesFast():
+    start=datetime.datetime.now()
+    templ="{% set devices = states | map(attribute='entity_id') | map('device_id') | unique | reject('eq',None) | list %}"
+    templ+="{%- set ns = namespace(devices = []) %}{%- for device in devices %}"
+    templ+="{%- set entities = device_entities(device) | list %}"
+    templ+="{%- set var = namespace(entities = [],state = '',device_class = 'sensor',energy_entity_id='')%}"
+    templ+="{%- for entity in entities %}"
+
+    templ+="{%- if not entity.split('.')[0] in ['sensor','binary_sensor'] %}"
+    templ+="{%- set var.state=states(entity)%}"
+    templ+="{%- set var.device_class=entity.split('.')[0]%}"
+    templ+="{%- if var.energy_entity_id== ''%}"
+    templ+="{%- set var.energy_entity_id= entity %}"
+    templ+="{%- endif %}"
+    templ+="{%- endif %}"
+    templ+="{%- if state_attr(entity,'device_class')== 'energy'%}"
+    templ+="{%- set var.energy_entity_id= entity %}"
+    templ+="{%- endif %}"
+    templ+="{%- set var.entities=var.entities+[{'entity_id':entity,'state':states(entity),'entity_class':state_attr(entity,'device_class'),'unit_of_measurement':state_attr(entity,'unit_of_measurement')}]%}"
+    templ+="{%- endfor %}"
+    templ+="{%- set dev = {'name':device_attr(device,'name'),'device_id':device,'name_by_user':device_attr(device,'name_by_user'),'model':device_attr(device,'model'),'manufacturer':device_attr(device,'manufacturer'),'state':var.state,'device_class':var.device_class,'energy_entity_id':var.energy_entity_id,'list_of_entities':var.entities}%}"
+    templ+="{%- if dev %}{%- set ns.devices = ns.devices + [ dev ] %}{%- endif %}{%- endfor %}"
+    templ+="{{ ns.devices |to_json(sort_keys=True)}}"
+    response = post(base_url+"/template", headers=headers, json={"template":templ})
+    res= json.loads(response.text)
+    
+    print("getDevicesFast: elapsed time"+str((datetime.datetime.now()-start).total_seconds()))
+    return {"status_code":200,"data":res}
 
 def getDevices(skip_services=False):
         '''
@@ -85,31 +117,33 @@ def getDevices(skip_services=False):
         entity_list=response.json()
         for entity in entity_list:
             device = getDeviceId(entity["entity_id"])
-            entity["device_id"]=device
-            if not skip_services:
-                services=getServicesByEntity(entity["entity_id"])
-                entity["services"]=services
+            entity=extractEntityData(entity,skip_services)
 
-            #Sposto i campi 
-            entity["friendly_name"]=entity["attributes"].get("friendly_name")
-            
-            entity["is_main_entity"]=isMainEntity(entity["entity_id"],entity["friendly_name"])
-
-            #Rimuovo i campi non necessari
-            entity.pop("context",None)
-            entity.pop("last_changed",None)
-            entity.pop("last_reported",None)
-            entity.pop("last_updated",None)
-            #entity["attributes"].pop("supported_features",None)
-            entity["attributes"].pop("friendly_name",None)
-            entity["attributes"].pop("supported_color_modes",None)
-            
-            t = dev_list.setdefault(entity['device_id'], {"list_of_entities":[]})
+            t = dev_list.setdefault(entity['device_id'], {"list_of_entities":[],"device_class":"sensor","state":"","energy_entity_id":""})
             t["list_of_entities"].append(entity)
+            
+            #Setting of device info
             device_info=getDeviceInfo(device)
             t.update(device_info)
+            t.update({"device_id":device})
+
+            if entity["entity_class"]=="energy":
+                t["energy_entity_id"]=entity["entity_id"]
+
+            if not (entity["entity_id"].startswith("sensor") or entity["entity_id"].startswith("binary_sensor")):
+                t.update({
+                    "device_class":entity["entity_class"],
+                    "state":entity["state"],
+                    "energy_entity_id":entity["entity_id"] if t["energy_entity_id"]=="" else t["energy_entity_id"]
+                     })
+                
+            
+            
+
+        del dev_list["None"] #removing entities that are not associated with a device
+
         print("Time to get all entities:"+str((time.time()-start_time)*1000)+" ms")
-        return {"status_code":200,"data":dev_list}
+        return {"status_code":200,"data":list(dev_list.values())}
 
 def getEntity(entity_id:str):
     '''Ritorna l'entità con l'entity_id passato'''
@@ -141,16 +175,25 @@ def getHistory(entities_id:str,start_timestamp:datetime.datetime |None, end_time
         if entity_state[0]["attributes"].get("unit_of_measurement"):
             unit=entity_state[0]["attributes"].get("unit_of_measurement")
         
-        modes=consumption_map.get(entity_id.split(".")[0],[])
+        if entity_state[0]["attributes"].get("device_class")=="power":
+           extract_power=True 
+        else: 
+            extract_power=False
+            modes=consumption_map.get(entity_id.split(".")[0],[])
 
         for entity_data in entity_state:
-            temp_date=parser.parse(entity_data["last_changed"])
-            temp_date=temp_date.astimezone(tz.tzlocal())
+            temp_date=parser.parse(entity_data["last_changed"]).astimezone(tz.tzlocal())
             entity_data["last_changed"]=temp_date.isoformat()
-            if entity_data["state"] in modes:
-                state_consumption=modes[entity_data["state"]]["power_consumption"]
+            if not extract_power:
+                if entity_data["state"] in modes:
+                    state_consumption=modes[entity_data["state"]]["power_consumption"]
+                else:
+                    state_consumption=0
             else:
-                state_consumption=0
+                try:
+                    state_consumption=float(entity_data["state"])
+                except ValueError:
+                    state_consumption=0
             entity_data.update({"unit_of_measurement":unit,"power_consumption":state_consumption})
         res[entity_id]=entity_state
     file.close()
@@ -312,16 +355,6 @@ def getDeviceId(entity_id:str):
     response = post(base_url+"/template", headers=headers, json={"template":templ})
     return response.text
 
-def isMainEntity(entity_id:str,entity_name:str)->bool:
-    if entity_name==None:
-        return False
-    
-    templ="{{device_attr(device_id('"+entity_id+"'),'name')}}"
-    response = post(base_url+"/template", headers=headers, json={"template":templ})
-    if response.status_code!=200:
-        return False
-    else:
-        return response.text.replace(" ","")==entity_name.replace(" ","")
 
 def getDeviceInfo(device_id:str):
     '''Dato l'id di un'entità ritorna l'id del dispositivo a cui tale entità è associata'''
@@ -335,14 +368,6 @@ def getDeviceInfo(device_id:str):
     response = post(base_url+"/template", headers=headers, json={"template":templ})
     obj=json.loads(response.text)
     return obj
-
-
-def getDeviceModel(device_id:str):
-    '''Dato l'id di un'entità ritorna l'id del dispositivo a cui tale entità è associata'''
-    templ="{{device_attr('"+device_id+"','model')}}"
-    response = post(base_url+"/template", headers=headers, json={"template":templ})
-    return response.text
-
 
 def getTriggerForDevice(entity_id:str,type:str)->dict:
     domain=str.split(entity_id,'.')[0]
@@ -369,3 +394,39 @@ def getListOfSupported(supported_features:int)->list[int]:
             res.append(pow(2,i))
         i=i+1
     return res
+
+
+
+
+def main():
+    start=datetime.datetime.now()
+    initializeToken()
+    templ="{% set devices = states | map(attribute='entity_id') | map('device_id') | unique | reject('eq',None) | list %}"
+    templ+="{%- set ns = namespace(devices = []) %}{%- for device in devices %}"
+    templ+="{%- set entities = device_entities(device) | list %}"
+    templ+="{%- set var = namespace(entities = [],state = '',device_class = 'sensor',energy_entity_id='')%}"
+    templ+="{%- for entity in entities %}"
+
+    templ+="{%- if not entity.split('.')[0] in ['sensor','binary_sensor'] %}"
+    templ+="{%- set var.state=states(entity)%}"
+    templ+="{%- set var.device_class=entity.split('.')[0]%}"
+    templ+="{%- if var.energy_entity_id== ''%}"
+    templ+="{%- set var.energy_entity_id= entity %}"
+    templ+="{%- endif %}"
+    templ+="{%- endif %}"
+    templ+="{%- if state_attr(entity,'device_class')== 'energy'%}"
+    templ+="{%- set var.energy_entity_id= entity %}"
+    templ+="{%- endif %}"
+    templ+="{%- set var.entities=var.entities+[{'entity_id':entity,'state':states(entity),'entity_class':state_attr(entity,'device_class'),'unit_of_measurement':state_attr(entity,'unit_of_measurement')}]%}"
+    templ+="{%- endfor %}"
+    templ+="{%- set dev = {'name':device_attr(device,'name'),'device_id':device,'name_by_user':device_attr(device,'name_by_user'),'model':device_attr(device,'model'),'manufacturer':device_attr(device,'manufacturer'),'state':var.state,'device_class':var.device_class,'energy_entity_id':var.energy_entity_id,'list_of_entities':var.entities}%}"
+    templ+="{%- if dev %}{%- set ns.devices = ns.devices + [ dev ] %}{%- endif %}{%- endfor %}"
+    templ+="{{ ns.devices |to_json(sort_keys=True)}}"
+    response = post(base_url+"/template", headers=headers, json={"template":templ})
+    res= json.loads(response.text)
+    
+    print("Elapsed time"+str((datetime.datetime.now()-start).total_seconds()))
+    print("Done")
+
+if __name__ == "__main__":
+    main()
