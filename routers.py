@@ -1,7 +1,7 @@
 from fastapi import APIRouter,HTTPException
 from multiprocessing import Pool
 
-from homeassistant_functions import getEntities,getEntity,getServicesByEntity,getHistory,getAutomations,callService,getDevices
+from homeassistant_functions import getEntities,getEntity,getServicesByEntity,getHistory,getAutomations,callService,getDevices,getDevicesFast
 from database_functions import (
     initialize_database,
     get_all_configuration_values,get_configuration_value_by_key,add_configuration_values,delete_configuration_value,
@@ -25,8 +25,8 @@ logger = logging.getLogger('uvicorn.error')
 def getEntityRouter():
     entity_router=APIRouter(tags=["Entity"],prefix="/entity")
     @entity_router.get("")
-    def Get_All_Entities(skip_services:bool=False,only_main:bool=False):
-        res=getEntities(skip_services,only_main)
+    def Get_All_Entities(skip_services:bool=False):
+        res=getEntities(skip_services)
         if res["status_code"]!=200:
             raise HTTPException(status_code=res["status_code"],detail=res["data"])
         return res["data"]
@@ -50,14 +50,14 @@ def getEntityRouter():
 
 
 
-def createStateArray(entity_id:str,list:list,start_timestamp:datetime,end_timestamp:datetime)->list:
-        time_delta=5 #minuti 
-        power_consumption_factor=time_delta/60 
+def createStateArray(entity_id:str,list:list,start_timestamp:datetime,end_timestamp:datetime,time_delta_min=2)->list:
+        power_consumption_factor=time_delta_min/60 
         #supponendo che un dispositivo abbia potenza 1W => consumera' 1 Wh ogni ora 
         #se campiono con un valore piu' basso dell'ora (es 1 minuti) dovro' calcolare che il dispositivo
         #consuma minuti_campionamento/60 di Wh ogni minuti_campionamento
         res=[]
         temp_date=start_timestamp
+        temp_date=parser.parse(list[0]["last_changed"],)
         for i in range(len(list)-1):
             #temp_date=parser.parse(list[i]["last_changed"],)
             end_block = parser.parse(list[i+1]["last_changed"]).astimezone(tz.tzlocal())
@@ -67,7 +67,7 @@ def createStateArray(entity_id:str,list:list,start_timestamp:datetime,end_timest
                     "state":list[i]["state"],
                     "unit_of_measurement":list[i]["unit_of_measurement"],
                     "power_consumption":list[i]["power_consumption"]*power_consumption_factor})
-                temp_date=temp_date+datetime.timedelta(minutes=time_delta)
+                temp_date=temp_date+datetime.timedelta(minutes=time_delta_min)
         #estendo l'ultimo blocco fino alla fine dell'intervallo richiesto in quanto home assistant fornisce solo i blocchi con dei cambi
         #per cui se per esempio l'ultimo cambio è avvenuto alle 22 l'ultimo blocco riporterà quell'ora e non le 23:59 per cui devo io estendere
         #manualmente lo stato fino alla fine dell'intervallo richiesto
@@ -77,10 +77,14 @@ def createStateArray(entity_id:str,list:list,start_timestamp:datetime,end_timest
                 "state":list[-1]["state"],
                 "unit_of_measurement":list[-1]["unit_of_measurement"],
                 "power_consumption":list[-1]["power_consumption"]*power_consumption_factor})
-            temp_date=temp_date+datetime.timedelta(minutes=time_delta)
+            temp_date=temp_date+datetime.timedelta(minutes=time_delta_min)
         return {entity_id:res}
 
 def computeHourlyTotalConsumption(entity_id,states,start_timestamp,end_timestamp):
+    #if the entity is of type energy i use a fast procedure 
+    if states[0]["attributes"].get("device_class")=="energy":
+        return hourlyPowerConsumption(entity_id,states,start_timestamp,end_timestamp)
+    
     state_array=createStateArray(entity_id,states,start_timestamp,end_timestamp)[entity_id]
     res=defaultdict(lambda: {"power_consumption":0,"power_consumption_unit":"Wh"})
     for state in state_array:
@@ -90,23 +94,50 @@ def computeHourlyTotalConsumption(entity_id,states,start_timestamp,end_timestamp
         res[key]["date"]=key
     return {entity_id:list(dict(res).values())}
 
-def computeTotalConsumption(list:list,day:datetime.date,date_format:str)->list:
+def hourlyPowerConsumption(entity_id,states,start_timestamp,end_timestamp):
+    state_array=createStateArray(entity_id,states,start_timestamp,end_timestamp,time_delta_min=60)[entity_id]
+    res=[]
+    for i in range(len(state_array)-1):
+        date=datetime.datetime.strptime(state_array[i]["date"],"%d/%m/%Y %H:%M:%S")
+        key=date.strftime("%d/%m/%Y %H-")+(date+datetime.timedelta(hours=1)).strftime("%H")
+        try:
+            consumption=float(state_array[i+1]["state"])-float(state_array[i]["state"])
+        except ValueError:
+            consumption=0
+        res.append({"date":key,"power_consumption":consumption,"power_consumption_unit":state_array[i]["unit_of_measurement"]})
+    return {entity_id:res}
+
+def test(states:list,day:datetime.date,date_format:str):
+    end_day=datetime.datetime.combine(day+datetime.timedelta(days=1), datetime.time.min).astimezone(tz.tzlocal())
+
+    return {"power_consumption":list,"power_consumption_unit":"Wh","date":day.strftime(date_format)}
+
+def computeTotalConsumption(list:list,day:datetime.date,date_format:str,device_class="")->list:
         sum=0
-        use_time=0 
-        time_delta=60
-        active_modes=["on","playing"]
-        for i in range(len(list)):
-            start_block=parser.parse(list[i]["last_changed"]).astimezone(tz.tzlocal())
-            if i+1==len(list):
-                end_block=datetime.datetime.combine(start_block+datetime.timedelta(days=1), datetime.time.min).astimezone(tz.tzlocal())
+        use_time=0
+        power_consumption_unit="Wh"
+
+        if len(list)>0:
+            power_consumption_unit=list[0]["unit_of_measurement"]
+            if device_class=="energy":
+                try:
+                    sum=float(list[-1]["state"])-float(list[0]["state"])
+                except ValueError:
+                    sum=0
             else:
-                end_block=parser.parse(list[i+1]["last_changed"]).astimezone(tz.tzlocal())
-            delta=(end_block-start_block).total_seconds() #calcolo la durata dell'intervallo
-            if list[i]["state"] in active_modes:
-                use_time=use_time+delta/60
-            delta=delta/3600 #lo converto in ore
-            sum=sum+list[i]["power_consumption"]*delta #calcolo il kWh spesi
-        return {"power_consumption":sum,"power_consumption_unit":"Wh","use_time":use_time,"use_time_unit":"min","date":day.strftime(date_format)}
+                end_day=datetime.datetime.combine(day+datetime.timedelta(days=1), datetime.time.min).astimezone(tz.tzlocal())
+                active_modes=["on","playing"]
+                for i in range(len(list)-1):
+                    start_block=parser.parse(list[i]["last_changed"]).astimezone(tz.tzlocal())
+                    end_block=parser.parse(list[i+1]["last_changed"]).astimezone(tz.tzlocal())
+                    if end_block> end_day: #se la fine del blocco supera la giornata odierna taglio il blocco ad day+1
+                        end_block=end_day
+                    delta=(end_block-start_block).total_seconds() #calcolo la durata dell'intervallo
+                    if list[i]["state"] in active_modes:
+                        use_time=use_time+delta/60
+                    delta=delta/3600 #lo converto in ore
+                    sum=sum+list[i]["power_consumption"]*delta #calcolo il kWh spesi
+        return {"power_consumption":sum,"power_consumption_unit":power_consumption_unit,"use_time":use_time,"use_time_unit":"min","date":day.strftime(date_format)}
         
 
         
@@ -177,22 +208,24 @@ def getConsumptionRouter():
         elif group.lower()=="daily":         
             delta=(end_timestamp-start_timestamp).days
             for id in entities_states:
+                device_class=entities_states[id][0]["attributes"].get("device_class")
                 temp_date=start_timestamp
                 temp=[]
                 for i in range(delta+1):                   
                     temp_list=[x for x in entities_states[id] if x["last_changed"].startswith(temp_date.strftime("%Y-%m-%d"))]
-                    temp.append(computeTotalConsumption(temp_list,temp_date,date_format="%d/%m/%Y"))
+                    temp.append(computeTotalConsumption(temp_list,temp_date,date_format="%d/%m/%Y",device_class=device_class))
                     temp_date=temp_date+datetime.timedelta(days=1)
                 res[id]=temp
 
         elif group.lower()=="monthly":
             delta =(end_timestamp.year - start_timestamp.year) * 12 + end_timestamp.month - start_timestamp.month
             for id in entities_states:
+                device_class=entities_states[id][0]["attributes"].get("device_class")
                 temp_date=start_timestamp
                 temp=[]
                 for i in range(delta+1):                
                     temp_list=[x for x in entities_states[id] if x["last_changed"].startswith(temp_date.strftime("%Y-%m"))]
-                    temp.append(computeTotalConsumption(temp_list,temp_date,date_format="%m/%Y"))
+                    temp.append(computeTotalConsumption(temp_list,temp_date,date_format="%m/%Y",device_class=device_class))
                     temp_date=temp_date+relativedelta(months=+1)
                 res[id]=temp
         
@@ -213,13 +246,13 @@ def getConsumptionRouter():
         start_call=datetime.datetime.now() #used for debug purposes
 
         ## Getting the list of all the entities of the house
-        res=getEntities(True,False)
+        res=getDevices(True)
         if res["status_code"]!=200:
             raise HTTPException(status_code=res["status_code"],detail=res["data"])
         
         ## Filtering only those entities that could produce some consumption data
-        domainsToFilter=["light","media_player","fan"] #domains of entities that could consume energy, sensors and buttons are supposed to consume 0
-        entities_list=[x["entity_id"] for x in res["data"] if x["entity_id"].split(".")[0] in domainsToFilter]
+        domainsToRemove=["sensor","device_tracker","event","button","weather","forecast"] #domains of entities that could not consume energy
+        entities_list=[x["energy_entity_id"] for x in res["data"] if x["device_class"]not in domainsToRemove]
         entities_list=",".join(entities_list)
 
         ## Producing consumption of each entitiy grouped by the value of group 
@@ -236,7 +269,7 @@ def getConsumptionRouter():
                 result[element["date"]]["date"]=element["date"]
 
         logger.debug(f"Get_Total_Consumption for {len(entities_list.split(","))} entities, time_range={(end_timestamp-start_timestamp).days} days, split={group}      elapsed_time={(datetime.datetime.now()-start_call).total_seconds()}[s]")
-        return list(dict(result).values())
+        return sorted(list(dict(result).values()),key=lambda x: x["date"])
     
     return consumption_router
 
@@ -247,7 +280,7 @@ def getDeviceRouter():
     device_router=APIRouter(tags=["Device"],prefix="/device")
     @device_router.get("")
     def Get_All_Devices(skip_services:bool):
-        res=getDevices(skip_services)
+        res=getDevicesFast()
         if res["status_code"]!=200:
             raise HTTPException(status_code=res["status_code"],detail=res["data"])
         return res["data"]
@@ -427,7 +460,7 @@ def getHomeRouter():
 
     @home_router.get("")
     def Get_Home_Context():
-        res=getEntities(skip_services=True,only_main=True)
+        res=getEntities(skip_services=True)
         if res["status_code"]!=200:
             raise HTTPException(status_code=res["status_code"],detail=res["data"])
         
