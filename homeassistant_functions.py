@@ -75,16 +75,15 @@ def getEntities(skip_services=False):
         return {"status_code":200,"data":res_list}
 
 
-def getDevicesFast():
+def getSingleDeviceFast(device_id:str):
     start=datetime.datetime.now()
-    templ="{% set devices = states | map(attribute='entity_id') | map('device_id') | unique | reject('eq',None) | list %}"
-    templ+="{%- set ns = namespace(devices = []) %}{%- for device in devices %}"
+    templ="{%- set device = '"+device_id+"' %}"
     templ+="{%- set entities = device_entities(device) | list %}"
-    templ+="{%- set var = namespace(entities = [],state = '',device_class = 'sensor',energy_entity_id='')%}"
+    templ+="{%- set var = namespace(entities = [],state = '',device_class = 'sensor',energy_entity_id='',power_entity_id='',state_entity_id='')%}"
     templ+="{%- for entity in entities %}"
-
     templ+="{%- if not entity.split('.')[0] in ['sensor','binary_sensor'] %}"
     templ+="{%- set var.state=states(entity)%}"
+    templ+="{%- set var.state_entity_id=entity%}"
     templ+="{%- set var.device_class=entity.split('.')[0]%}"
     templ+="{%- if var.energy_entity_id== ''%}"
     templ+="{%- set var.energy_entity_id= entity %}"
@@ -93,9 +92,45 @@ def getDevicesFast():
     templ+="{%- if state_attr(entity,'device_class')== 'energy'%}"
     templ+="{%- set var.energy_entity_id= entity %}"
     templ+="{%- endif %}"
+    templ+="{%- if state_attr(entity,'device_class')== 'power'%}"
+    templ+="{%- set var.power_entity_id= entity %}"
+    templ+="{%- endif %}"
     templ+="{%- set var.entities=var.entities+[{'entity_id':entity,'state':states(entity),'entity_class':state_attr(entity,'device_class'),'unit_of_measurement':state_attr(entity,'unit_of_measurement')}]%}"
     templ+="{%- endfor %}"
-    templ+="{%- set dev = {'name':device_attr(device,'name'),'device_id':device,'name_by_user':device_attr(device,'name_by_user'),'model':device_attr(device,'model'),'manufacturer':device_attr(device,'manufacturer'),'state':var.state,'device_class':var.device_class,'energy_entity_id':var.energy_entity_id,'list_of_entities':var.entities}%}"
+    templ+="{%- set dev = {'name':device_attr(device,'name'),'device_id':device,'name_by_user':device_attr(device,'name_by_user'),'model':device_attr(device,'model'),'manufacturer':device_attr(device,'manufacturer'),'state':var.state,'device_class':var.device_class,'energy_entity_id':var.energy_entity_id,'power_entity_id':var.power_entity_id,'state_entity_id':var.state_entity_id,'list_of_entities':var.entities}%}"
+    templ+="{{ dev |to_json(sort_keys=True)}}"
+    response = post(base_url+"/template", headers=headers, json={"template":templ})
+    res= json.loads(response.text)
+    
+    print("getSingleDevice:"+device_id+" elapsed time "+str((datetime.datetime.now()-start).total_seconds()))
+    return {"status_code":200,"data":res}
+
+
+
+def getDevicesFast():
+    start=datetime.datetime.now()
+    templ="{% set devices = states | map(attribute='entity_id') | map('device_id') | unique | reject('eq',None) | list %}"
+    templ+="{%- set ns = namespace(devices = []) %}{%- for device in devices %}"
+    templ+="{%- set entities = device_entities(device) | list %}"
+    templ+="{%- set var = namespace(entities = [],state = '',device_class = 'sensor',energy_entity_id='',power_entity_id='',state_entity_id='')%}"
+    templ+="{%- for entity in entities %}"
+    templ+="{%- if not entity.split('.')[0] in ['sensor','binary_sensor'] %}"
+    templ+="{%- set var.state=states(entity)%}"
+    templ+="{%- set var.state_entity_id=entity%}"
+    templ+="{%- set var.device_class=entity.split('.')[0]%}"
+    templ+="{%- if var.energy_entity_id== ''%}"
+    templ+="{%- set var.energy_entity_id= entity %}"
+    templ+="{%- endif %}"
+    templ+="{%- endif %}"
+    templ+="{%- if state_attr(entity,'device_class')== 'energy'%}"
+    templ+="{%- set var.energy_entity_id= entity %}"
+    templ+="{%- endif %}"
+    templ+="{%- if state_attr(entity,'device_class')== 'power'%}"
+    templ+="{%- set var.power_entity_id= entity %}"
+    templ+="{%- endif %}"
+    templ+="{%- set var.entities=var.entities+[{'entity_id':entity,'state':states(entity),'entity_class':state_attr(entity,'device_class'),'unit_of_measurement':state_attr(entity,'unit_of_measurement')}]%}"
+    templ+="{%- endfor %}"
+    templ+="{%- set dev = {'name':device_attr(device,'name'),'device_id':device,'name_by_user':device_attr(device,'name_by_user'),'model':device_attr(device,'model'),'manufacturer':device_attr(device,'manufacturer'),'state':var.state,'device_class':var.device_class,'energy_entity_id':var.energy_entity_id,'power_entity_id':var.power_entity_id,'state_entity_id':var.state_entity_id,'list_of_entities':var.entities}%}"
     templ+="{%- if dev %}{%- set ns.devices = ns.devices + [ dev ] %}{%- endif %}{%- endfor %}"
     templ+="{{ ns.devices |to_json(sort_keys=True)}}"
     response = post(base_url+"/template", headers=headers, json={"template":templ})
@@ -399,33 +434,8 @@ def getListOfSupported(supported_features:int)->list[int]:
 
 
 def main():
-    start=datetime.datetime.now()
     initializeToken()
-    templ="{% set devices = states | map(attribute='entity_id') | map('device_id') | unique | reject('eq',None) | list %}"
-    templ+="{%- set ns = namespace(devices = []) %}{%- for device in devices %}"
-    templ+="{%- set entities = device_entities(device) | list %}"
-    templ+="{%- set var = namespace(entities = [],state = '',device_class = 'sensor',energy_entity_id='')%}"
-    templ+="{%- for entity in entities %}"
-
-    templ+="{%- if not entity.split('.')[0] in ['sensor','binary_sensor'] %}"
-    templ+="{%- set var.state=states(entity)%}"
-    templ+="{%- set var.device_class=entity.split('.')[0]%}"
-    templ+="{%- if var.energy_entity_id== ''%}"
-    templ+="{%- set var.energy_entity_id= entity %}"
-    templ+="{%- endif %}"
-    templ+="{%- endif %}"
-    templ+="{%- if state_attr(entity,'device_class')== 'energy'%}"
-    templ+="{%- set var.energy_entity_id= entity %}"
-    templ+="{%- endif %}"
-    templ+="{%- set var.entities=var.entities+[{'entity_id':entity,'state':states(entity),'entity_class':state_attr(entity,'device_class'),'unit_of_measurement':state_attr(entity,'unit_of_measurement')}]%}"
-    templ+="{%- endfor %}"
-    templ+="{%- set dev = {'name':device_attr(device,'name'),'device_id':device,'name_by_user':device_attr(device,'name_by_user'),'model':device_attr(device,'model'),'manufacturer':device_attr(device,'manufacturer'),'state':var.state,'device_class':var.device_class,'energy_entity_id':var.energy_entity_id,'list_of_entities':var.entities}%}"
-    templ+="{%- if dev %}{%- set ns.devices = ns.devices + [ dev ] %}{%- endif %}{%- endfor %}"
-    templ+="{{ ns.devices |to_json(sort_keys=True)}}"
-    response = post(base_url+"/template", headers=headers, json={"template":templ})
-    res= json.loads(response.text)
-    
-    print("Elapsed time"+str((datetime.datetime.now()-start).total_seconds()))
+    obj=getSingleDeviceFast("81faa423066ee532f37f15f1897a699d")
     print("Done")
 
 if __name__ == "__main__":

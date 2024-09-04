@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from routers import (
     getEntityRouter,getAutomationRouter,getServiceRouter,
     getConfigurationRouter,getMapConfigurationRouter,getVirtualRouter,
-    getConsumptionRouter,getHistoryRouter,
+    getConsumptionRouter,getHistoryRouter,getTestRouter,
     getDeviceRouter,getHomeRouter,getEnergyCalendarConfigurationRouter
     )
 from homeassistant_functions import initializeToken
@@ -27,7 +27,8 @@ def create_api():
         getConfigurationRouter(),
         getMapConfigurationRouter(),
         getEnergyCalendarConfigurationRouter(),
-        getVirtualRouter()
+        getVirtualRouter(),
+        getTestRouter()
     ]
 
     for router in routers:

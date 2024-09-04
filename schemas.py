@@ -102,7 +102,7 @@ actions={
 				"service": "service",
 				"metadata": {},
 				"data": {},
-				"target": {
+				"target": { #può comparire anche solo uno dei tre
 					"area_id": [
 						"area_virtuale_1"
 					],
