@@ -2,6 +2,33 @@ import sqlite3
 
 DB_PATH="./data/digital_twin.db"
 
+QUERIES={
+    "hourly_consumption":
+    ("select " 
+    "strftime('%d-%m-%Y %H',start,'unixepoch','localtime') ||'-'|| strftime('%H',end,'unixepoch','localtime') as 'date',"
+    "sum(energy_consumption) as 'energy_consumption',energy_consumption_unit " 
+    "from Hourly_Consumption "
+    "where start>={from_time} and end<={to_time} {device_filter}"
+    "GROUP by start order by start"
+    ),
+    "daily_consumption":
+    ("select " 
+    "strftime('%d-%m-%Y',start,'unixepoch','localtime') as 'date',"
+    "sum(energy_consumption) as 'energy_consumption',energy_consumption_unit " 
+    "from Hourly_Consumption "
+    "where start>={from_time} and end<={to_time} {device_filter}"
+    "GROUP by strftime('%d-%m-%Y',start,'unixepoch','localtime') order by start"
+    ),
+    "monthly_consumption":
+    ("select " 
+    "strftime('%m-%Y',start,'unixepoch','localtime') as 'date',"
+    "sum(energy_consumption) as 'energy_consumption',energy_consumption_unit " 
+    "from Hourly_Consumption "
+    "where start>={from_time} and end<={to_time} {device_filter}"
+    "GROUP by strftime('%m-%Y',start,'unixepoch','localtime') order by start"
+    ),
+}
+
 def row_to_dict(cursor: sqlite3.Cursor, row: sqlite3.Row) -> dict:
     data = {}
     for idx, col in enumerate(cursor.description):
@@ -18,9 +45,9 @@ def create_tables():
         'CREATE TABLE "Map_config" ("entity_id" TEXT NOT NULL,"x" INTEGER NOT NULL,"y" INTEGER NOT NULL,"floor" INTEGER NOT NULL,PRIMARY KEY("entity_id"));',
         'CREATE TABLE "Service_logs" ("user"	TEXT NOT NULL,"service"	TEXT NOT NULL,"target"	TEXT,"payload"	TEXT,"timestamp"	INTEGER NOT NULL);',
         'CREATE TABLE "Energy_Timeslot" ("day"	INTEGER,"hour"	INTEGER,"slot"	INTEGER);',
-        'CREATE TABLE "Daily_Consumption" ("entity_id" TEXT,"power_consumption"	REAL,"power_consumption_unit" TEXT,"use_time" REAL,"use_time_unit" TEXT,"date" INTEGER,PRIMARY KEY("entity_id","date"))',
-        'CREATE TABLE "Hourly_Consumption" ("entitiy_id" TEXT,"power_consumption" REAL,"power_consumption_unit"	TEXT,"from"	INTEGER,"to" INTEGER,PRIMARY KEY("entity_id","start"))',
-        'CREATE TABLE "Appliances_Usage" ("entity_id" TEXT,"state" TEXT,"average_duration"	REAL,"samples" INTEGER,"unit" TEXT,PRIMARY KEY("entity_id","state"));'
+        'CREATE TABLE "Daily_Consumption" ("device_id" TEXT,"energy_consumption"	REAL,"energy_consumption_unit" TEXT,"use_time" REAL,"use_time_unit" TEXT,"date" INTEGER,PRIMARY KEY("entity_id","date"))',
+        'CREATE TABLE "Hourly_Consumption" ("device_id" TEXT,"energy_consumption" REAL,"energy_consumption_unit"	TEXT,"from"	INTEGER,"to" INTEGER,PRIMARY KEY("entity_id","start"))',
+        'CREATE TABLE "Appliances_Usage" ("device_id"	TEXT,"state"	TEXT,"average_duration"	REAL,"duration_unit"	TEXT,"duration_samples"	INTEGER,"average_power"	REAL,"average_power_unit"	TEXT,"power_samples"	INTEGER,"last_timestamp"	INTEGER,PRIMARY KEY("device_id","state"))'
     ]
     con=sqlite3.connect(DB_PATH)
     cur=con.cursor()
@@ -198,7 +225,7 @@ def delete_energy_slots():
 def add_daily_consumption_entry(entry_list:list):
     con=sqlite3.connect(DB_PATH)
     cur=con.cursor()
-    cur.executemany("INSERT or REPLACE into Daily_Consumption(entity_id,power_consumption,power_consumption_unit,use_time,use_time_unit,date) VALUES (?,?,?,?,?,?)",entry_list)
+    cur.executemany("INSERT or REPLACE into Daily_Consumption(device_id,energy_consumption,energy_consumption_unit,use_time,use_time_unit,date) VALUES (?,?,?,?,?,?)",entry_list)
     con.commit()
     success=True if cur.rowcount>0 else False
     con.close()
@@ -218,7 +245,7 @@ def get_all_daily_consumption_entries():
 def add_hourly_consumption_entry(entry_list:list):
     con=sqlite3.connect(DB_PATH)
     cur=con.cursor()
-    cur.executemany("INSERT or REPLACE into Hourly_Consumption(entity_id,power_consumption,power_consumption_unit,start,end) VALUES (?,?,?,?,?)",entry_list)
+    cur.executemany("INSERT or REPLACE into Hourly_Consumption(device_id,energy_consumption,energy_consumption_unit,start,end) VALUES (?,?,?,?,?)",entry_list)
     con.commit()
     success=True if cur.rowcount>0 else False
     con.close()
@@ -234,10 +261,26 @@ def get_all_hourly_consumption_entries():
     con.close()
     return res
 
+def get_total_consumption(from_timestamp:int,to_timestamp:int,group:str="hourly",device_id:str=""):
+    con=sqlite3.connect(DB_PATH)
+    cur=con.cursor()
+    cur.row_factory=row_to_dict
+    device_filter=""
+    if device_id!="":
+        device_filter="and device_id="+"'"+device_id+"'"
+    key=group+"_consumption"
+    query=QUERIES[key].format(from_time=from_timestamp,to_time=to_timestamp,device_filter=device_filter)
+    res=cur.execute(query)
+    res=res.fetchall()
+    con.close()
+    return res
+
 def add_appliances_usage_entry(entry_list:list):
     con=sqlite3.connect(DB_PATH)
     cur=con.cursor()
-    cur.executemany("INSERT or REPLACE into Appliances_Usage(entity_id,state,average_duration,samples,unit) VALUES (?,?,?,?,?)",entry_list)
+    cur.executemany("""INSERT or REPLACE into Appliances_Usage
+                    (device_id,state,average_duration,duration_unit,duration_samples,average_power,average_power_unit,power_samples,last_timestamp) 
+                    VALUES (?,?,?,?,?,?,?,?,?)""",entry_list)
     con.commit()
     success=True if cur.rowcount>0 else False
     con.close()
