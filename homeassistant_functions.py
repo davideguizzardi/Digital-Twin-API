@@ -105,6 +105,25 @@ def getSingleDeviceFast(device_id:str):
     print("getSingleDevice:"+device_id+" elapsed time "+str((datetime.datetime.now()-start).total_seconds()))
     return {"status_code":200,"data":res}
 
+def getDevicesNameAndId():
+    start=datetime.datetime.now()
+    templ=(
+        "{% set devices = states | map(attribute='entity_id') | map('device_id') | unique | reject('eq',None) | list %}"
+        "{%- set ns = namespace(devices = []) %}"
+        "{%- for device in devices %}"
+        "{%- set name=device_attr(device,'name')%}"
+        "{%- if device_attr(device,'name_by_user')%}"
+        "{%- set name=device_attr(device,'name_by_user')%}"
+        "{%- endif %}"
+        "{%- set dev = {'name':name,'device_id':device}%}"
+        "{%- if dev %}{%- set ns.devices = ns.devices + [ dev ] %}{%- endif %}{%- endfor %}"
+        "{{ ns.devices |to_json(sort_keys=True)}}")
+    response = post(base_url+"/template", headers=headers, json={"template":templ})
+    res= json.loads(response.text)
+    
+    print("getDevicesNameAndId: elapsed time "+str((datetime.datetime.now()-start).total_seconds()))
+    return {"status_code":200,"data":res}
+    
 
 
 def getDevicesFast():
@@ -136,7 +155,7 @@ def getDevicesFast():
     response = post(base_url+"/template", headers=headers, json={"template":templ})
     res= json.loads(response.text)
     
-    print("getDevicesFast: elapsed time"+str((datetime.datetime.now()-start).total_seconds()))
+    print("getDevicesFast: elapsed time "+str((datetime.datetime.now()-start).total_seconds()))
     return {"status_code":200,"data":res}
 
 def getDevices(skip_services=False):
