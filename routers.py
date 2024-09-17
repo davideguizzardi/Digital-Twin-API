@@ -1,14 +1,20 @@
 from fastapi import APIRouter,HTTPException
 from multiprocessing import Pool
 
-from homeassistant_functions import getEntities,getEntity,getServicesByEntity,getHistory,getAutomations,callService,getDevices,getDevicesFast,getSingleDeviceFast
+from homeassistant_functions import (
+    getEntities,getEntity,
+    getServicesByEntity,
+    getHistory,getAutomations,
+    callService,getDevicesFast,getDevicesNameAndId,
+    getSingleDeviceFast,getDeviceId,
+    getDeviceInfo)
 from database_functions import (
     initialize_database,
     get_all_configuration_values,get_configuration_value_by_key,add_configuration_values,delete_configuration_value,
     add_map_entities, get_all_map_entities,get_map_entity,delete_map_entry,delete_floor_map_configuration,
     get_all_service_logs,add_service_logs,get_service_logs_by_user,
     get_energy_slot_by_day,get_all_energy_slots,add_energy_slots,delete_energy_slots,
-    get_total_consumption
+    get_total_consumption,get_appliance_usage_entry
     )
 from schemas import (
     Service_In,Operation_Out,Map_Entity_List,
@@ -58,7 +64,15 @@ def createStateArray(entity_id:str,list:list,start_timestamp:datetime,end_timest
         #consuma minuti_campionamento/60 di Wh ogni minuti_campionamento
         res=[]
         temp_date=start_timestamp
-        temp_date=parser.parse(list[0]["last_changed"],)
+        start_history=parser.parse(list[0]["last_changed"],)
+        while temp_date<start_history:
+                res.append({
+                "date":temp_date.strftime("%d/%m/%Y %H:%M:%S"),
+                "state":"unavailable",
+                "power":0,
+                "unit_of_measurement":"",
+                "energy_consumption":0})
+                temp_date=temp_date+datetime.timedelta(minutes=time_delta_min)
         for i in range(len(list)-1):
             #temp_date=parser.parse(list[i]["last_changed"],)
             end_block = parser.parse(list[i+1]["last_changed"]).astimezone(tz.tzlocal())
@@ -155,30 +169,7 @@ def getHistoryRouter():
         if end_timestamp==None:
             end_timestamp=start_timestamp+datetime.timedelta(days=1)
         return extractSingleDeviceHistory(device_id, start_timestamp,end_timestamp)
-    
-    @history_router.get("/test/{device_id}") #TODO:remove
-    def Get_Hourly_stats(device_id:str,start_timestamp:datetime.datetime=datetime.date.today()):
-        history=Get_Device_History(device_id,start_timestamp)
-        use_map=defaultdict(lambda:{"average_duration":0,"average_duration_unit":"min","average_power":0,"average_power_unit":"W","power_samples":0,"duration_samples":0})
-        prev_state=history[0]["state"]
-        current_duration=1
-        for i in range(len(history)):
-            x=history[i]
-            x["state"]="off" if x["power"]<2 else x["state"]
-            key= x["state"]
-            use_map[key]["average_power"]=((use_map[key]["average_power"]*use_map[key]["power_samples"])+x["power"])/(use_map[key]["power_samples"]+1)
-            use_map[key]["power_samples"]+=1
-            
-            if x["state"]==prev_state:#current block is still going
-                current_duration+=1
-            if x["state"]!=prev_state or i==len(history)-1: #current block is over or we reached the end of the day
-                use_map[prev_state]["average_duration"]=((use_map[prev_state]["average_duration"]*use_map[prev_state]["duration_samples"])+current_duration)/(use_map[prev_state]["duration_samples"]+1)
-                use_map[prev_state]["duration_samples"]+=1
-                current_duration=1
-                prev_state=x["state"]
-
-        return {device_id:use_map}
-        
+          
     return history_router
 
 
@@ -307,39 +298,9 @@ def getConsumptionRouter():
         
         logger.debug(f"Get_Entities_Consumption for {len(entities.split(","))} entities, time_range={(end_timestamp-start_timestamp).days} days, split={group}      elapsed_time={(datetime.datetime.now()-start_call).total_seconds()}[s]")
         return res
-        
-    @consumption_router.get("/total") #TODO:remove
-    def Get_Total_Consumption(start_timestamp:datetime.date=datetime.date.today(),end_timestamp:datetime.date=datetime.date.today(),group:str="hourly"):
-        start_call=datetime.datetime.now() #used for debug purposes
-
-        ## Getting the list of all the entities of the house
-        res=getDevicesFast()
-        if res["status_code"]!=200:
-            raise HTTPException(status_code=res["status_code"],detail=res["data"])
-        
-        ## Filtering only those entities that could produce some consumption data
-        domainsToRemove=["sensor","device_tracker","event","button","weather","forecast"] #domains of entities that could not consume energy
-        entities_list=[x["energy_entity_id"] for x in res["data"] if x["device_class"]not in domainsToRemove]
-        entities_list=",".join(entities_list)
-
-        ## Producing consumption of each entitiy grouped by the value of group 
-        consumption_history=Get_Entities_Consumption(entities_list,start_timestamp,end_timestamp,group)
-        if group=="entity":
-            return sorted(consumption_history,key=lambda x: x['energy_consumption'],reverse=True)
-        
-        result=defaultdict(lambda:{"energy_consumption":0,"energy_consumption_unit":"Wh"})
-
-        ## Merging all the values together
-        for key1 in consumption_history.keys():
-            for element in consumption_history[key1]:
-                result[element["date"]]["energy_consumption"]+=element["energy_consumption"]
-                result[element["date"]]["date"]=element["date"]
-
-        logger.debug(f"Get_Total_Consumption for {len(entities_list.split(","))} entities, time_range={(end_timestamp-start_timestamp).days} days, split={group}      elapsed_time={(datetime.datetime.now()-start_call).total_seconds()}[s]")
-        return sorted(list(dict(result).values()),key=lambda x: x["date"])
     
-    @consumption_router.get("/device/fast")
-    def Get_Device_Consumption_Fast(device_id:str,start_timestamp:datetime.date=datetime.date.today(),end_timestamp:datetime.date=datetime.date.today(),group:str="hourly"):
+    @consumption_router.get("/device")
+    def Get_Device_Consumption_Fast(device_id:str="81faa423066ee532f37f15f1897a699d",start_timestamp:datetime.date=datetime.date.today(),end_timestamp:datetime.date=datetime.date.today(),group:str="hourly"):
         start_timestamp=datetime.datetime.combine(start_timestamp, datetime.time.min).astimezone(tz.tzlocal())
         end_timestamp=datetime.datetime.combine(end_timestamp,  datetime.time(23, 59)).astimezone(tz.tzlocal())
 
@@ -347,7 +308,7 @@ def getConsumptionRouter():
         to_ts=int(end_timestamp.replace(microsecond=0).timestamp())
         return get_total_consumption(from_ts,to_ts,group,device_id)
     
-    @consumption_router.get("/total/fast")
+    @consumption_router.get("/total")
     def Get_Total_Consumption_Fast(start_timestamp:datetime.date=datetime.date.today(),end_timestamp:datetime.date=datetime.date.today(),group:str="hourly"):
         start_timestamp=datetime.datetime.combine(start_timestamp, datetime.time.min).astimezone(tz.tzlocal())
         end_timestamp=datetime.datetime.combine(end_timestamp,  datetime.time(23, 59)).astimezone(tz.tzlocal())
@@ -355,6 +316,7 @@ def getConsumptionRouter():
         from_ts=int(start_timestamp.replace(microsecond=0).timestamp())
         to_ts=int(end_timestamp.replace(microsecond=0).timestamp())
         return get_total_consumption(from_ts,to_ts,group)
+
     return consumption_router
 
 
@@ -363,8 +325,11 @@ def getConsumptionRouter():
 def getDeviceRouter():
     device_router=APIRouter(tags=["Device"],prefix="/device")
     @device_router.get("")
-    def Get_All_Devices(skip_services:bool):
-        res=getDevicesFast()
+    def Get_All_Devices(get_only_names:bool=False):
+        if get_only_names:
+            res=getDevicesNameAndId()
+        else:    
+            res=getDevicesFast()
         if res["status_code"]!=200:
             raise HTTPException(status_code=res["status_code"],detail=res["data"])
         return res["data"]
@@ -387,7 +352,100 @@ def getAutomationRouter():
         res=getAutomations()
         if res["status_code"]!=200:
             raise HTTPException(status_code=res["status_code"],detail=res["data"])
-        return res["data"]
+        else:
+            automations_list=res["data"]
+            file = open("./data/devices_new_state_map.json")
+            state_map=json.load(file)
+            ret=[]
+            for automation in automations_list:
+                automation_power_consumption=0
+                temp=[]
+                action_list=[]
+                activation_time=""
+                activation_days=[]
+                time_trigger=[x for x in automation["trigger"] if x["platform"]=="time"]
+                if len(time_trigger)>0:
+                    activation_time=time_trigger[0]["at"] #we assume only one time trigger
+
+                time_condition=[x for x in automation["condition"] if x["condition"]=="time"]
+                if len(time_condition)>0:
+                    activation_days=time_condition[0]["weekday"] #we assume only one time trigger
+                for action in automation["action"]:
+                    if action.get("device_id")!=None:
+                        #if contains "device_id" then it is an action on device, the "type" field represent the service
+                        service=action["type"]
+                        device_id=action["device_id"]
+                        temp.append((device_id,service))
+                    if action.get("service")!=None:
+                        #if contains "service" then is a service type of action, target->entity_id/device_id is the recipient 
+                        # while "service" is the service
+                        service=action["service"].split(".")[1]
+                        #some actions (like notify) don't have target in that case we assume no action
+                        if action.get("target"): 
+                            if action["target"].get("entity_id"):
+                                #some cases the target is a list in others is a single value
+                                if type(action["target"].get("entity_id")) is list:
+                                    for entity_id in action["target"]["entity_id"]:
+                                        device_id=getDeviceId(entity_id)
+                                        temp.append((device_id,service))
+                                else:
+                                    temp.append((getDeviceId(action["target"].get("entity_id")),service))
+                            if action["target"].get("device_id"):
+                                #some cases the target is a list in others is a single value
+                                if type(action["target"].get("device_id")) is list:
+                                    for device in action["target"]["device_id"]:
+                                        temp.append((device,service))
+                                else:
+                                    temp.append((action["target"].get("device_id"),service))
+                for action in temp:
+                    device_id=action[0]
+                    service=action[1]
+                    state=state_map[service]
+                    device_info=getDeviceInfo(device_id)
+                    device_name=device_info["name_by_user"] if device_info["name_by_user"]!="None" else device_info["name"]
+                    if state not in ["on|off","same"]:#TODO:manage also this cases
+                        usage_data=get_appliance_usage_entry(device_id,state)
+                        usage_data.update({
+                            "device_id":device_id,"state":state,"service":service,"device_name":device_name
+                        })
+                        automation_power_consumption+=usage_data["average_power"]
+                        action_list.append(usage_data)
+                    else:
+                        action_list.append({"device_id":device_id,"state":state,"service":service,"device_name":device_name})
+
+                
+
+                ret.append({
+                    "id":automation["id"],
+                    "description":automation["description"],
+                    "trigger":automation["trigger"],
+                    "condition":automation["condition"],
+                    "name":automation["alias"],
+                    "time":activation_time,
+                    "days":activation_days,
+                    "action":action_list,
+                    "power_consumption":automation_power_consumption
+                    })
+        return ret
+    
+    @automation_router.get("/matrix")
+    def Get_State_Matrix():
+
+        ret = Get_Automations()
+        state_matrix=defaultdict(lambda: {"state_list":[""]*1440,"power_list":[0]*1440})
+        ret=sorted(ret,key=lambda x:x["time"])
+        for aut in ret:
+            if aut["time"]!="":
+                activation_time=parser.parse(aut["time"])
+                activation_index=activation_time.hour*60+activation_time.minute
+                for act in aut["action"]:
+                    end_index=min(activation_index+int(act["average_duration"]),1440)
+                    state_matrix[act["device_id"]]["state_list"][activation_index:end_index]=[act["state"]]*(end_index-activation_index)
+                    state_matrix[act["device_id"]]["power_list"][activation_index:end_index]=[act["average_power"]]*(end_index-activation_index)
+                    state_matrix[act["device_id"]]["device_id"]=act["device_id"]
+                    state_matrix[act["device_id"]]["device_name"]=act["device_name"]
+
+        return list(state_matrix.values()) #ret
     
     return automation_router
 
