@@ -3,7 +3,10 @@ import datetime
 
 from homeassistant_functions import getEntities,getHistory,initializeToken
 from homeassistant_functions import getDevicesFast
-from database_functions import add_daily_consumption_entry,add_hourly_consumption_entry,get_all_appliances_usage_entries,add_appliances_usage_entry,get_total_consumption
+from database_functions import (
+    add_daily_consumption_entry,add_hourly_consumption_entry,
+    get_all_appliances_usage_entries,add_appliances_usage_entry,
+    fetchOneElement)
 from routers import computeHourlyTotalConsumption,computeTotalConsumption,extractSingleDeviceHistory
 from dateutil import tz,parser
 from collections import defaultdict
@@ -11,9 +14,10 @@ from collections import defaultdict
 logger = logging.getLogger(__name__)
 
 def devicesExtractionProcedure(start_timestamp:datetime.datetime=datetime.date.today()):
-    start_call=datetime.datetime.now() #used for debug purposes
-    start_timestamp=datetime.datetime.combine(start_timestamp, datetime.time.min).astimezone(tz.tzlocal())
-    end_timestamp=start_timestamp+datetime.timedelta(days=1)
+    start_call=datetime.datetime.now() 
+
+    end_timestamp=datetime.datetime.today().astimezone(tz.tzlocal())
+    end_timestamp=end_timestamp.replace(minute=0,second=0)
     #Getting the list of devices
     res=getDevicesFast()
     if res["status_code"]!=200:
@@ -34,6 +38,8 @@ def devicesExtractionProcedure(start_timestamp:datetime.datetime=datetime.date.t
         energy_unit = history[0]["energy_consumption_unit"]
 
         temp_date=starting_date
+        i=0
+        steps=int((ending_date-starting_date).total_seconds()/3600)
 
         while temp_date<ending_date:
             consumption=sum([x["energy_consumption"] for x in history if x["date"].startswith(temp_date.strftime("%d/%m/%Y %H"))])
@@ -44,17 +50,11 @@ def devicesExtractionProcedure(start_timestamp:datetime.datetime=datetime.date.t
                 temp_date.replace(microsecond=0).timestamp(),
                 (temp_date+datetime.timedelta(hours=1)).replace(microsecond=0).timestamp()
                 ))
+            print(f"Consumption History extraction step:{i}/{steps}",end="\r",flush=True)
+            i+=1
             temp_date=temp_date+datetime.timedelta(hours=1)
-            
-        daily_consumption=sum([x["energy_consumption"] for x in history])
-        daily_usage=len([x for x in history if x["power"]>2])
-        daily_grouping.append((
-            id,
-            daily_consumption,energy_unit,
-            daily_usage*60,"s",
-            starting_date.replace(microsecond=0).timestamp()
-
-        ))
+        
+        print("\nConsumption History extraction: DONE!")
 
         #Computing appliance use datas
         use_map=defaultdict(lambda:{"average_duration":0,"average_duration_unit":"min","average_power":0,"average_power_unit":"W","power_samples":0,"duration_samples":0})
@@ -74,42 +74,44 @@ def devicesExtractionProcedure(start_timestamp:datetime.datetime=datetime.date.t
                 use_map[prev_state]["duration_samples"]+=1
                 current_duration=1
                 prev_state=x["state"]
+            print(f"Appliance use data extraction step:{i}/{len(history)}",end="\r",flush=True)
 
         mode_use_dict[id]=dict(use_map)
+        print("\nAppliance use data extraction: DONE!")
 
-        temp=[]
-        database_data=get_all_appliances_usage_entries()
-        for id in mode_use_dict.keys():
-            for mode in mode_use_dict[id]:
-                index=[i for i in range(len(database_data)) if database_data[i]["device_id"]==id and database_data[i]["state"]==mode]
-                if len(index)>0: #the db already has some data about that mode
-                    database_element=database_data[index[0]]
+    temp=[]
+    database_data=get_all_appliances_usage_entries()
+    for id in mode_use_dict.keys():
+        for mode in mode_use_dict[id]:
+            index=[i for i in range(len(database_data)) if database_data[i]["device_id"]==id and database_data[i]["state"]==mode]
+            if len(index)>0: #the db already has some data about that mode
+                database_element=database_data[index[0]]
 
-                    if database_element["last_timestamp"]<start_timestamp.replace(microsecond=0).timestamp():
-                        old_sum_of_duration=database_element["average_duration"]*database_element["duration_samples"]
-                        new_sum_of_duration=mode_use_dict[id][mode]["average_duration"]*mode_use_dict[id][mode]["duration_samples"]
-                        duration_samples=mode_use_dict[id][mode]["duration_samples"]+database_element["duration_samples"]
-                        new_average_duration=(new_sum_of_duration+old_sum_of_duration)/(duration_samples)
+                if database_element["last_timestamp"]<end_timestamp.replace(microsecond=0).timestamp():
+                    old_sum_of_duration=database_element["average_duration"]*database_element["duration_samples"]
+                    new_sum_of_duration=mode_use_dict[id][mode]["average_duration"]*mode_use_dict[id][mode]["duration_samples"]
+                    duration_samples=mode_use_dict[id][mode]["duration_samples"]+database_element["duration_samples"]
+                    new_average_duration=(new_sum_of_duration+old_sum_of_duration)/(duration_samples)
 
-                        old_sum_of_power=database_element["average_power"]*database_element["power_samples"]
-                        new_sum_of_power=mode_use_dict[id][mode]["average_power"]*mode_use_dict[id][mode]["power_samples"]
-                        power_samples=mode_use_dict[id][mode]["power_samples"]+database_element["power_samples"]
-                        new_average_power=(new_sum_of_power+old_sum_of_power)/(power_samples) if power_samples>0 else 0
+                    old_sum_of_power=database_element["average_power"]*database_element["power_samples"]
+                    new_sum_of_power=mode_use_dict[id][mode]["average_power"]*mode_use_dict[id][mode]["power_samples"]
+                    power_samples=mode_use_dict[id][mode]["power_samples"]+database_element["power_samples"]
+                    new_average_power=(new_sum_of_power+old_sum_of_power)/(power_samples) if power_samples>0 else 0
 
 
-                        temp.append((
-                            id,mode,
-                            new_average_duration,mode_use_dict[id][mode]["average_duration_unit"],duration_samples,
-                            new_average_power,mode_use_dict[id][mode]["average_power_unit"],power_samples,
-                            start_timestamp.replace(microsecond=0).timestamp()
-                            ))
-                else:
                     temp.append((
                         id,mode,
-                        mode_use_dict[id][mode]["average_duration"],mode_use_dict[id][mode]["average_duration_unit"],mode_use_dict[id][mode]["duration_samples"],
-                        mode_use_dict[id][mode]["average_power"],mode_use_dict[id][mode]["average_power_unit"],mode_use_dict[id][mode]["power_samples"],
-                        start_timestamp.replace(microsecond=0).timestamp()
+                        new_average_duration,mode_use_dict[id][mode]["average_duration_unit"],duration_samples,
+                        new_average_power,mode_use_dict[id][mode]["average_power_unit"],power_samples,
+                        end_timestamp.replace(microsecond=0).timestamp()
                         ))
+            else:
+                temp.append((
+                    id,mode,
+                    mode_use_dict[id][mode]["average_duration"],mode_use_dict[id][mode]["average_duration_unit"],mode_use_dict[id][mode]["duration_samples"],
+                    mode_use_dict[id][mode]["average_power"],mode_use_dict[id][mode]["average_power_unit"],mode_use_dict[id][mode]["power_samples"],
+                    end_timestamp.replace(microsecond=0).timestamp()
+                    ))
     
     
     res=add_appliances_usage_entry(temp)
@@ -117,12 +119,6 @@ def devicesExtractionProcedure(start_timestamp:datetime.datetime=datetime.date.t
         logger.info("Appliances usage data updated successfully!")
     else:
         logger.error("Some error occurred while saving appliaces usage data, could't update...")
-
-    res=add_daily_consumption_entry(daily_grouping)
-    if res:
-        logger.info("Daily consumption data updated successfully!")
-    else:
-        logger.error("Some error occurred while saving daily consumption data, could't update...")
     
     res=add_hourly_consumption_entry(hourly_grouping)
     if res:
@@ -248,7 +244,18 @@ def main():
     logging.basicConfig(format='%(levelname)s-%(asctime)s: %(message)s',datefmt='%d/%m/%Y %H:%M:%S',filename='./logs/periodic_functions.log', encoding='utf-8', level=logging.INFO)
     logger.info("Running the script to get hourly appliances consumption and usage time...")
     initializeToken()
-    devicesExtractionProcedure()
+    last_timestamp_usage=fetchOneElement("select max(last_timestamp) from Appliances_Usage")
+    last_timestamp_consumption=fetchOneElement("select max(start) from Hourly_Consumption")
+    last_timestamp_consumption=last_timestamp_consumption["max(start)"]
+    last_timestamp_usage=last_timestamp_usage["max(last_timestamp)"]
+
+
+    if last_timestamp_usage!=None and last_timestamp_consumption!=None:
+        starting_date=datetime.datetime.fromtimestamp(min(last_timestamp_usage,last_timestamp_consumption)).astimezone(tz.tzlocal())
+        starting_date=starting_date.replace(minute=0,second=0)
+    else:
+        starting_date=datetime.datetime.combine(datetime.date.today(), datetime.time.min).astimezone(tz.tzlocal())
+    devicesExtractionProcedure(start_timestamp=starting_date)
 
 if __name__ == "__main__":
     main()
