@@ -43,10 +43,15 @@ def getEntityRouter():
         res=getEntity(entity_id=entity_id)
         if res["status_code"]!=200:
             raise HTTPException(status_code=res["status_code"],detail=res["data"])
-        return res["data"]
+        entity=res["data"]
+        res=getServicesByEntity(entity_id=entity_id)
+        if res["status_code"]!=200:
+            raise HTTPException(status_code=res["status_code"],detail=res["data"])
+        entity["services"]=res["data"]
+        return entity
     
     @entity_router.get("/services/{entity_id}")
-    def Get_Entity_Serices(entity_id:str):
+    def Get_Entity_Services(entity_id:str):
         res=getServicesByEntity(entity_id=entity_id)
         if res["status_code"]!=200:
             raise HTTPException(status_code=res["status_code"],detail=res["data"])
@@ -67,7 +72,8 @@ def createStateArray(entity_id:str,list:list,start_timestamp:datetime,end_timest
         start_history=parser.parse(list[0]["last_changed"],)
         while temp_date<start_history:
                 res.append({
-                "date":temp_date.strftime("%d/%m/%Y %H:%M:%S"),
+                #"date":temp_date.strftime("%d/%m/%Y %H:%M:%S"),
+                "date":temp_date.strftime("%Y-%m-%dT%H:%M:%S"),
                 "state":"unavailable",
                 "power":0,
                 "unit_of_measurement":"",
@@ -78,7 +84,8 @@ def createStateArray(entity_id:str,list:list,start_timestamp:datetime,end_timest
             end_block = parser.parse(list[i+1]["last_changed"]).astimezone(tz.tzlocal())
             while temp_date<end_block:
                 res.append({
-                    "date":temp_date.strftime("%d/%m/%Y %H:%M:%S"),
+                    #"date":temp_date.strftime("%d/%m/%Y %H:%M:%S"),
+                    "date":temp_date.strftime("%Y-%m-%dT%H:%M:%S"),
                     "state":list[i]["state"],
                     "power":list[i]["power_consumption"],
                     "unit_of_measurement":list[i]["unit_of_measurement"],
@@ -89,7 +96,8 @@ def createStateArray(entity_id:str,list:list,start_timestamp:datetime,end_timest
         #manualmente lo stato fino alla fine dell'intervallo richiesto
         while temp_date<end_timestamp:
             res.append({
-                "date":temp_date.strftime("%d/%m/%Y %H:%M:%S"),
+                #"date":temp_date.strftime("%d/%m/%Y %H:%M:%S"),
+                "date":temp_date.strftime("%Y-%m-%dT%H:%M:%S"),
                 "state":list[-1]["state"],
                 "power":list[-1]["power_consumption"],
                 "unit_of_measurement":list[-1]["unit_of_measurement"],
@@ -573,11 +581,24 @@ def getMapConfigurationRouter():
 def getVirtualRouter():
     virtual_router=APIRouter(tags=["Virtual"],prefix="/virtual")
 
+    @virtual_router.get("/device")
+    def Get_All_Devices(get_only_names:bool=False):
+        file=open("./data/virtual_context.json")
+        virtual_context=json.load(file)
+        return virtual_context["device_context"] if not get_only_names else virtual_context["device_context_only_names"]
+
     @virtual_router.get("/entity")
     def Get_All_Virtual_Entities():
         file=open("./data/virtual_context.json")
         virtual_context=json.load(file)
         return virtual_context["entities_context"]
+    
+    @virtual_router.get("/entity/{entity_id}")
+    def Get_Virtual_Entity(entity_id):
+        file=open("./data/virtual_context.json")
+        virtual_context=json.load(file)
+        temp=[x for x in virtual_context["entities_context"] if x["entity_id"]==entity_id]
+        return temp[0] if len(temp)>0 else {}
     
     @virtual_router.get("/home")
     def Get_Home_context():
