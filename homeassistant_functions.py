@@ -128,30 +128,32 @@ def getDevicesNameAndId():
 
 def getDevicesFast():
     start=datetime.datetime.now()
-    templ="{% set devices = states | map(attribute='entity_id') | map('device_id') | unique | reject('eq',None) | list %}"
-    templ+="{%- set ns = namespace(devices = []) %}{%- for device in devices %}"
-    templ+="{%- set entities = device_entities(device) | list %}"
-    templ+="{%- set var = namespace(entities = [],state = '',device_class = 'sensor',energy_entity_id='',power_entity_id='',state_entity_id='')%}"
-    templ+="{%- for entity in entities %}"
-    templ+="{%- if not entity.split('.')[0] in ['sensor','binary_sensor'] %}"
-    templ+="{%- set var.state=states(entity)%}"
-    templ+="{%- set var.state_entity_id=entity%}"
-    templ+="{%- set var.device_class=entity.split('.')[0]%}"
-    templ+="{%- if var.energy_entity_id== ''%}"
-    templ+="{%- set var.energy_entity_id= entity %}"
-    templ+="{%- endif %}"
-    templ+="{%- endif %}"
-    templ+="{%- if state_attr(entity,'device_class')== 'energy'%}"
-    templ+="{%- set var.energy_entity_id= entity %}"
-    templ+="{%- endif %}"
-    templ+="{%- if state_attr(entity,'device_class')== 'power'%}"
-    templ+="{%- set var.power_entity_id= entity %}"
-    templ+="{%- endif %}"
-    templ+="{%- set var.entities=var.entities+[{'entity_id':entity,'state':states(entity),'entity_class':state_attr(entity,'device_class'),'unit_of_measurement':state_attr(entity,'unit_of_measurement')}]%}"
-    templ+="{%- endfor %}"
-    templ+="{%- set dev = {'name':device_attr(device,'name'),'device_id':device,'name_by_user':device_attr(device,'name_by_user'),'model':device_attr(device,'model'),'manufacturer':device_attr(device,'manufacturer'),'state':var.state,'device_class':var.device_class,'energy_entity_id':var.energy_entity_id,'power_entity_id':var.power_entity_id,'state_entity_id':var.state_entity_id,'list_of_entities':var.entities}%}"
-    templ+="{%- if dev %}{%- set ns.devices = ns.devices + [ dev ] %}{%- endif %}{%- endfor %}"
-    templ+="{{ ns.devices |to_json(sort_keys=True)}}"
+    templ=(
+    "{% set devices = states | map(attribute='entity_id') | map('device_id') | unique | reject('eq',None) | list %}"
+    "{%- set ns = namespace(devices = []) %}{%- for device in devices %}"
+    "{%- set entities = device_entities(device) | list %}"
+    "{%- set var = namespace(entities = [],state = '',device_class = 'sensor',energy_entity_id='',power_entity_id='',state_entity_id='')%}"
+    "{%- for entity in entities %}"
+    "{%- if not entity.split('.')[0] in ['sensor','binary_sensor'] %}"
+    "{%- set var.state=states(entity)%}"
+    "{%- set var.state_entity_id=entity%}"
+    "{%- set var.device_class=entity.split('.')[0]%}"
+    "{%- if var.energy_entity_id== ''%}"
+    "{%- set var.energy_entity_id= entity %}"
+    "{%- endif %}"
+    "{%- endif %}"
+    "{%- if state_attr(entity,'device_class')== 'energy'%}"
+    "{%- set var.energy_entity_id= entity %}"
+    "{%- endif %}"
+    "{%- if state_attr(entity,'device_class')== 'power'%}"
+    "{%- set var.power_entity_id= entity %}"
+    "{%- endif %}"
+    "{%- set var.entities=var.entities+[{'entity_id':entity,'state':states(entity),'entity_class':state_attr(entity,'device_class'),'unit_of_measurement':state_attr(entity,'unit_of_measurement')}]%}"
+    "{%- endfor %}"
+    "{%- set dev = {'name':device_attr(device,'name'),'device_id':device,'name_by_user':device_attr(device,'name_by_user'),'model':device_attr(device,'model'),'manufacturer':device_attr(device,'manufacturer'),'state':var.state,'device_class':var.device_class,'energy_entity_id':var.energy_entity_id,'power_entity_id':var.power_entity_id,'state_entity_id':var.state_entity_id,'list_of_entities':var.entities}%}"
+    "{%- if dev %}{%- set ns.devices = ns.devices + [ dev ] %}{%- endif %}{%- endfor %}"
+    "{{ ns.devices |to_json(sort_keys=True)}}"
+    )
     response = post(base_url+"/template", headers=headers, json={"template":templ})
     res= json.loads(response.text)
     
@@ -259,7 +261,7 @@ def getServicesByEntity(entity_id:str):
     Ritorna la lista dei servizi supportati dell'entità specificata.
     Per le lampadine viene fatto un controllo delle modalità supportate e inseriti solo i campi adeguati
     '''
-
+    start_function=datetime.datetime.now()
     #estraggo i dati dell'entita per avere le supported_features
     response = get(base_url+"/states"+"/"+entity_id, headers=headers)
     if response.status_code!=200:
@@ -332,7 +334,7 @@ def getServicesByEntity(entity_id:str):
     #TODO:ottimizzare la cosa evitando di fare un ciclo aggiuntivo
     for service_key in supported_services:
         supported_services[service_key].pop("target",None)
-
+    print("getServicesByEntity required "+str((datetime.datetime.now()-start_function).total_seconds())+"[s]")
     return {"status_code":200,"data":supported_services}
 
 
