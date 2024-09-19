@@ -14,12 +14,15 @@ from database_functions import (
     add_map_entities, get_all_map_entities,get_map_entity,delete_map_entry,delete_floor_map_configuration,
     get_all_service_logs,add_service_logs,get_service_logs_by_user,
     get_energy_slot_by_day,get_all_energy_slots,add_energy_slots,delete_energy_slots,
-    get_total_consumption,get_appliance_usage_entry
+    get_total_consumption,get_appliance_usage_entry,
+    get_all_user_preferences,add_user_preferences,get_user_preferences_by_user,delete_user_preferences_by_user
     )
 from schemas import (
     Service_In,Operation_Out,Map_Entity_List,
     Map_Entity,User_Log,User_Log_List,Configuration_Value,
-    Configuration_Value_List,Energy_Plan_Calendar)
+    Configuration_Value_List,Energy_Plan_Calendar,
+    User_Preference_List,User_Preference
+    )
 
 import datetime,json,configparser,logging
 from dateutil import parser,tz
@@ -455,6 +458,16 @@ def getAutomationRouter():
 
         return list(state_matrix.values()) #ret
     
+    @automation_router.get("/simulate")
+    def Simulate_Matrix_Addition():
+        state_matrix=Get_State_Matrix()
+        comulative_power_matrix=[0]*1440
+        for device in state_matrix:
+            for i in range(0,1440):
+                comulative_power_matrix[i]+=device["power_list"][i]
+
+        return {"power_list":comulative_power_matrix}
+    
     return automation_router
 
 def getServiceRouter():
@@ -676,5 +689,35 @@ def getTestRouter():
                     return False
     
     return test_router
+
+def getUserRouter():
+    user_router=APIRouter(tags=["User"],prefix="/user")
+
+    @user_router.get("/preferences")
+    def Get_All_Preferences():
+        preferences=get_all_user_preferences()
+        res=[]
+        for user in preferences:
+            res.append({"user_id":user["user_id"],"preferences":user["preferences"].split(","),"data_collection":bool(user["data_collection"]),"data_disclosure":bool(user["data_disclosure"])})
+        return res
+    
+    @user_router.get("/preferences/{user_id}")
+    def Get_Preferences_Of_Single_User(user_id:str):
+        user= get_user_preferences_by_user(user_id)
+        return {"user_id":user["user_id"],"preferences":user["preferences"].split(","),"data_collection":bool(user["data_collection"]),"data_disclosure":bool(user["data_disclosure"])} if user else {}
+    
+    @user_router.put("/preferences",response_model=Operation_Out)
+    def Add_User_Preferences(preferences_list:User_Preference_List):
+        to_add=[]
+        for user in preferences_list.data:
+            to_add.append((user.user_id,','.join(user.preferences),user.data_collection,user.data_disclosure))
+        return {"success":add_user_preferences(to_add)}
+    
+    @user_router.delete("/preference/{user_id}",response_model=Operation_Out)
+    def Delete_User_Preferences(user_id:str):
+        return {"success":delete_user_preferences_by_user(user_id)}
+
+    
+    return user_router
 
 

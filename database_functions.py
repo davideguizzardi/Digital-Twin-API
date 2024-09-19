@@ -50,7 +50,8 @@ def create_tables():
         'CREATE TABLE "Energy_Timeslot" ("day"	INTEGER,"hour"	INTEGER,"slot"	INTEGER);',
         'CREATE TABLE "Daily_Consumption" ("device_id" TEXT,"energy_consumption"	REAL,"energy_consumption_unit" TEXT,"use_time" REAL,"use_time_unit" TEXT,"date" INTEGER,PRIMARY KEY("device_id","date"))',
         'CREATE TABLE "Hourly_Consumption" ("device_id" TEXT,"energy_consumption" REAL,"energy_consumption_unit"	TEXT,"from"	INTEGER,"to" INTEGER,PRIMARY KEY("device_id","from"))',
-        'CREATE TABLE "Appliances_Usage" ("device_id"	TEXT,"state"	TEXT,"average_duration"	REAL,"duration_unit"	TEXT,"duration_samples"	INTEGER,"average_power"	REAL,"average_power_unit"	TEXT,"power_samples"	INTEGER,"last_timestamp"	INTEGER,PRIMARY KEY("device_id","state"))'
+        'CREATE TABLE "Appliances_Usage" ("device_id"	TEXT,"state"	TEXT,"average_duration"	REAL,"duration_unit"	TEXT,"duration_samples"	INTEGER,"average_power"	REAL,"average_power_unit"	TEXT,"power_samples"	INTEGER,"last_timestamp"	INTEGER,PRIMARY KEY("device_id","state"))',
+        'CREATE TABLE "User_Preferences" ("user_id"	TEXT NOT NULL,"preferences"	TEXT,"data_collection"	INTEGER,"data_disclosure"	INTEGER,PRIMARY KEY("user_id"))'
     ]
     con=sqlite3.connect(DB_PATH)
     cur=con.cursor()
@@ -69,6 +70,51 @@ def fetchOneElement(query:str):
     con.close()
     return res
 
+def add_user_preferences(preferences_list:list):
+    con=sqlite3.connect(DB_PATH)
+    cur=con.cursor()
+    cur.executemany("INSERT or REPLACE into User_Preferences(user_id,preferences,data_collection,data_disclosure) VALUES (?,?,?,?)",preferences_list)
+    con.commit()
+    success=True if cur.rowcount>0 else False
+    con.close()
+    return success
+
+def get_all_user_preferences():
+    con=sqlite3.connect(DB_PATH)
+    cur=con.cursor()
+    cur.row_factory=row_to_dict
+    res=cur.execute("SELECT * FROM User_Preferences")
+    res=res.fetchall()
+    con.close()
+    return res
+
+def get_user_preferences_by_user(user_id:str):
+    con=sqlite3.connect(DB_PATH)
+    cur=con.cursor()
+    cur.row_factory=row_to_dict
+    res=cur.execute("SELECT * FROM User_Preferences WHERE user_id='"+user_id+"'")
+    res=res.fetchone()
+    con.close()
+    return res
+
+def delete_user_preferences_by_user(user_id:str):
+    con=sqlite3.connect(DB_PATH)
+    cur=con.cursor()
+    cur.row_factory=row_to_dict
+    res=cur.execute("DELETE FROM User_Preferences WHERE user_id='"+user_id+"'")
+    con.commit()
+    success=True if cur.rowcount>0 else False
+    con.close()
+    return success
+
+def add_user_consensus(consensus_list:list):
+    con=sqlite3.connect(DB_PATH)
+    cur=con.cursor()
+    cur.executemany("INSERT or REPLACE into User_Consensus(user_id,data_collection,information_disclosure) VALUES (?,?,?)",consensus_list)
+    con.commit()
+    success=True if cur.rowcount>0 else False
+    con.close()
+    return success
 
 def add_service_logs(logs_list:list):
     con=sqlite3.connect(DB_PATH)
@@ -181,12 +227,16 @@ def get_configuration_value_by_key(key:str):
     return res
 
 def delete_configuration_value(key:int):
-    con=sqlite3.connect(DB_PATH)
-    cur=con.cursor()
-    cur.execute("DELETE FROM Configuration WHERE key='"+key+"'")
-    con.commit()
-    success=True if cur.rowcount>0 else False
-    con.close()
+    element=fetchOneElement("Select * from Configuration WHERE key='"+key+"'")
+    if element:
+        con=sqlite3.connect(DB_PATH)
+        cur=con.cursor()
+        cur.execute("DELETE FROM Configuration WHERE key='"+key+"'")
+        con.commit()
+        success=True if cur.rowcount>0 else False
+        con.close()
+    else:
+        success=True
     return success
 
 

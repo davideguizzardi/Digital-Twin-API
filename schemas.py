@@ -25,6 +25,15 @@ class Map_Entity(BaseModel):
 class Map_Entity_List(BaseModel):
     data:list[Map_Entity]
 
+class User_Preference(BaseModel):
+    user_id:str
+    preferences:list[str]
+    data_collection:bool
+    data_disclosure:bool
+
+class User_Preference_List(BaseModel):
+    data: list[User_Preference]
+
 class User_Log(BaseModel):
      user:str
      service:str

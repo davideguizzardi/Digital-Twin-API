@@ -5,7 +5,8 @@ from routers import (
     getEntityRouter,getAutomationRouter,getServiceRouter,
     getConfigurationRouter,getMapConfigurationRouter,getVirtualRouter,
     getConsumptionRouter,getHistoryRouter,getTestRouter,
-    getDeviceRouter,getHomeRouter,getEnergyCalendarConfigurationRouter
+    getDeviceRouter,getHomeRouter,getEnergyCalendarConfigurationRouter,
+    getUserRouter
     )
 from homeassistant_functions import initializeToken
 
@@ -25,6 +26,7 @@ def create_api():
         getAutomationRouter(),
         getServiceRouter(),
         getConfigurationRouter(),
+        getUserRouter(),
         getMapConfigurationRouter(),
         getEnergyCalendarConfigurationRouter(),
         getVirtualRouter(),
