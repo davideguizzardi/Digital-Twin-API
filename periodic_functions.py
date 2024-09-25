@@ -32,7 +32,8 @@ def devicesExtractionProcedure(start_timestamp:datetime.datetime=datetime.date.t
     daily_grouping=[]
     for id in devices_list:
         history=extractSingleDeviceHistory(id,start_timestamp,end_timestamp)
-
+        if len(history)==0: #if the device remains not available for long HA will not produce its history 
+            continue
         starting_date=parser.parse(history[0]["date"],dayfirst=True).astimezone(tz.tzlocal())
         ending_date=parser.parse(history[-1]["date"],dayfirst=True).astimezone(tz.tzlocal())
         energy_unit = history[0]["energy_consumption_unit"]
@@ -42,7 +43,7 @@ def devicesExtractionProcedure(start_timestamp:datetime.datetime=datetime.date.t
         steps=int((ending_date-starting_date).total_seconds()/3600)
 
         while temp_date<ending_date:
-            consumption=sum([x["energy_consumption"] for x in history if x["date"].startswith(temp_date.strftime("%d/%m/%Y %H"))])
+            consumption=sum([x["energy_consumption"] for x in history if x["date"].startswith(temp_date.strftime("%Y-%m-%dT%H"))])
             hourly_grouping.append((
                 id,
                 consumption,
