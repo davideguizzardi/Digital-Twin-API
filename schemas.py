@@ -44,6 +44,10 @@ class User_Log(BaseModel):
 class User_Log_List(BaseModel):
     data:list[User_Log]
 
+
+class Automation(BaseModel):
+    automation:object
+
 class Configuration_Value(BaseModel):
     key:str
     value:str
