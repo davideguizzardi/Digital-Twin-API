@@ -302,13 +302,13 @@ def get_all_configuration_values():
 
 
 def get_configuration_value_by_key(key:str):
-    query = "SELECT * FROM Configuration WHERE key= = ?"
-    params = (id,) 
+    query = "SELECT * FROM Configuration WHERE key= ?"
+    params = (key,) 
     return fetch_one_element(query,params)
 
 
 def delete_configuration_value(key:int):
-    query = "SELECT * FROM Configuration WHERE key= = ?"
+    query = "SELECT * FROM Configuration WHERE key= ?"
     params = (key,) 
     element=fetch_one_element(query,params)
     if element:
