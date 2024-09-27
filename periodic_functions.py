@@ -7,7 +7,7 @@ from database_functions import (
     add_daily_consumption_entry,add_hourly_consumption_entry,
     get_all_appliances_usage_entries,add_appliances_usage_entry,
     fetch_one_element)
-from routers import computeHourlyTotalConsumption,computeTotalConsumption,extractSingleDeviceHistory
+from routers_old import computeHourlyTotalConsumption,computeTotalConsumption,extractSingleDeviceHistory
 from dateutil import tz,parser
 from collections import defaultdict
 

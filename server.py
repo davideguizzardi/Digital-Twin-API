@@ -1,13 +1,21 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from routers import (
-    getEntityRouter,getAutomationRouter,getServiceRouter,
-    getConfigurationRouter,getMapConfigurationRouter,getVirtualRouter,
-    getConsumptionRouter,getHistoryRouter,getTestRouter,
-    getDeviceRouter,getHomeRouter,getEnergyCalendarConfigurationRouter,
-    getUserRouter
+from routers_old import (
+    getTestRouter
+    ,getHomeRouter
     )
+from routers.entityRouter import getEntityRouter
+from routers.automationRouter import getAutomationRouter
+from routers.serviceRouter import getServiceRouter
+from routers.configurationRouter import getConfigurationRouter
+from routers.configurationRouter import getMapConfigurationRouter
+from routers.configurationRouter import getEnergyCalendarConfigurationRouter
+from routers.configurationRouter import getUserRouter
+from routers.virtualRouter import getVirtualRouter
+from routers.consumptionRouter import getConsumptionRouter
+from routers.historyRouter import getHistoryRouter
+from routers.deviceRouter import getDeviceRouter
 from homeassistant_functions import initializeToken
 
 import uvicorn
