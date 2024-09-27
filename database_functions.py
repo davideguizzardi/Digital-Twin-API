@@ -50,6 +50,28 @@ QUERIES={
             Configuration c 
         ON 
             c.key = 'cost_slot_' || et.slot;
+    ''',
+    "minimum_energy_slots":'''
+        SELECT 
+            CASE et.day 
+                WHEN 0 THEN 'mon' 
+                WHEN 1 THEN 'tue' 
+                WHEN 2 THEN 'wed' 
+                WHEN 3 THEN 'thu' 
+                WHEN 4 THEN 'fri' 
+                WHEN 5 THEN 'sat' 
+                WHEN 6 THEN 'sun' 
+            END AS day_name, 
+            et.hour, 
+            c.value AS slot_value 
+        FROM 
+            Energy_Timeslot et 
+        JOIN 
+            Configuration c 
+        ON 
+            c.key = 'cost_slot_' || et.slot
+        WHERE 
+            c.value = (SELECT MIN(value) FROM Configuration WHERE key LIKE 'cost_slot_%');
     '''
 }
 
@@ -278,6 +300,16 @@ def get_all_energy_slots():
     con.close()
     return res
 
+
+def get_minimum_energy_slots():
+    con=sqlite3.connect(DB_PATH)
+    cur=con.cursor()
+    cur.row_factory=row_to_dict
+    res=cur.execute(QUERIES["minimum_energy_slots"])
+    res=res.fetchall()
+    con.close()
+    return res
+
 def get_energy_slot_by_day(day:int):
     con=sqlite3.connect(DB_PATH)
     cur=con.cursor()
@@ -286,6 +318,9 @@ def get_energy_slot_by_day(day:int):
     res=res.fetchall()
     con.close()
     return res
+
+def get_minimum_cost_slot():
+    return fetchOneElement("SELECT MIN(value) as cost FROM Configuration WHERE key LIKE 'cost_slot_%'")
 
 def get_energy_slot_by_slot(slot:int):
     con=sqlite3.connect(DB_PATH)
