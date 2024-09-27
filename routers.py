@@ -16,7 +16,7 @@ from database_functions import (
     get_energy_slot_by_day,get_all_energy_slots,add_energy_slots,delete_energy_slots,
     get_total_consumption,get_appliance_usage_entry,
     get_all_user_preferences,add_user_preferences,get_user_preferences_by_user,delete_user_preferences_by_user,
-    get_all_energy_slots_with_cost
+    get_all_energy_slots_with_cost,get_minimum_cost_slot,get_minimum_energy_slots
     )
 from schemas import (
     Service_In,Operation_Out,Map_Entity_List,
@@ -488,9 +488,7 @@ def getEnergyCostMatrix():#TODO:could be moved outside
     return cost_matrix
 
 def getPowerMatrix(automation):#TODO:could be moved outside
-
     power_matrix = {day: [0] * 1440 for day in DAYS}  
-
     if automation["time"]!="":
         activation_time=parser.parse(automation["time"])
         activation_days=automation["days"] if len(automation["days"])>0 else DAYS
@@ -503,12 +501,12 @@ def getPowerMatrix(automation):#TODO:could be moved outside
     return power_matrix
 
 
-def getAutomationCost(automation):
-    automation=getAutomationDetails(automation)
+def getAutomationCost(automation,day_list=DAYS):
+    #automation=getAutomationDetails(automation)
     energy_cost_matrix=getEnergyCostMatrix()
     power_matrix=getPowerMatrix(automation)
-    cost_matrix={day: 0.0 for day in DAYS}  
-    for day in DAYS:
+    cost_matrix={day: 0.0 for day in day_list}  
+    for day in day_list:
         for i in range(1440):
             #power is in W so we need to divide by 1000 to get kW
             #energy_cost is in euro/kWh
@@ -516,6 +514,129 @@ def getAutomationCost(automation):
             cost_matrix[day]+=(power_matrix[day][i]/1000)*(energy_cost_matrix[day][i])*(1/60)
 
     return cost_matrix
+
+def findBetterActivationTime(automation,device_list,saved_automations):
+    #automation=getAutomationDetails(automation)
+    temp_automation=automation.copy()
+    cost=getAutomationCost(automation)
+    minimum_cost_slot=get_minimum_cost_slot()
+
+    ideal_cost=float(minimum_cost_slot["cost"])*(automation["energy_consumption"]/1000) if minimum_cost_slot else 0 # placeholder for ideal in the case in which the db is down
+
+    less_cost_index=get_minimum_energy_slots() #for each day
+
+    suggestions=[]
+
+    for day in automation["days"] if len(automation["days"])>0 else DAYS:
+        if cost[day]<=ideal_cost:
+            continue
+
+        index_list=[x for x in less_cost_index if x["day_name"]==day]
+
+        new_activation_found=False
+        index=0
+        while (not new_activation_found) or index>=len(index_list):
+            new_activation=f"{index_list[index]["hour"]:02d}:00:00"
+            temp_automation["time"]=new_activation
+            temp_automation["days"]=[day]#used to check conflicts only on the current day TODO: change this
+
+            #Checking for conflicts with the new activation time
+            conflicts=getConflicts(
+                device_list=device_list,
+                automations_list=saved_automations+[temp_automation],
+                return_only_conflicts=True)
+            
+            if len(conflicts)<=0:
+                new_cost=getAutomationCost(temp_automation,day_list=[day])
+                
+                if new_cost[day]<cost[day]:
+                    new_activation_found=True
+                    suggestions.append(
+                        {
+                            "day":day,
+                            "new_activation_time":new_activation,
+                            "saved_money": cost[day]-new_cost[day]
+                        }
+                    )
+            
+            index+=1
+
+
+    return suggestions
+
+
+def getConflicts(device_list,automations_list,return_only_conflicts=True):
+    #Initializing the state matrix
+    state_matrix = {day: {} for day in DAYS}
+    for day in DAYS:
+        for dev in device_list["data"]:
+            if dev["device_class"] not in ["sensor","event","sun","weather","device_tracker"]:
+                state_matrix[day][dev["device_id"]] = {
+                        "state_list": [""] * 1440,
+                        "power_list": [0] * 1440,
+                        "device_id": dev["device_id"],
+                        "device_name": dev["name"]
+                    }
+
+    #Populating state matrix with automation's actions
+    sorted_automations=sorted(automations_list,key=lambda x:x["time"]) #sort automations by activation time 
+    for aut in sorted_automations:
+        if aut["time"]!="":
+            activation_time=parser.parse(aut["time"])
+            activation_days=aut["days"] if len(aut["days"])>0 else DAYS
+            activation_index=activation_time.hour*60+activation_time.minute
+
+            for act in aut["action"]:
+                end_index=min(activation_index+int(act["average_duration"]),1440)
+                for day in activation_days:
+                    device = state_matrix[day][act["device_id"]]
+                    device["state_list"][activation_index:end_index]=[act["state"]]*(end_index-activation_index)
+                    device["state_list"][end_index:]=[""]*(1440-end_index) #Added to fix a bug, could be removed if problems occurs
+                    device["power_list"][activation_index:end_index]=[act["average_power"]]*(end_index-activation_index)
+
+                    device["device_id"]=act["device_id"]
+                    device["device_name"]=act["device_name"]
+
+    #Computing the cumulative power matrix for conflicts identification
+    cumulative_power_matrix = {day: [0] * 1440 for day in DAYS}  
+    for day in DAYS:
+        for dev in state_matrix[day].values():
+            for i in range(1440):
+                cumulative_power_matrix[day][i]+=dev["power_list"][i]
+
+    #Conflicts identification
+    conflicts_list = defaultdict(lambda: {"type": "Excessive energy demand", "days": []})
+    threshold = get_configuration_value_by_key("power_threshold")  
+    if threshold:
+        threshold=float(threshold["value"])
+    else:
+        threshold=150 #TODO: remember to remove this default
+    for day in DAYS:
+        conflict_is_occurring=False
+        for i in range(1440):
+            if cumulative_power_matrix[day][i] > threshold: 
+                if not conflict_is_occurring:
+                    start=i
+                    conflict_is_occurring=True
+                end=i
+            else:
+                if conflict_is_occurring: #there was a conflict since last minute
+                    key=f"{start//60:02}:{(start%60):02}-{end//60:02}:{(end%60):02}"
+                    conflicts_list[key]["days"].append(day)
+                    conflicts_list[key]["start"] = f"{start // 60:02}:{start % 60:02}"
+                    conflicts_list[key]["end"] = f"{end // 60:02}:{end % 60:02}"
+                    conflict_is_occurring=False
+
+    conflicts_list=list(conflicts_list.values())
+
+    if return_only_conflicts:
+        return conflicts_list 
+    else:
+        return {
+        "state_matrix":state_matrix,
+        "cumulative_power_matrix":cumulative_power_matrix,
+        "conflicts":conflicts_list
+        }
 
 
 
@@ -541,9 +662,6 @@ def getAutomationRouter():
                 temp=[]
                 action_list=[]
                 activation_days=[]
-                #time_trigger=[x for x in automation["trigger"] if x["platform"]=="time"]
-                #if len(time_trigger)>0:
-                #    activation_time=time_trigger[0]["at"] #we assume only one time trigger
 
                 activation_time=getAutomationTime(automation["trigger"])
                 time_condition=[x for x in automation["condition"] if x["condition"]=="time"]
@@ -638,92 +756,96 @@ def getAutomationRouter():
     
     
     @automation_router.post("/simulate")
-    def Simulate_Automation_Addition(automation:Automation):
+    def Simulate_Automation_Addition(automation_in:Automation):
+        start_call=datetime.datetime.now()
+
         #Get automations saved and details of the one we want to add
-        automation=getAutomationDetails(automation.automation)
-        ret = Get_Automations()
-        ret.append(automation)
+        automation=getAutomationDetails(automation_in.automation)
+        saved_automations = Get_Automations()
+        new_automation_list=saved_automations+[automation]
 
+        #Getting the list of devices
         dev_list=getDevicesFast()
-        week_days=[
-				"mon",
-				"tue",
-				"wed",
-				"thu",
-				"fri",
-				"sat",
-                "sun"
-			]
-        state_matrix = {day: {} for day in week_days}
+        
+        # #Initializing the state matrix
+        # state_matrix = {day: {} for day in DAYS}
+        # for day in DAYS:
+        #     for dev in dev_list["data"]:
+        #         if dev["device_class"] not in ["sensor","event","sun","weather","device_tracker"]:
+        #             state_matrix[day][dev["device_id"]] = {
+        #                     "state_list": [""] * 1440,
+        #                     "power_list": [0] * 1440,
+        #                     "device_id": dev["device_id"],
+        #                     "device_name": dev["name"]
+        #                 }
 
-        for day in week_days:
-            for dev in dev_list["data"]:
-                if dev["device_class"] not in ["sensor","event","sun","weather","device_tracker"]:
-                    state_matrix[day][dev["device_id"]] = {
-                            "state_list": [""] * 1440,
-                            "power_list": [0] * 1440,
-                            "device_id": dev["device_id"],
-                            "device_name": dev["name"]
-                        }
+        # #Populating state matrix with automation's actions
+        # new_automation_list=sorted(new_automation_list,key=lambda x:x["time"]) #sort automations by activation time 
+        # for aut in new_automation_list:
+        #     if aut["time"]!="":
+        #         activation_time=parser.parse(aut["time"])
+        #         activation_days=aut["days"] if len(aut["days"])>0 else DAYS
+        #         activation_index=activation_time.hour*60+activation_time.minute
 
+        #         for act in aut["action"]:
+        #             end_index=min(activation_index+int(act["average_duration"]),1440)
+        #             for day in activation_days:
+        #                 device = state_matrix[day][act["device_id"]]
+        #                 device["state_list"][activation_index:end_index]=[act["state"]]*(end_index-activation_index)
+        #                 device["state_list"][end_index:]=[""]*(1440-end_index) #Added to fix a bug, could be removed if problems occurs
+        #                 device["power_list"][activation_index:end_index]=[act["average_power"]]*(end_index-activation_index)
 
-        ret=sorted(ret,key=lambda x:x["time"])
+        #                 device["device_id"]=act["device_id"]
+        #                 device["device_name"]=act["device_name"]
 
-        for aut in ret:
-            if aut["time"]!="":
-                activation_time=parser.parse(aut["time"])
-                activation_days=aut["days"] if len(aut["days"])>0 else week_days
-                activation_index=activation_time.hour*60+activation_time.minute
+        # #Computing the cumulative power matrix for conflicts identification
+        # cumulative_power_matrix = {day: [0] * 1440 for day in DAYS}  
+        # for day in DAYS:
+        #     for dev in state_matrix[day].values():
+        #         for i in range(1440):
+        #             cumulative_power_matrix[day][i]+=dev["power_list"][i]
 
-                for act in aut["action"]:
-                    end_index=min(activation_index+int(act["average_duration"]),1440)
-                    for day in activation_days:
-                        device = state_matrix[day][act["device_id"]]
-                        device["state_list"][activation_index:end_index]=[act["state"]]*(end_index-activation_index)
-                        device["state_list"][end_index:]=[""]*(1440-end_index) #Added to fix a bug, could be removed if problems occurs
-                        device["power_list"][activation_index:end_index]=[act["average_power"]]*(end_index-activation_index)
+        # #Conflicts identification
+        # conflicts_list = defaultdict(lambda: {"type": "Excessive energy demand", "days": []})
+        # threshold = get_configuration_value_by_key("power_threshold")  
+        # if threshold:
+        #     threshold=float(threshold["value"])
+        # else:
+        #     threshold=150 #TODO: remember to remove this default
+        # for day in DAYS:
+        #     conflict_is_occurring=False
+        #     for i in range(1440):
+        #         if cumulative_power_matrix[day][i] > threshold: 
+        #             if not conflict_is_occurring:
+        #                 start=i
+        #                 conflict_is_occurring=True
+        #             end=i
+        #         else:
+        #             if conflict_is_occurring: #there was a conflict since last minute
+        #                 key=f"{start//60:02}:{(start%60):02}-{end//60:02}:{(end%60):02}"
+        #                 conflicts_list[key]["days"].append(day)
+        #                 conflicts_list[key]["start"] = f"{start // 60:02}:{start % 60:02}"
+        #                 conflicts_list[key]["end"] = f"{end // 60:02}:{end % 60:02}"
+        #                 conflict_is_occurring=False
 
-                        device["device_id"]=act["device_id"]
-                        device["device_name"]=act["device_name"]
+        # conflicts_list=list(conflicts_list.values())
 
-        cumulative_power_matrix = {day: [0] * 1440 for day in week_days}  
+        simulation=getConflicts(device_list=dev_list,automations_list=new_automation_list,return_only_conflicts=False)
 
-        for day in week_days:
-            for dev in state_matrix[day].values():
-                for i in range(1440):
-                    cumulative_power_matrix[day][i]+=dev["power_list"][i]
+        #Suggestions identification if no conflict occurs
+        suggestions=[]
+        if len(simulation["conflicts"])<=0:
+            suggestions=findBetterActivationTime(automation,dev_list,saved_automations)
 
-        conflicts_list = defaultdict(lambda: {"type": "Excessive energy demand", "days": []})
-        threshold = get_configuration_value_by_key("power_threshold")  
-        if threshold:
-            threshold=float(threshold["value"])
-        else:
-            threshold=150 #TODO: remember to remove this default
-
-        for day in week_days:
-            conflict_is_occurring=False
-
-            for i in range(1440):
-                if cumulative_power_matrix[day][i] > threshold: 
-                    if not conflict_is_occurring:
-                        start=i
-                        conflict_is_occurring=True
-                    end=i
-                else:
-                    if conflict_is_occurring: #there was a conflict since last minute
-                        key=f"{start//60:02}:{(start%60):02}-{end//60:02}:{(end%60):02}"
-                        conflicts_list[key]["days"].append(day)
-                        conflicts_list[key]["start"] = f"{start // 60:02}:{start % 60:02}"
-                        conflicts_list[key]["end"] = f"{end // 60:02}:{end % 60:02}"
-                        conflict_is_occurring=False
 
         
-
+        print(f"Simulate_Automation_Addition required {(datetime.datetime.now()-start_call).total_seconds()} [s]")
 
         return {
-            "state_matrix":state_matrix,
-            "cumulative_power_matrix":cumulative_power_matrix,
-            "conflicts":list(conflicts_list.values())
+            "state_matrix":simulation["state_matrix"],
+            "cumulative_power_matrix":simulation["cumulative_power_matrix"],
+            "conflicts":simulation["conflicts"],
+            "suggestions":suggestions
             }
     
     return automation_router
@@ -982,7 +1104,7 @@ def getUserRouter():
 def main():
     initializeToken()
     list_auto=getAutomations()
-    cost_matrix=getAutomationCost(list_auto["data"][1])
+    cost_matrix=findBetterActivationTime(list_auto["data"][5])
 
 if __name__ == "__main__":
     main()
