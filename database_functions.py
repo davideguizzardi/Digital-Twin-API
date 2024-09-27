@@ -1,4 +1,5 @@
 import sqlite3
+from contextlib import contextmanager
 
 DB_PATH="./data/digital_twin.db"
 
@@ -81,12 +82,34 @@ def row_to_dict(cursor: sqlite3.Cursor, row: sqlite3.Row) -> dict:
         data[col[0]] = row[idx]
     return data
 
+@contextmanager
+def get_db_connection(db_path=DB_PATH):
+    """
+    Context manager for handling SQLite connections.
+    Automatically manages connection opening and closing, and handles errors.
+
+    :param db_path: Path to the SQLite database.
+    :yield: SQLite connection object.
+    """
+    connection = None
+    try:
+        connection = sqlite3.connect(db_path)
+        connection.row_factory = row_to_dict  
+        yield connection  
+    except sqlite3.Error as e:
+        print(f"Error connecting to the database: {e}")
+        if connection:
+            connection.rollback()  # Roll back if an error occurs
+    finally:
+        if connection:
+            connection.close()  # Ensure the connection is always closed
+
 def initialize_database():
     create_tables()
 
-
+    
 def create_tables():
-    query_list=[
+    table_creation_queries=[
         'CREATE TABLE "Configuration" ("key" TEXT NOT NULL,"value" TEXT NOT NULL,"unit"	TEXT,PRIMARY KEY("key"));',
         'CREATE TABLE "Map_config" ("entity_id" TEXT NOT NULL,"x" INTEGER NOT NULL,"y" INTEGER NOT NULL,"floor" INTEGER NOT NULL,PRIMARY KEY("entity_id"));',
         'CREATE TABLE "Service_logs" ("user"	TEXT NOT NULL,"service"	TEXT NOT NULL,"target"	TEXT,"payload"	TEXT,"timestamp"	INTEGER NOT NULL);',
@@ -96,95 +119,142 @@ def create_tables():
         'CREATE TABLE "Appliances_Usage" ("device_id"	TEXT,"state"	TEXT,"average_duration"	REAL,"duration_unit"	TEXT,"duration_samples"	INTEGER,"average_power"	REAL,"average_power_unit"	TEXT,"power_samples"	INTEGER,"last_timestamp"	INTEGER,PRIMARY KEY("device_id","state"))',
         'CREATE TABLE "User_Preferences" ("user_id"	TEXT NOT NULL,"preferences"	TEXT,"data_collection"	INTEGER,"data_disclosure"	INTEGER,PRIMARY KEY("user_id"))'
     ]
-    con=sqlite3.connect(DB_PATH)
-    cur=con.cursor()
-    for query in query_list:
-        res=cur.execute(query)
-        success=True if cur.rowcount>0 else False
-    con.close()
+    success=True
+    with get_db_connection() as con:
+        try:
+            cur = con.cursor()
+            # Execute each table creation query
+            for query in table_creation_queries:
+                cur.execute(query)
+                success=True if cur.rowcount>0 else False
+            con.commit()  # Commit the changes after creating tables
+        except sqlite3.Error as e:
+            print(f"An error occurred while creating tables: {e}")
+            con.rollback()  # Rollback if an error occurs
+            success=False
     return success
 
-def fetchOneElement(query:str):
-    con=sqlite3.connect(DB_PATH)
-    cur=con.cursor()
-    cur.row_factory=row_to_dict
-    res=cur.execute(query)
-    res=res.fetchone()
-    con.close()
-    return res
+
+#region General DB operations
+def fetch_one_element(query:str, params=None):
+    """
+    Executes a query to fetch a single element from the database.
+    
+    :param query: The SQL query to execute.
+    :param params: Parameters for the SQL query (optional).
+    :return: The first row of the query result as a dictionary, or None if an error occurs.
+    """
+    with get_db_connection() as con:
+        try:
+            cur = con.cursor()
+            cur.execute(query, params or ())
+            result = cur.fetchone()  # Fetch a single result
+            return result if result else None  # Return None if no result found
+        except sqlite3.Error as e:
+            print(f"An error occurred during fetch_one_element: {e}")
+            return None  # Return None if there was an error
+        
+def fetch_multiple_elements(query:str, params=None):
+    """
+    Executes a query to fetch multiple elements from the database.
+    
+    :param query: The SQL query to execute.
+    :param params: Parameters for the SQL query (optional).
+    :return: The result as a dictionary, or an empty list if an error occurs.
+    """
+    with get_db_connection() as con:
+        try:
+            cur = con.cursor()
+            cur.execute(query, params or ())
+            result = cur.fetchall()  # Fetch multiple results
+            return result if result else []  # Return empty list if no result found
+        except sqlite3.Error as e:
+            print(f"An error occurred during fetch_one_element: {e}")
+            return []  # Return None if there was an error
+        
+def execute_one_query(query: str, params: tuple = None) -> bool:
+    """
+    Executes a single SQL query that modifies the database (INSERT, UPDATE, DELETE).
+
+    :param query: The SQL query to execute.
+    :param params: A tuple of parameters to substitute into the query.
+    :return: True if the query affected any rows, otherwise False.
+    """
+    try:
+        with get_db_connection() as con:
+            cur = con.cursor()
+            cur.execute(query, params or ())  # Execute the query with parameters
+            con.commit()  # Commit changes
+            return cur.rowcount > 0  # Return True if any rows were affected
+    except sqlite3.Error as e:
+        print(f"An error occurred: {e}")  # Log the error message
+        return False  # Return False to indicate failure
+        
+def add_multiple_elements(query, data):
+    """
+    Adds multiple elements to the database using the provided query.
+
+    :param query: The SQL query to execute.
+    :param data: A list of tuples containing the data to insert.
+    :return: True if the elements were added successfully, False otherwise.
+    """
+    try:
+        with get_db_connection() as con:
+            cur = con.cursor()
+            cur.executemany(query, data)  # Insert all elements at once
+            con.commit()  # Commit changes after inserting
+            return cur.rowcount>0  # Return True on success
+    except sqlite3.Error as e:
+        print(f"An error occurred while adding elements: {e}")
+        return False  # Return False if there was an error
+
+#endregion
+
+#region User preferences and data    
 
 def add_user_preferences(preferences_list:list):
-    con=sqlite3.connect(DB_PATH)
-    cur=con.cursor()
-    cur.executemany("INSERT or REPLACE into User_Preferences(user_id,preferences,data_collection,data_disclosure) VALUES (?,?,?,?)",preferences_list)
-    con.commit()
-    success=True if cur.rowcount>0 else False
-    con.close()
-    return success
+    query="INSERT or REPLACE into User_Preferences(user_id,preferences,data_collection,data_disclosure) VALUES (?,?,?,?)"
+    return add_multiple_elements(query,preferences_list)
+
 
 def get_all_user_preferences():
-    con=sqlite3.connect(DB_PATH)
-    cur=con.cursor()
-    cur.row_factory=row_to_dict
-    res=cur.execute("SELECT * FROM User_Preferences")
-    res=res.fetchall()
-    con.close()
-    return res
+    return fetch_multiple_elements("SELECT * FROM User_Preferences")
 
 def get_user_preferences_by_user(user_id:str):
-    con=sqlite3.connect(DB_PATH)
-    cur=con.cursor()
-    cur.row_factory=row_to_dict
-    res=cur.execute("SELECT * FROM User_Preferences WHERE user_id='"+user_id+"'")
-    res=res.fetchone()
-    con.close()
-    return res
+    query = "SELECT * FROM User_Preferences WHERE user_id = ?"
+    params = (user_id,) 
+    return fetch_one_element(query,params)
 
 def delete_user_preferences_by_user(user_id:str):
-    con=sqlite3.connect(DB_PATH)
-    cur=con.cursor()
-    cur.row_factory=row_to_dict
-    res=cur.execute("DELETE FROM User_Preferences WHERE user_id='"+user_id+"'")
-    con.commit()
-    success=True if cur.rowcount>0 else False
-    con.close()
-    return success
+    query = "DELETE FROM User_Preferences WHERE user_id = ?"
+    params = (user_id,)
+    return execute_one_query(query,params)
 
 def add_user_consensus(consensus_list:list):
-    con=sqlite3.connect(DB_PATH)
-    cur=con.cursor()
-    cur.executemany("INSERT or REPLACE into User_Consensus(user_id,data_collection,information_disclosure) VALUES (?,?,?)",consensus_list)
-    con.commit()
-    success=True if cur.rowcount>0 else False
-    con.close()
-    return success
+    query="INSERT or REPLACE into User_Consensus(user_id,data_collection,information_disclosure) VALUES (?,?,?)"
+    return add_multiple_elements(query,consensus_list)
+
+#endregion
+
+#region Service logs
 
 def add_service_logs(logs_list:list):
-    con=sqlite3.connect(DB_PATH)
-    cur=con.cursor()
-    cur.executemany("INSERT into Service_logs(user,service,target,payload,timestamp) VALUES (?,?,?,?,?)",logs_list)
-    con.commit()
-    success=True if cur.rowcount>0 else False
-    con.close()
-    return success
+    query="INSERT into Service_logs(user,service,target,payload,timestamp) VALUES (?,?,?,?,?)"
+    return add_multiple_elements(query,logs_list)
 
 def get_all_service_logs():
-    con=sqlite3.connect(DB_PATH)
-    cur=con.cursor()
-    cur.row_factory=row_to_dict
-    res=cur.execute("SELECT * FROM Service_logs")
-    res=res.fetchall()
-    con.close()
-    return res
+    return fetch_multiple_elements("SELECT * FROM Service_logs")
+
 
 def get_service_logs_by_user(user:str):
-    con=sqlite3.connect(DB_PATH)
-    cur=con.cursor()
-    cur.row_factory=row_to_dict
-    res=cur.execute("SELECT * FROM Service_logs WHERE user='"+user+"'")
-    res=res.fetchall()
-    con.close()
-    return res
+    query = "SELECT * FROM Service_logs WHERE user= ?"
+    params = (user,) 
+    return fetch_multiple_elements(query,params)
+
+#endregion
+
+#region Map entries configuration
+
     
 def add_map_entities(entities_list:list):
     """
@@ -196,101 +266,66 @@ def add_map_entities(entities_list:list):
     lista di tuple nella forma (entity_id,x,y,floor)
 
     """
-    con=sqlite3.connect(DB_PATH)
-    cur=con.cursor()
-    cur.executemany("INSERT or REPLACE into Map_config VALUES (?,?,?,?)",entities_list)
-    con.commit()
-    success=True if cur.rowcount>0 else False
-    con.close()
-    return success
+    query="INSERT or REPLACE into Map_config VALUES (?,?,?,?)"
+    return add_multiple_elements(query,entities_list)
+
 
 def delete_map_entry(entity_id:str):
-    con=sqlite3.connect(DB_PATH)
-    cur=con.cursor()
-    cur.execute("DELETE FROM Map_config WHERE entity_id='"+entity_id+"'")
-    con.commit()
-    success=True if cur.rowcount>0 else False
-    con.close()
-    return success
+    query = "DELETE FROM Map_config WHERE entity_id= ?"
+    params = (entity_id,)
+    return execute_one_query(query,params)
 
 def delete_floor_map_configuration(floor:int):
-    con=sqlite3.connect(DB_PATH)
-    cur=con.cursor()
-    cur.execute("DELETE FROM Map_config WHERE floor="+str(floor))
-    con.commit()
-    success=True if cur.rowcount>0 else False
-    con.close()
-    return success
+    query = "DELETE FROM Map_config WHERE floor=?"
+    params = (floor,)
+    return execute_one_query(query,params)
 
 def get_all_map_entities():
-    con=sqlite3.connect(DB_PATH)
-    cur=con.cursor()
-    cur.row_factory=row_to_dict
-    res=cur.execute("SELECT * FROM Map_config")
-    res=res.fetchall()
-    con.close()
-    return res
+    return fetch_multiple_elements("SELECT * FROM Map_config")
+
 
 def get_map_entity(id):
-    con=sqlite3.connect(DB_PATH)
-    cur=con.cursor()
-    cur.row_factory=row_to_dict
-    res=cur.execute("SELECT * FROM Map_config WHERE entity_id=\""+id+"\"")
-    res=res.fetchone()
-    con.close()
-    return res
+    query = "SELECT * FROM Map_config WHERE entity_id = ?"
+    params = (id,) 
+    return fetch_one_element(query,params)
 
+#endregion
 
+#region General Configuration
 
 def add_configuration_values(values_list:list):
-    con=sqlite3.connect(DB_PATH)
-    cur=con.cursor()
-    cur.executemany("INSERT or REPLACE into Configuration(key,value,unit) VALUES (?,?,?)",values_list)
-    con.commit()
-    success=True if cur.rowcount>0 else False
-    con.close()
-    return success
+    query="INSERT or REPLACE into Configuration(key,value,unit) VALUES (?,?,?)"
+    return add_multiple_elements(query,values_list)
 
 def get_all_configuration_values():
-    con=sqlite3.connect(DB_PATH)
-    cur=con.cursor()
-    cur.row_factory=row_to_dict
-    res=cur.execute("SELECT * FROM Configuration")
-    res=res.fetchall()
-    con.close()
-    return res
+    return fetch_multiple_elements("SELECT * FROM Configuration")
+
 
 def get_configuration_value_by_key(key:str):
-    con=sqlite3.connect(DB_PATH)
-    cur=con.cursor()
-    cur.row_factory=row_to_dict
-    res=cur.execute("SELECT * FROM Configuration WHERE key='"+key+"'")
-    res=res.fetchone()
-    con.close()
-    return res
+    query = "SELECT * FROM Configuration WHERE key= = ?"
+    params = (id,) 
+    return fetch_one_element(query,params)
+
 
 def delete_configuration_value(key:int):
-    element=fetchOneElement("Select * from Configuration WHERE key='"+key+"'")
+    query = "SELECT * FROM Configuration WHERE key= = ?"
+    params = (key,) 
+    element=fetch_one_element(query,params)
     if element:
-        con=sqlite3.connect(DB_PATH)
-        cur=con.cursor()
-        cur.execute("DELETE FROM Configuration WHERE key='"+key+"'")
-        con.commit()
-        success=True if cur.rowcount>0 else False
-        con.close()
+        query = "DELETE FROM Configuration WHERE key=?"
+        success=execute_one_query(query,params)
     else:
         success=True
     return success
 
+#endregion
+
+#region Energy slots planning
 
 def add_energy_slots(slots_list:list):
-    con=sqlite3.connect(DB_PATH)
-    cur=con.cursor()
-    cur.executemany("INSERT or REPLACE into Energy_Timeslot(day,hour,slot) VALUES (?,?,?)",slots_list)
-    con.commit()
-    success=True if cur.rowcount>0 else False
-    con.close()
-    return success
+    query="INSERT or REPLACE into Energy_Timeslot(day,hour,slot) VALUES (?,?,?)"
+    return add_multiple_elements(query,slots_list)
+
 
 def get_all_energy_slots():
     con=sqlite3.connect(DB_PATH)
@@ -302,92 +337,49 @@ def get_all_energy_slots():
 
 
 def get_minimum_energy_slots():
-    con=sqlite3.connect(DB_PATH)
-    cur=con.cursor()
-    cur.row_factory=row_to_dict
-    res=cur.execute(QUERIES["minimum_energy_slots"])
-    res=res.fetchall()
-    con.close()
-    return res
+    return fetch_multiple_elements(QUERIES["minimum_energy_slots"])
+
 
 def get_energy_slot_by_day(day:int):
-    con=sqlite3.connect(DB_PATH)
-    cur=con.cursor()
-    cur.row_factory=row_to_dict
-    res=cur.execute("SELECT * FROM Energy_Timeslot WHERE day="+str(day)+" ORDER by day ASC, hour ASC")
-    res=res.fetchall()
-    con.close()
-    return res
+    query="SELECT * FROM Energy_Timeslot WHERE day= ? ORDER by day ASC, hour ASC"
+    params=(day,)
+    return fetch_multiple_elements(query,params)
+
 
 def get_minimum_cost_slot():
-    return fetchOneElement("SELECT MIN(value) as cost FROM Configuration WHERE key LIKE 'cost_slot_%'")
+    return fetch_one_element("SELECT MIN(value) as cost FROM Configuration WHERE key LIKE 'cost_slot_%'")
 
 def get_energy_slot_by_slot(slot:int):
-    con=sqlite3.connect(DB_PATH)
-    cur=con.cursor()
-    cur.row_factory=row_to_dict
-    res=cur.execute("SELECT * FROM Energy_Timeslot WHERE slot="+str(slot))
-    res=res.fetchall()
-    con.close()
-    return res
+    query = "SELECT * FROM Energy_Timeslot WHERE slot= ?"
+    params = (slot,) 
+    return fetch_multiple_elements(query,params)
 
 def get_all_energy_slots_with_cost():
-    con=sqlite3.connect(DB_PATH)
-    cur=con.cursor()
-    cur.row_factory=row_to_dict
-    res=cur.execute(QUERIES["energy_slots"])
-    res=res.fetchall()
-    con.close()
-    return res
+    return fetch_multiple_elements(QUERIES["energy_slots"])
+
 
 def delete_energy_slots():
-    con=sqlite3.connect(DB_PATH)
-    cur=con.cursor()
-    cur.execute("DELETE FROM Energy_Timeslot")
-    con.commit()
-    success=True if cur.rowcount>0 else False
-    con.close()
-    return success
+    return execute_one_query("DELETE FROM Energy_Timeslot")
 
+#endregion
 
+#region Daily consumption and Total consumption
 def add_daily_consumption_entry(entry_list:list):
-    con=sqlite3.connect(DB_PATH)
-    cur=con.cursor()
-    cur.executemany("INSERT or REPLACE into Daily_Consumption(device_id,energy_consumption,energy_consumption_unit,use_time,use_time_unit,date) VALUES (?,?,?,?,?,?)",entry_list)
-    con.commit()
-    success=True if cur.rowcount>0 else False
-    con.close()
-    return success
+    query="INSERT or REPLACE into Daily_Consumption(device_id,energy_consumption,energy_consumption_unit,use_time,use_time_unit,date) VALUES (?,?,?,?,?,?)"
+    return add_multiple_elements(query,entry_list)
 
 
 def get_all_daily_consumption_entries():
-    con=sqlite3.connect(DB_PATH)
-    cur=con.cursor()
-    cur.row_factory=row_to_dict
-    res=cur.execute("SELECT * FROM Daily_Consumption")
-    res=res.fetchall()
-    con.close()
-    return res
+    return fetch_multiple_elements("SELECT * FROM Daily_Consumption")
 
 
 def add_hourly_consumption_entry(entry_list:list):
-    con=sqlite3.connect(DB_PATH)
-    cur=con.cursor()
-    cur.executemany("INSERT or REPLACE into Hourly_Consumption(device_id,energy_consumption,energy_consumption_unit,start,end) VALUES (?,?,?,?,?)",entry_list)
-    con.commit()
-    success=True if cur.rowcount>0 else False
-    con.close()
-    return success
+    query="INSERT or REPLACE into Hourly_Consumption(device_id,energy_consumption,energy_consumption_unit,start,end) VALUES (?,?,?,?,?)"
+    return add_multiple_elements(query,entry_list)
 
 
 def get_all_hourly_consumption_entries():
-    con=sqlite3.connect(DB_PATH)
-    cur=con.cursor()
-    cur.row_factory=row_to_dict
-    res=cur.execute("SELECT * FROM Hourly_Consumption")
-    res=res.fetchall()
-    con.close()
-    return res
+    return fetch_multiple_elements("SELECT * FROM Hourly_Consumption")
 
 def get_total_consumption(from_timestamp:int,to_timestamp:int,group:str="hourly",device_id:str=""):
     con=sqlite3.connect(DB_PATH)
@@ -411,33 +403,22 @@ def get_total_consumption(from_timestamp:int,to_timestamp:int,group:str="hourly"
     con.close()
     return res
 
+#endregion
+
+#region Appliances usage
 def add_appliances_usage_entry(entry_list:list):
-    con=sqlite3.connect(DB_PATH)
-    cur=con.cursor()
-    cur.executemany("""INSERT or REPLACE into Appliances_Usage
+    query="""INSERT or REPLACE into Appliances_Usage
                     (device_id,state,average_duration,duration_unit,duration_samples,average_power,average_power_unit,power_samples,last_timestamp) 
-                    VALUES (?,?,?,?,?,?,?,?,?)""",entry_list)
-    con.commit()
-    success=True if cur.rowcount>0 else False
-    con.close()
-    return success
+                    VALUES (?,?,?,?,?,?,?,?,?)"""
+    return add_multiple_elements(query,entry_list)
 
 def get_all_appliances_usage_entries():
-    con=sqlite3.connect(DB_PATH)
-    cur=con.cursor()
-    cur.row_factory=row_to_dict
-    res=cur.execute("SELECT * FROM Appliances_Usage")
-    res=res.fetchall()
-    con.close()
-    return res
+    return fetch_multiple_elements("SELECT * FROM Appliances_Usage")
+
 
 def get_appliance_usage_entry(device_id:str, state:str):
-    con=sqlite3.connect(DB_PATH)
-    cur=con.cursor()
-    cur.row_factory=row_to_dict
-    res=cur.execute('select average_power,average_power_unit,average_duration,duration_unit from Appliances_Usage where device_id="'+device_id+'" and state="'+state+'"')
-    res=res.fetchone()
-    con.close()
-    return res
+    query='select average_power,average_power_unit,average_duration,duration_unit from Appliances_Usage where device_id=? and state=?'
+    params=(device_id,state)
+    return fetch_one_element(query,params)
 
 

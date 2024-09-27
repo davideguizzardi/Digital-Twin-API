@@ -6,7 +6,7 @@ from homeassistant_functions import getDevicesFast
 from database_functions import (
     add_daily_consumption_entry,add_hourly_consumption_entry,
     get_all_appliances_usage_entries,add_appliances_usage_entry,
-    fetchOneElement)
+    fetch_one_element)
 from routers import computeHourlyTotalConsumption,computeTotalConsumption,extractSingleDeviceHistory
 from dateutil import tz,parser
 from collections import defaultdict
@@ -245,8 +245,8 @@ def main():
     logging.basicConfig(format='%(levelname)s-%(asctime)s: %(message)s',datefmt='%d/%m/%Y %H:%M:%S',filename='./logs/periodic_functions.log', encoding='utf-8', level=logging.INFO)
     logger.info("Running the script to get hourly appliances consumption and usage time...")
     initializeToken()
-    last_timestamp_usage=fetchOneElement("select max(last_timestamp) from Appliances_Usage")
-    last_timestamp_consumption=fetchOneElement("select max(start) from Hourly_Consumption")
+    last_timestamp_usage=fetch_one_element("select max(last_timestamp) from Appliances_Usage")
+    last_timestamp_consumption=fetch_one_element("select max(start) from Hourly_Consumption")
     last_timestamp_consumption=last_timestamp_consumption["max(start)"]
     last_timestamp_usage=last_timestamp_usage["max(last_timestamp)"]
 
