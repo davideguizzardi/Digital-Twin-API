@@ -34,8 +34,8 @@ def devicesExtractionProcedure(start_timestamp:datetime.datetime=datetime.date.t
         history=extractSingleDeviceHistory(id,start_timestamp,end_timestamp)
         if len(history)==0: #if the device remains not available for long HA will not produce its history 
             continue
-        starting_date=parser.parse(history[0]["date"],dayfirst=True).astimezone(tz.tzlocal())
-        ending_date=parser.parse(history[-1]["date"],dayfirst=True).astimezone(tz.tzlocal())
+        starting_date=parser.parse(history[0]["date"],dayfirst=False).astimezone(tz.tzlocal())
+        ending_date=parser.parse(history[-1]["date"],dayfirst=False).astimezone(tz.tzlocal())
         energy_unit = history[0]["energy_consumption_unit"]
 
         temp_date=starting_date

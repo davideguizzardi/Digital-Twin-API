@@ -199,22 +199,31 @@ def extractSingleDeviceHistory(device_id, start_timestamp,end_timestamp):
 
 
     response=getEntitiesHistory(entities_list,start_timestamp,end_timestamp)
+
+    states_list=response.get(state_entity_id)
+    powers_list=response.get(power_entity_id)
     temp=[]
-    for i in range(len(response[device_data["state_entity_id"]]) if response else 0):
+    #in some situations HA will provide power history but not state one. In this case we use data provided by power and set the state to unknown
+    elements_list=states_list if states_list else (powers_list if powers_list else [])
+    for i in range(len(elements_list)):
         if power_entity_id!="":
-            power=float(response[power_entity_id][i]["state"]) if response[power_entity_id][i]["state"]!="unavailable" else 0
-            power_unit=response[power_entity_id][i]["unit_of_measurement"]
-            energy_consumption=response[power_entity_id][i]["energy_consumption"]
-            energy_consumption_unit=response[power_entity_id][i]["unit_of_measurement"]+"h"
+            try:
+                power=float(powers_list[i]["state"]) if powers_list[i]["state"]!="unavailable" else 0
+            except ValueError:
+                power=0
+            
+            power_unit=powers_list[i]["unit_of_measurement"]
+            energy_consumption=powers_list[i]["energy_consumption"]
+            energy_consumption_unit=powers_list[i]["unit_of_measurement"]+"h"
         else:
-            power=response[state_entity_id][i]["power"]
+            power=states_list[i]["power"] if states_list else 0
             power_unit="W"
-            energy_consumption=response[state_entity_id][i]["energy_consumption"]
+            energy_consumption=states_list[i]["energy_consumption"] if states_list else 0
             energy_consumption_unit="Wh"
 
         temp.append({
-            "date": response[state_entity_id][i]["date"],
-            "state": response[state_entity_id][i]["state"], #preso dall'entita stato 
+            "date": elements_list[i]["date"],
+            "state": states_list[i]["state"] if states_list else "unavailable", #in some situations getHistory produce the history of power element but not state
             "power": power,
             "power_unit":power_unit,
             "energy_consumption": energy_consumption,
