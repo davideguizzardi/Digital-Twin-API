@@ -213,15 +213,29 @@ def add_multiple_elements(query, data):
 #region User preferences and data    
 
 def add_user_preferences(preferences_list:list):
-    query="INSERT or REPLACE into User_Preferences(user_id,preferences,data_collection,data_disclosure) VALUES (?,?,?,?)"
+    query="INSERT or REPLACE into User_Preferences(user_id,preferences) VALUES (?,?)"
     return add_multiple_elements(query,preferences_list)
+
+def add_user_privacy_settings(settings_list:list):
+    query="INSERT or REPLACE into User_Preferences(user_id,data_collection,data_disclosure) VALUES (?,?,?)"
+    return add_multiple_elements(query,settings_list)
+
 
 
 def get_all_user_preferences():
-    return fetch_multiple_elements("SELECT * FROM User_Preferences")
+    return fetch_multiple_elements("SELECT user_id,preferences FROM User_Preferences")
+
+
+def get_all_user_privacy_settings():
+    return fetch_multiple_elements("SELECT user_id,data_collection,data_disclosure FROM User_Preferences")
 
 def get_user_preferences_by_user(user_id:str):
-    query = "SELECT * FROM User_Preferences WHERE user_id = ?"
+    query = "SELECT user_id,preferences FROM User_Preferences WHERE user_id = ?"
+    params = (user_id,) 
+    return fetch_one_element(query,params)
+
+def get_user_privacy_settings_by_user(user_id:str):
+    query = "SELECT user_id,data_collection,data_disclosure FROM User_Preferences WHERE user_id = ?"
     params = (user_id,) 
     return fetch_one_element(query,params)
 
@@ -229,10 +243,6 @@ def delete_user_preferences_by_user(user_id:str):
     query = "DELETE FROM User_Preferences WHERE user_id = ?"
     params = (user_id,)
     return execute_one_query(query,params)
-
-def add_user_consensus(consensus_list:list):
-    query="INSERT or REPLACE into User_Consensus(user_id,data_collection,information_disclosure) VALUES (?,?,?)"
-    return add_multiple_elements(query,consensus_list)
 
 #endregion
 

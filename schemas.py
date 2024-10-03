@@ -28,11 +28,17 @@ class Map_Entity_List(BaseModel):
 class User_Preference(BaseModel):
     user_id:str
     preferences:list[str]
-    data_collection:bool
-    data_disclosure:bool
 
 class User_Preference_List(BaseModel):
     data: list[User_Preference]
+
+class User_Privacy(BaseModel):
+    user_id:str
+    data_collection:bool
+    data_disclosure:bool
+
+class User_Privacy_List(BaseModel):
+    data: list[User_Privacy]
 
 class User_Log(BaseModel):
      user:str
@@ -58,6 +64,8 @@ class Configuration_Value_List(BaseModel):
 
 class Energy_Plan_Calendar(BaseModel):
     data:list[list[int]]
+
+
 
 triggers={
     "device_trigger":{
