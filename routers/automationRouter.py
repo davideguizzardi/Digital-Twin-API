@@ -2,7 +2,7 @@ from fastapi import APIRouter,HTTPException
 
 from homeassistant_functions import (
     getEntity,
-    getAutomations,
+    getAutomations,createAutomationDirect,
     getDevicesFast,
     getDeviceId,
     getDeviceInfo)
@@ -18,8 +18,23 @@ from schemas import (
 import datetime,json,logging
 from dateutil import parser,tz
 from collections import defaultdict
+from enum import Enum
+
+class Conflict(Enum):
+    def __new__(cls, *args, **kwds):
+            value = len(cls.__members__) + 1
+            obj = object.__new__(cls)
+            obj._value_ = value
+            return obj
+    def __init__(self, a, b):
+            self.type = a
+            self.description = b
+
+    EXCESSIVE_ENERGY="Excessive energy consumption","The power required by the system will exceed the maximum value of {treshold} W from {start} to {end}"
+    NOT_FEASIBLE_AUTOMATION="Not feasible automation","The automation's required power ({automation_power} W) exceeds the maximum power available ({treshold} W)"
 
 DAYS=["mon","tue","wed","thu","fri","sat","sun"]
+POWER_TRESHOLD_DEFAULT=150 #TODO:change this value
 
 logger = logging.getLogger('uvicorn.error')
 
@@ -43,7 +58,7 @@ def getAutomationDetails(automation,state_map={}):
         with open("./data/devices_new_state_map.json") as file: #TODO:extract path
             state_map=json.load(file)
         
-    for device_id,service in temp:
+    for device_id,service,action_data in temp:
 
         state=state_map[service]
         device_info=getDeviceInfo(device_id)
@@ -52,13 +67,13 @@ def getAutomationDetails(automation,state_map={}):
         if state not in ["on|off","same"]:#TODO:manage also this cases
             usage_data=get_appliance_usage_entry(device_id,state)
             usage_data.update({
-                "device_id":device_id,"state":state,"service":service,"device_name":device_name
+                "device_id":device_id,"state":state,"service":service,"device_name":device_name,"data":action_data
             })
             automation_power_drawn+=usage_data["average_power"]
             automation_energy_consumption+=usage_data["average_power"]*(usage_data["average_duration"]/60) #Remember that use time is express in minutes
             action_list.append(usage_data)
         else:
-            action_list.append({"device_id":device_id,"state":state,"service":service,"device_name":device_name})
+            action_list.append({"device_id":device_id,"state":state,"service":service,"device_name":device_name,"data":action_data})
 
     return {"id":automation["id"],
         "description":automation["description"],
@@ -74,9 +89,10 @@ def getAutomationDetails(automation,state_map={}):
 
 def extract_action_operations(action):
     pairs=[]
+    action_data=action.get("data",None)
     if action.get("device_id")!=None:
         #if contains "device_id" then it is an action on device, the "type" field represent the service
-        pairs.append((action["device_id"],action["type"]))
+        pairs.append((action["device_id"],action["type"],action_data))
 
     if action.get("service")!=None:
         #if contains "service" then is a service type of action, target->entity_id/device_id is the recipient 
@@ -89,17 +105,17 @@ def extract_action_operations(action):
             if entity_ids:
                 #some cases the target is a list in others is a single value
                 if isinstance(entity_ids, list):
-                    pairs.extend([(getDeviceId(eid), service) for eid in entity_ids])
+                    pairs.extend([(getDeviceId(eid), service,action_data) for eid in entity_ids])
                 else:
-                    pairs.append((getDeviceId(entity_ids), service))
+                    pairs.append((getDeviceId(entity_ids), service,action_data))
 
             devices_ids=action["target"].get("device_id")
             if devices_ids:
                     #some cases the target is a list in others is a single value
                 if isinstance(devices_ids, list):
-                    pairs.extend([(device, service) for device in devices_ids])
+                    pairs.extend([(device, service,action_data) for device in devices_ids])
                 else:
-                    pairs.append((devices_ids, service))
+                    pairs.append((devices_ids, service,action_data))
     return pairs
 
 def getAutomationTime(trigger):
@@ -194,38 +210,50 @@ def findBetterActivationTime(automation,device_list,saved_automations):
     less_cost_index=get_minimum_energy_slots() #for each day
 
     suggestions=[]
-
+    activation_hour=float(automation["time"].split(":")[0])
     for day in automation["days"] if len(automation["days"])>0 else DAYS:
         if cost[day]<=ideal_cost:
             continue
 
         index_list=[x for x in less_cost_index if x["day_name"]==day]
+        index_list=sorted(index_list,key=lambda x: abs(x["hour"]-activation_hour))
 
         new_activation_found=False
         index=0
         while (not new_activation_found) or index>=len(index_list):
-            new_activation=f"{index_list[index]["hour"]:02d}:00:00"
-            temp_automation["time"]=new_activation
-            temp_automation["days"]=[day]#used to check conflicts only on the current day TODO: change this
+            new_activation_hour=index_list[index]["hour"]
+            #i try to get a value as close as possible to the activation hour
+            #if im over i will check "clockwise"
+            #if im before i will check "counterclockwise"
+            if int(new_activation_hour)>activation_hour:
+                minute_list=["00","10","20","30","40","50"]
+            else:
+                minute_list=["50","40","30","20","10","00"]
+            for minute in minute_list:
+                if new_activation_found: break
+                new_activation=f"{new_activation_hour:02d}:{minute}:00"
+                temp_automation["time"]=new_activation
+                temp_automation["days"]=[day]#used to check conflicts only on the current day TODO: change this
 
-            #Checking for conflicts with the new activation time
-            conflicts=getConflicts(
-                device_list=device_list,
-                automations_list=saved_automations+[temp_automation],
-                return_only_conflicts=True)
-            
-            if len(conflicts)<=0:
-                new_cost=getAutomationCost(temp_automation,day_list=[day])
+                #Checking for conflicts with the new activation time
+                conflicts=getConflicts(
+                    device_list=device_list,
+                    automations_list=saved_automations+[temp_automation],
+                    return_only_conflicts=True)
                 
-                if new_cost[day]<cost[day]:
-                    new_activation_found=True
-                    suggestions.append(
-                        {
-                            "day":day,
-                            "new_activation_time":new_activation,
-                            "saved_money": cost[day]-new_cost[day]
-                        }
-                    )
+                if len(conflicts)<=0:
+                    new_cost=getAutomationCost(temp_automation,day_list=[day])
+                    
+                    #if new_cost[day]<cost[day]:
+                    if new_cost[day]<=ideal_cost:
+                        new_activation_found=True
+                        suggestions.append(
+                            {
+                                "day":day,
+                                "new_activation_time":new_activation,
+                                "saved_money": cost[day]-new_cost[day]
+                            }
+                        )
             
             index+=1
 
@@ -273,10 +301,10 @@ def getConflicts(device_list,automations_list,return_only_conflicts=True):
                 cumulative_power_matrix[day][i]+=dev["power_list"][i]
 
     #Conflicts identification
-    conflicts_list = defaultdict(lambda: {"type": "Excessive energy demand", "days": []})
+    conflicts_list = defaultdict(lambda: {"type": Conflict.EXCESSIVE_ENERGY.type, "days": []})
 
     threshold = get_configuration_value_by_key("power_threshold")  
-    threshold=float(threshold["value"]) if threshold else 150  #TODO: remember to remove this default
+    threshold=float(threshold["value"]) if threshold else POWER_TRESHOLD_DEFAULT
     
     for day in DAYS:
         conflict_is_occurring=False
@@ -288,10 +316,16 @@ def getConflicts(device_list,automations_list,return_only_conflicts=True):
                 end=i
             else:
                 if conflict_is_occurring: #there was a conflict since last minute
-                    key=f"{start//60:02}:{(start%60):02}-{end//60:02}:{(end%60):02}"
+                    start_conflict=f"{start // 60:02}:{start % 60:02}"
+                    end_conflict=f"{end // 60:02}:{end % 60:02}"
+                    key=f"{start_conflict}-{end_conflict}"
                     conflicts_list[key]["days"].append(day)
-                    conflicts_list[key]["start"] = f"{start // 60:02}:{start % 60:02}"
-                    conflicts_list[key]["end"] = f"{end // 60:02}:{end % 60:02}"
+                    conflicts_list[key]["start"] = start_conflict
+                    conflicts_list[key]["end"] = end_conflict
+                    conflicts_list[key]["description"]=Conflict.EXCESSIVE_ENERGY.description.format(
+                        treshold=threshold,
+                        start=start_conflict,
+                        end=end_conflict)
                     conflict_is_occurring=False
 
     conflicts_list=list(conflicts_list.values())
@@ -304,6 +338,26 @@ def getConflicts(device_list,automations_list,return_only_conflicts=True):
         "cumulative_power_matrix":cumulative_power_matrix,
         "conflicts":conflicts_list
         }
+    
+def getFeasibilityConflicts(automation):
+    '''
+    Functions that checks if the given automation could be executed alone.
+    The control evaluates the instantaneous power drawn by the automations and compare it to the maximum threshold possible. 
+    If such treshold is exceeded, a corresponding "conflict" is produced
+    '''
+    threshold = get_configuration_value_by_key("power_threshold")  
+    threshold=float(threshold["value"]) if threshold else POWER_TRESHOLD_DEFAULT
+
+    automation_power=automation.get("power_drawn",0)
+    if  automation_power>= threshold:
+        return {
+                "type":Conflict.NOT_FEASIBLE_AUTOMATION.type,
+                "description":Conflict.NOT_FEASIBLE_AUTOMATION.description.format(
+                    treshold=threshold,automation_power=automation_power),
+                    "days":DAYS #FIXME: this is a patchwork to show something in the web app, remove in prod           
+                }
+    else:
+        return None
 
 
 def getAutomationRouter():
@@ -321,7 +375,10 @@ def getAutomationRouter():
 
             ret = [getAutomationDetails(automation, state_map) for automation in automations_list]
             return ret
-            
+        
+    @automation_router.post("")
+    def Simulate_Automation_Addition(automation_in:Automation):
+        return createAutomationDirect(automation_in.automation)
     
     @automation_router.get("/matrix")
     def Get_State_Matrix():
@@ -357,6 +414,11 @@ def getAutomationRouter():
 
         #Get automations saved and details of the one we want to add
         automation=getAutomationDetails(automation_in.automation)
+
+        #TODO: when writing the final version, do the feasibility check first
+        # conflicts=checkAutomationFeasibility(automation)
+        # if not conflicts:
+
         saved_automations = Get_Automations()
         new_automation_list=saved_automations+[automation]
 
@@ -366,10 +428,17 @@ def getAutomationRouter():
         #Getting conflicts
         simulation=getConflicts(device_list=dev_list,automations_list=new_automation_list,return_only_conflicts=False)
 
+        #TODO:remove this part in the final version
+        feasibilty_conflicts=getFeasibilityConflicts(automation)
+        if feasibilty_conflicts:
+            simulation["conflicts"]=[feasibilty_conflicts]
+
         #Suggestions identification if no conflict occurs
         suggestions=[]
         if len(simulation["conflicts"])<=0:
             suggestions=findBetterActivationTime(automation,dev_list,saved_automations)
+        
+
 
 
         

@@ -404,6 +404,12 @@ def createAutomation(name:str,description:str,triggers:list,conditions:list,acti
     response = post(base_url+"/config/automation/config/"+str(id), headers=headers, json=data)
     return (id,response.text)
 
+def createAutomationDirect(automation):
+    automation["id"]=str(automation["id"])
+    body=automation
+    response = post(base_url+"/config/automation/config/"+str(automation["id"]), headers=headers, json=body)
+    return (id,response.text)
+
 
 def getDeviceId(entity_id:str):
     '''Dato l'id di un'entità ritorna l'id del dispositivo a cui tale entità è associata'''
@@ -456,7 +462,7 @@ def getListOfSupported(supported_features:int)->list[int]:
 
 def main():
     initializeToken()
-    obj=getSingleDeviceFast("81faa423066ee532f37f15f1897a699d")
+    obj=getHistory("switch.shellyplusplugit_80646fc994c8_switch_0",datetime.datetime.now()-datetime.timedelta(days=13),datetime.datetime.now())
     print("Done")
 
 if __name__ == "__main__":
