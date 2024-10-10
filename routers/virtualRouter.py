@@ -22,6 +22,12 @@ def getVirtualRouter():
         temp=[x for x in virtual_context["entities_context"] if x["entity_id"]==entity_id]
         return temp[0] if len(temp)>0 else {}
     
+    @virtual_router.get("/automation")
+    def Get_Automations_Context():
+        file=open("./data/virtual_context.json")
+        virtual_context=json.load(file)
+        return virtual_context["automation_context"]
+    
     @virtual_router.get("/home")
     def Get_Home_context():
         file=open("./data/virtual_context.json")

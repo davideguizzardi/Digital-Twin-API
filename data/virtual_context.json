@@ -4059,5 +4059,391 @@
 		  "friendly_name": "Accendi Pc al mattino",
 		  "entity_class": "automation"
 		}
+	  ],
+	  "automation_context":[
+		{
+		  "id": "1724873221363",
+		  "entity_id": "automation.accendi_spegni_luce",
+		  "state": "off",
+		  "description": "",
+		  "trigger": [
+			{
+			  "platform": "device",
+			  "device_id": "893d6954dd2779cf1e402d47cf5be7e7",
+			  "domain": "bthome",
+			  "type": "button",
+			  "subtype": "press"
+			}
+		  ],
+		  "condition": [],
+		  "name": "Accendi/Spegni luce",
+		  "time": "",
+		  "days": [],
+		  "action": [
+			{
+			  "device_id": "63b600888041f6723478f767b8cbb4d1",
+			  "state": "on|off",
+			  "service": "toggle",
+			  "domain": "light",
+			  "device_name": "Luce shelly test",
+			  "data": {}
+			}
+		  ],
+		  "power_drawn": 0,
+		  "energy_consumption": 0,
+		  "suggestions": []
+		},
+		{
+		  "id": "1725266058147",
+		  "entity_id": "automation.automazione_prova_temporale",
+		  "state": "off",
+		  "description": "",
+		  "trigger": [
+			{
+			  "platform": "time",
+			  "at": "16:00:00"
+			}
+		  ],
+		  "condition": [
+			{
+			  "condition": "time",
+			  "weekday": [
+				"mon",
+				"tue",
+				"sat"
+			  ]
+			}
+		  ],
+		  "name": "automazione prova temporale",
+		  "time": "16:00:00",
+		  "days": [
+			"mon",
+			"tue",
+			"sat"
+		  ],
+		  "action": [
+			{
+			  "average_power": 83.77343174790172,
+			  "average_power_unit": "W",
+			  "average_duration": 119.2061403508772,
+			  "duration_unit": "min",
+			  "device_id": "81faa423066ee532f37f15f1897a699d",
+			  "state": "on",
+			  "service": "turn_on",
+			  "domain": "switch",
+			  "device_name": "PC Fisso",
+			  "data": null
+			},
+			{
+			  "average_power": 8.046116504854366,
+			  "average_power_unit": "W",
+			  "average_duration": 12.875,
+			  "duration_unit": "min",
+			  "device_id": "63b600888041f6723478f767b8cbb4d1",
+			  "state": "on",
+			  "service": "turn_on",
+			  "domain": "light",
+			  "device_name": "Luce shelly test",
+			  "data": {
+				"rgb_color": [
+				  243,
+				  32,
+				  32
+				]
+			  }
+			},
+			{
+			  "average_power": 5,
+			  "average_power_unit": "W",
+			  "average_duration": 22.50815850815851,
+			  "duration_unit": "min",
+			  "device_id": "8cd1e3328e88ccd5ef0f03e2eac04a59",
+			  "state": "playing",
+			  "service": "play_media",
+			  "domain": "media_player",
+			  "device_name": "Test",
+			  "data": {
+				"media_content_id": "media-source://tts/tts.google_en_com?message=Questa+%C3%A8+una+prova%21&language=it",
+				"media_content_type": "provider"
+			  }
+			}
+		  ],
+		  "power_drawn": 96.81954825275609,
+		  "energy_consumption": 170.04070008592998,
+		  "suggestions": [
+			{
+			  "day": "mon",
+			  "new_activation_time": "21:00:00",
+			  "saved_money": 0.005766168673099786
+			},
+			{
+			  "day": "tue",
+			  "new_activation_time": "21:00:00",
+			  "saved_money": 0.005766168673099786
+			},
+			{
+			  "day": "sat",
+			  "new_activation_time": "19:00:00",
+			  "saved_money": 0.0039006435141557792
+			}
+		  ]
+		},
+		{
+		  "id": "1725286989727",
+		  "entity_id": "automation.automazione_media_player",
+		  "state": "off",
+		  "description": "",
+		  "trigger": [
+			{
+			  "platform": "time_pattern",
+			  "hours": "8"
+			}
+		  ],
+		  "condition": [],
+		  "name": "automazione media player",
+		  "time": "",
+		  "days": [],
+		  "action": [
+			{
+			  "average_power": 5,
+			  "average_power_unit": "W",
+			  "average_duration": 22.50815850815851,
+			  "duration_unit": "min",
+			  "device_id": "8cd1e3328e88ccd5ef0f03e2eac04a59",
+			  "state": "playing",
+			  "service": "media_play",
+			  "domain": "media_player",
+			  "device_name": "Test",
+			  "data": {}
+			}
+		  ],
+		  "power_drawn": 5,
+		  "energy_consumption": 1.8756798756798756,
+		  "suggestions": []
+		},
+		{
+		  "id": "1725443005351",
+		  "entity_id": "automation.spegnimento_pc_inattivo",
+		  "state": "off",
+		  "description": "Stacca la spina del pc se il valore di potenza è minore di 4 W per 30 minuti",
+		  "trigger": [
+			{
+			  "type": "power",
+			  "platform": "device",
+			  "device_id": "81faa423066ee532f37f15f1897a699d",
+			  "entity_id": "5f50acf3de22e25c3e2ec6a6e42cbfac",
+			  "domain": "sensor",
+			  "below": 5,
+			  "for": {
+				"hours": 0,
+				"minutes": 30,
+				"seconds": 0
+			  }
+			}
+		  ],
+		  "condition": [],
+		  "name": "Spegnimento PC inattivo",
+		  "time": "",
+		  "days": [],
+		  "action": [
+			{
+			  "average_power": 0.33383905785395424,
+			  "average_power_unit": "W",
+			  "average_duration": 176.5206611570248,
+			  "duration_unit": "min",
+			  "device_id": "81faa423066ee532f37f15f1897a699d",
+			  "state": "off",
+			  "service": "turn_off",
+			  "domain": "switch",
+			  "device_name": "PC Fisso",
+			  "data": {}
+			}
+		  ],
+		  "power_drawn": 0.33383905785395424,
+		  "energy_consumption": 0.9821581868736375,
+		  "suggestions": []
+		},
+		{
+		  "id": "1725897329881",
+		  "entity_id": "automation.accendi_pc_al_mattino",
+		  "state": "off",
+		  "description": "",
+		  "trigger": [
+			{
+			  "platform": "time",
+			  "at": "04:00:00"
+			}
+		  ],
+		  "condition": [],
+		  "name": "Accendi Pc al mattino",
+		  "time": "04:00:00",
+		  "days": [],
+		  "action": [
+			{
+			  "average_power": 83.77343174790172,
+			  "average_power_unit": "W",
+			  "average_duration": 119.2061403508772,
+			  "duration_unit": "min",
+			  "device_id": "81faa423066ee532f37f15f1897a699d",
+			  "state": "on",
+			  "service": "turn_on",
+			  "domain": "switch",
+			  "device_name": "PC Fisso",
+			  "data": {}
+			}
+		  ],
+		  "power_drawn": 83.77343174790172,
+		  "energy_consumption": 166.4384577102501,
+		  "suggestions": []
+		},
+		{
+		  "id": "1727245127439",
+		  "entity_id": "automation.automazione_al_tramonto",
+		  "state": "off",
+		  "description": "",
+		  "trigger": [
+			{
+			  "platform": "sun",
+			  "event": "sunset",
+			  "offset": "3600"
+			}
+		  ],
+		  "condition": [],
+		  "name": "Automazione al tramonto",
+		  "time": "19:42:35",
+		  "days": [],
+		  "action": [
+			{
+			  "average_power": 9,
+			  "average_power_unit": "W",
+			  "average_duration": 1,
+			  "duration_unit": "min",
+			  "device_id": "ecea8689e033555606f0d9db9bb7eb57",
+			  "state": "on",
+			  "service": "turn_on",
+			  "domain": "light",
+			  "device_name": "Luce Camera Davide",
+			  "data": {}
+			}
+		  ],
+		  "power_drawn": 9,
+		  "energy_consumption": 0.15,
+		  "suggestions": [
+			{
+			  "day": "mon",
+			  "new_activation_time": "21:00:00",
+			  "saved_money": 0.0000034500000000000025
+			},
+			{
+			  "day": "tue",
+			  "new_activation_time": "21:00:00",
+			  "saved_money": 0.0000034500000000000025
+			},
+			{
+			  "day": "wed",
+			  "new_activation_time": "21:00:00",
+			  "saved_money": 0.0000034500000000000025
+			},
+			{
+			  "day": "thu",
+			  "new_activation_time": "21:00:00",
+			  "saved_money": 0.0000034500000000000025
+			},
+			{
+			  "day": "fri",
+			  "new_activation_time": "21:00:00",
+			  "saved_money": 0.0000034500000000000025
+			}
+		  ]
+		},
+		{
+		  "id": "1727252339602",
+		  "entity_id": "automation.automazione_ricorrenza_temporale",
+		  "state": "off",
+		  "description": "",
+		  "trigger": [
+			{
+			  "platform": "time_pattern",
+			  "hours": "1",
+			  "minutes": "1",
+			  "seconds": "1"
+			}
+		  ],
+		  "condition": [],
+		  "name": "Automazione ricorrenza temporale",
+		  "time": "",
+		  "days": [],
+		  "action": [
+			{
+			  "average_power": 5,
+			  "average_power_unit": "W",
+			  "average_duration": 22.50815850815851,
+			  "duration_unit": "min",
+			  "device_id": "8cd1e3328e88ccd5ef0f03e2eac04a59",
+			  "state": "playing",
+			  "service": "media_play",
+			  "domain": "media_player",
+			  "device_name": "Test",
+			  "data": {}
+			}
+		  ],
+		  "power_drawn": 5,
+		  "energy_consumption": 1.8756798756798756,
+		  "suggestions": []
+		},
+		{
+		  "id": "1727772624764",
+		  "entity_id": "automation.automazione_con_parametri",
+		  "state": "off",
+		  "description": "",
+		  "trigger": [
+			{
+			  "type": "temperature",
+			  "platform": "device",
+			  "device_id": "387afc73eefb47101285e661be316f81",
+			  "entity_id": "2b9e6b04bce4fd839c48c8d799e1697e",
+			  "domain": "sensor",
+			  "above": 50,
+			  "for": {
+				"hours": 0,
+				"minutes": 20,
+				"seconds": 0
+			  }
+			}
+		  ],
+		  "condition": [],
+		  "name": "Automazione con parametri",
+		  "time": "",
+		  "days": [],
+		  "action": [
+			{
+			  "average_power": 9,
+			  "average_power_unit": "W",
+			  "average_duration": 1,
+			  "duration_unit": "min",
+			  "device_id": "ecea8689e033555606f0d9db9bb7eb57",
+			  "state": "on",
+			  "service": "turn_on",
+			  "domain": "light",
+			  "device_name": "Luce Camera Davide",
+			  "data": {
+				"brightness_pct": 23
+			  }
+			},
+			{
+			  "device_id": "8cd1e3328e88ccd5ef0f03e2eac04a59",
+			  "state": "same",
+			  "service": "volume_set",
+			  "domain": "media_player",
+			  "device_name": "Test",
+			  "data": {
+				"volume_level": 0.3
+			  }
+			}
+		  ],
+		  "power_drawn": 9,
+		  "energy_consumption": 0.15,
+		  "suggestions": []
+		}
 	  ]
 }
