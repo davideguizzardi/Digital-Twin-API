@@ -43,7 +43,7 @@ def create_api():
 
     for router in routers:
         api.include_router(router)
-
+        
     api.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -54,10 +54,13 @@ def create_api():
     
     return api
 
+
+
+
 def main():
     initializeToken()
     api = create_api()
-    uvicorn.run(api, host="0.0.0.0",log_level="debug")
+    uvicorn.run(api, host="0.0.0.0",port=8000,log_level="debug")
 
 if __name__ == "__main__":
     main()

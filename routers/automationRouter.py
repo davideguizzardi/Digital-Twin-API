@@ -58,7 +58,7 @@ def getAutomationDetails(automation,state_map={}):
         with open("./data/devices_new_state_map.json") as file: #TODO:extract path
             state_map=json.load(file)
         
-    for device_id,service,action_data in temp:
+    for device_id,service,domain,action_data in temp:
 
         state=state_map[service]
         device_info=getDeviceInfo(device_id)
@@ -67,15 +67,18 @@ def getAutomationDetails(automation,state_map={}):
         if state not in ["on|off","same"]:#TODO:manage also this cases
             usage_data=get_appliance_usage_entry(device_id,state)
             usage_data.update({
-                "device_id":device_id,"state":state,"service":service,"device_name":device_name,"data":action_data
+                "device_id":device_id,"state":state,"service":service,"domain":domain,"device_name":device_name,"data":action_data
             })
             automation_power_drawn+=usage_data["average_power"]
             automation_energy_consumption+=usage_data["average_power"]*(usage_data["average_duration"]/60) #Remember that use time is express in minutes
             action_list.append(usage_data)
         else:
-            action_list.append({"device_id":device_id,"state":state,"service":service,"device_name":device_name,"data":action_data})
+            action_list.append({"device_id":device_id,"state":state,"service":service,"domain":domain,"device_name":device_name,"data":action_data})
 
-    return {"id":automation["id"],
+    return {
+        "id":automation["id"],
+        "entity_id":automation["entity_id"] if automation.get("entity_id") else "",
+        "state":automation["state"]if automation.get("state") else "",
         "description":automation["description"],
         "trigger":automation["trigger"],
         "condition":automation["condition"],
@@ -92,12 +95,13 @@ def extract_action_operations(action):
     action_data=action.get("data",None)
     if action.get("device_id")!=None:
         #if contains "device_id" then it is an action on device, the "type" field represent the service
-        pairs.append((action["device_id"],action["type"],action_data))
+        pairs.append((action["device_id"],action["type"],action["domain"],action_data))
 
     if action.get("service")!=None:
         #if contains "service" then is a service type of action, target->entity_id/device_id is the recipient 
         # while "service" is the service
         service=action["service"].split(".")[1]
+        domain=action["service"].split(".")[0]
         #some actions (like notify) don't have target in that case we assume no action
         target=action.get("target")
         if target: 
@@ -105,17 +109,17 @@ def extract_action_operations(action):
             if entity_ids:
                 #some cases the target is a list in others is a single value
                 if isinstance(entity_ids, list):
-                    pairs.extend([(getDeviceId(eid), service,action_data) for eid in entity_ids])
+                    pairs.extend([(getDeviceId(eid), service,domain,action_data) for eid in entity_ids])
                 else:
-                    pairs.append((getDeviceId(entity_ids), service,action_data))
+                    pairs.append((getDeviceId(entity_ids), service,domain,action_data))
 
             devices_ids=action["target"].get("device_id")
             if devices_ids:
                     #some cases the target is a list in others is a single value
                 if isinstance(devices_ids, list):
-                    pairs.extend([(device, service,action_data) for device in devices_ids])
+                    pairs.extend([(device, service,domain,action_data) for device in devices_ids])
                 else:
-                    pairs.append((devices_ids, service,action_data))
+                    pairs.append((devices_ids, service,domain,action_data))
     return pairs
 
 def getAutomationTime(trigger):
@@ -210,52 +214,54 @@ def findBetterActivationTime(automation,device_list,saved_automations):
     less_cost_index=get_minimum_energy_slots() #for each day
 
     suggestions=[]
-    activation_hour=float(automation["time"].split(":")[0])
-    for day in automation["days"] if len(automation["days"])>0 else DAYS:
-        if cost[day]<=ideal_cost:
-            continue
+    if automation["time"]!="":
+        activation_hour=float(automation["time"].split(":")[0])
+        for day in automation["days"] if len(automation["days"])>0 else DAYS:
+            if cost[day]<=ideal_cost:
+                continue
 
-        index_list=[x for x in less_cost_index if x["day_name"]==day]
-        index_list=sorted(index_list,key=lambda x: abs(x["hour"]-activation_hour))
+            index_list=[x for x in less_cost_index if x["day_name"]==day]
+            index_list=sorted(index_list,key=lambda x: abs(x["hour"]-activation_hour))
 
-        new_activation_found=False
-        index=0
-        while (not new_activation_found) or index>=len(index_list):
-            new_activation_hour=index_list[index]["hour"]
-            #i try to get a value as close as possible to the activation hour
-            #if im over i will check "clockwise"
-            #if im before i will check "counterclockwise"
-            if int(new_activation_hour)>activation_hour:
-                minute_list=["00","10","20","30","40","50"]
-            else:
-                minute_list=["50","40","30","20","10","00"]
-            for minute in minute_list:
-                if new_activation_found: break
-                new_activation=f"{new_activation_hour:02d}:{minute}:00"
-                temp_automation["time"]=new_activation
-                temp_automation["days"]=[day]#used to check conflicts only on the current day TODO: change this
+            new_activation_found=False
+            index=0
+            while (not new_activation_found) or index>=len(index_list):
+                new_activation_hour=index_list[index]["hour"]
+                #i try to get a value as close as possible to the activation hour
+                #if im over i will check "clockwise"
+                #if im before i will check "counterclockwise"
+                if int(new_activation_hour)>activation_hour:
+                    minute_list=["00","10","20","30","40","50"]
+                else:
+                    minute_list=["50","40","30","20","10","00"]
+                for minute in minute_list:
+                    if new_activation_found: break
+                    new_activation=f"{new_activation_hour:02d}:{minute}:00"
+                    temp_automation["time"]=new_activation
+                    temp_automation["days"]=[day]#used to check conflicts only on the current day TODO: change this
 
-                #Checking for conflicts with the new activation time
-                conflicts=getConflicts(
-                    device_list=device_list,
-                    automations_list=saved_automations+[temp_automation],
-                    return_only_conflicts=True)
-                
-                if len(conflicts)<=0:
-                    new_cost=getAutomationCost(temp_automation,day_list=[day])
+                    #Checking for conflicts with the new activation time
+                    conflicts=getConflicts(
+                        device_list=device_list,
+                        automations_list=saved_automations+[temp_automation],
+                        return_only_conflicts=True)
                     
-                    #if new_cost[day]<cost[day]:
-                    if new_cost[day]<=ideal_cost:
-                        new_activation_found=True
-                        suggestions.append(
-                            {
-                                "day":day,
-                                "new_activation_time":new_activation,
-                                "saved_money": cost[day]-new_cost[day]
-                            }
-                        )
-            
-            index+=1
+                    if len(conflicts)<=0:
+                        new_cost=getAutomationCost(temp_automation,day_list=[day])
+                        
+                        if new_cost[day]<cost[day]:
+                        #if new_cost[day]<=ideal_cost:
+                            new_activation_found=True
+                            saved_money=cost[day]-new_cost[day]
+                            suggestions.append(
+                                {
+                                    "day":day,
+                                    "new_activation_time":new_activation,
+                                    "saved_money": cost[day]-new_cost[day]
+                                }
+                            )
+                
+                index+=1
 
     return suggestions
 
@@ -373,7 +379,14 @@ def getAutomationRouter():
             with open("./data/devices_new_state_map.json") as file:  # TODO: Extract path to config
                 state_map = json.load(file)
 
-            ret = [getAutomationDetails(automation, state_map) for automation in automations_list]
+                
+
+            automations_details = [getAutomationDetails(automation, state_map) for automation in automations_list]
+            dev_list=getDevicesFast()
+            ret=[]
+            for automation in automations_details:
+                automation["suggestions"]=findBetterActivationTime(automation,dev_list,automations_details)
+                ret.append(automation)
             return ret
         
     @automation_router.post("")
