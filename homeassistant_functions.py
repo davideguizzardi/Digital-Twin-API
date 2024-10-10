@@ -349,11 +349,13 @@ def getAutomations():
     x=json.loads(response.text)
     for state in x:
         if state["entity_id"].startswith("automation"):
-            ids.append(state["attributes"]["id"])
+            ids.append((state["attributes"]["id"],state["entity_id"],state["state"]))
 
-    for id in ids:
-        response = get(base_url+"/config/automation/config/"+id,headers=headers)
-        automations.append(response.json())
+    for automation_id,entity_id,automation_state in ids:
+        response = get(base_url+"/config/automation/config/"+automation_id,headers=headers)
+        to_add=response.json()
+        to_add.update({"entity_id":entity_id,"state":automation_state})
+        automations.append(to_add)
     return {"status_code":200,"data":automations}
 
 
