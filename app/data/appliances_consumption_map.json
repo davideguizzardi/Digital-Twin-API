@@ -1,0 +1,268 @@
+{
+	"light": [
+		{
+			"id": 0,
+			"name": "off",
+			"power_consumption": 0
+		},
+		{
+			"id": 1,
+			"name": "on",
+			"power_consumption": 19,
+			"default_duration": 587
+		}
+	],
+	"radio":[
+		{
+			"id": 0,
+			"name": "off",
+			"power_consumption": 0
+		},
+		{
+			"id": 1,
+			"name": "stand-by",
+			"power_consumption": 1,
+			"default_duration": 80
+		},
+		{
+			"id": 2,
+			"name": "on",
+			"power_consumption": 37,
+			"default_duration": 4435
+		}
+	],
+	"television":[
+		{
+			"id": 0,
+			"name": "off",
+			"power_consumption": 0
+		}, 
+		{
+			"id": 1,
+			"name": "stand-by",
+			"power_consumption": 18,
+			"default_duration": 2514
+		},
+		{
+			"id": 2,
+			"name": "on",
+			"power_consumption": 110,
+			"default_duration": 1833
+		}
+	],
+	"washing_machine":[
+		{
+			"id": 0,
+			"name": "off",
+			"power_consumption": 0
+		},
+		{
+			"id": 1,
+			"name": "cotton 90",
+			"power_consumption": 2000,
+			"default_duration": 8700
+		},
+		{
+			"id": 2,
+			"name": "cotton 60e",
+			"power_consumption": 950,
+			"default_duration": 7680
+		},
+		{
+			"id": 3,
+			"name": "cotton 60",
+			"power_consumption": 1200,
+			"default_duration": 7200
+		},
+		{
+			"id": 4,
+			"name": "cotton 30",
+			"power_consumption": 550,
+			"default_duration": 6900
+		},
+		{
+			"id": 5,
+			"name": "synthetic 30",
+			"power_consumption": 900,
+			"default_duration": 5400
+		},
+		{
+			"id": 6,
+			"name": "delicate 30",
+			"power_consumption": 500,
+			"default_duration": 3600
+		},
+		{
+			"id": 7,
+			"name": "wool",
+			"power_consumption": 450,
+			"default_duration": 3300
+		}
+	],
+	"microwave":[
+		{
+			"id": 0,
+			"name": "off",
+			"power_consumption": 0
+		},
+		{
+			"id": 1,
+			"name": "stand-by",
+			"power_consumption": 5
+		},
+		{
+			"id": 2,
+			"name": "microwave",
+			"power_consumption": 750,
+			"default_duration": 300
+		},
+		{
+			"id": 3,
+			"name": "crisp",
+			"power_consumption": 500,
+			"default_duration": 300
+		},
+		{
+			"id": 4,
+			"name": "grill",
+			"power_consumption": 500,
+			"default_duration": 300
+		},
+		{
+			"id": 5,
+			"name": "grill+microwave",
+			"power_consumption": 500,
+			"default_duration": 300
+		},
+		{
+			"id": 6,
+			"name": "steam",
+			"power_consumption": 350,
+			"default_duration": 300
+		},
+		{
+			"id": 7,
+			"name": "jet defrost",
+			"power_consumption": 900,
+			"default_duration": 300
+		}
+	],
+	"fridge":[
+		{
+			"id": 0,
+			"name": "off",
+			"power_consumption": 0
+		},
+		{
+			"id": 1,
+			"name": "on",
+			"power_consumption": 208
+		}
+	],
+	"dish-washer":[
+		{
+			"id": 0,
+			"name": "off",
+			"power_consumption": 0
+		},
+		{
+			"id": 1,
+			"name": "intensive",
+			"power_consumption": 1400,
+			"default_duration": 10380
+		},
+		{
+			"id": 2,
+			"name": "daily",
+			"power_consumption": 810,
+			"default_duration": 10260
+		},
+		{
+			"id": 3,
+			"name": "eco",
+			"power_consumption": 700,
+			"default_duration": 6600
+		},
+		{
+			"id": 4,
+			"name": "express",
+			"power_consumption": 350,
+			"default_duration": 1680
+		},
+		{
+			"id": 5,
+			"name": "delicate",
+			"power_consumption": 800,
+			"default_duration": 7080
+		},
+		{
+			"id": 6,
+			"name": "pre-wash",
+			"power_consumption": 10,
+			"default_duration": 660
+		}
+	],
+	"desktop":[
+		{
+			"id": 0,
+			"name": "off",
+			"power_consumption": 0
+		},
+		{
+			"id": 1,
+			"name": "suspended",
+			"power_consumption": 4,
+			"default_duration": 1159
+		},
+		{
+			"id": 2,
+			"name": "on",
+			"power_consumption": 41,
+			"default_duration": 12412
+		}
+	],
+	"boiler":[
+		{
+			"id": 0,
+			"name": "off",
+			"power_consumption": 0
+		},
+		{
+			"id": 1,
+			"name": "holiday",
+			"power_consumption": 33,
+			"default_duration": 300
+		},
+		{
+			"id": 2,
+			"name": "auto",
+			"power_consumption": 57,
+			"default_duration": 525
+		},
+		{
+			"id": 3,
+			"name": "comfort",
+			"power_consumption": 101,
+			"default_duration": 2187
+		}
+	],
+	"air_conditioning":[
+		{
+			"id": 0,
+			"name": "off",
+			"power_consumption": 0
+		},
+		{
+			"id": 1,
+			"name": "cool",
+			"power_consumption": 336,
+			"default_duration": 3337
+		},
+		{
+			"id": 2,
+			"name": "heat",
+			"power_consumption": 656,
+			"default_duration": 30176
+		}
+	]
+}
