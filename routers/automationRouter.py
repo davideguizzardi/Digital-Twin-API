@@ -151,7 +151,7 @@ def getConditionDescription(condition):
         # Set device name based on device info, default to "Unknown device"
         device_name = "Unknown device"
         if condition.get('device_id'):
-            device_info = getDeviceInfo(condition.get('device_id'))  # Assuming this function exists
+            device_info = getDeviceInfo(condition.get('device_id'))  
             device_name = device_info["name_by_user"] if device_info["name_by_user"] != "None" else device_info["name"]
 
         domain = condition.get('domain', 'unknown domain')
@@ -255,9 +255,15 @@ def getAutomationDetails(automation,state_map={}):
 
     activation_time=getAutomationTime(automation["trigger"])
     for trigger in automation["trigger"]:
+        if trigger["platform"]=="device":
+            device_info = getDeviceInfo(trigger.get('device_id'))  
+            trigger["device_name"] = device_info["name_by_user"] if device_info["name_by_user"] != "None" else device_info["name"]
         trigger["description"]=getTriggerDescription(trigger)
 
     for condition in automation["condition"]:
+        if condition["condition"]=="device":
+            device_info = getDeviceInfo(condition.get('device_id'))  
+            condition["device_name"] = device_info["name_by_user"] if device_info["name_by_user"] != "None" else device_info["name"]
         condition["description"]=getConditionDescription(condition) 
 
     time_condition=[x for x in automation["condition"] if x["condition"]=="time"]
