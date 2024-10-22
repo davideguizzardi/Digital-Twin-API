@@ -1,4 +1,5 @@
-from fastapi import APIRouter
+import ipaddress
+from fastapi import APIRouter,HTTPException
 
 from database_functions import (
     initialize_database,
@@ -12,9 +13,11 @@ from schemas import (
     Operation_Out,Map_Entity_List,
     Map_Entity,Configuration_Value,
     Configuration_Value_List,Energy_Plan_Calendar,
-    User_Preference_List,User_Privacy_List
+    User_Preference_List,User_Privacy_List,
+    Home_Assistant_Configuration
     )
 
+from homeassistant_functions import setHomeAssistantConfiguration
 
 
 #region ConfigurationRouter
@@ -32,6 +35,13 @@ def getConfigurationRouter():
     @configuration_router.get("/{key}",response_model=Configuration_Value)
     def Get_Configuration_Value_By_Key(key):
         return get_configuration_value_by_key(key)
+    
+    @configuration_router.put("/homeassistant",response_model=Operation_Out)
+    def Add_Home_Assistant_Configuration(configuration:Home_Assistant_Configuration):
+        if configuration.token and len(configuration.token)!=183:
+            raise HTTPException(status_code=400,detail="Format of the token not correct")
+        return {"success":setHomeAssistantConfiguration(configuration.token,configuration.server_address)}
+        
     
     @configuration_router.put("",response_model=Operation_Out)
     def Add_Configuration_Values(values_list:Configuration_Value_List):

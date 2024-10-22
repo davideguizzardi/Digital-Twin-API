@@ -2,11 +2,12 @@ from requests import get,post
 from random import randint
 from schemas import Service_In
 from urllib.parse import urlencode
-import json,datetime,time,configparser
+import json,datetime,time,configparser,os
 from dateutil import tz,parser
 
 base_url="http://homeassistant.local:8123/api"
 headers = {}
+CONFIGURATION_PATH="./data/configuration.txt"
 
 def buildError(response):
     return {"status_code":response.status_code,"data":response.text}
@@ -15,7 +16,7 @@ def initializeToken():
     global headers
     global base_url
     parser=configparser.ConfigParser()
-    parser.read("./data/configuration.txt")
+    parser.read(CONFIGURATION_PATH)
     base_url=parser["HomeAssistant"]["server_url"] if 'server_url' in parser["HomeAssistant"] else base_url
 
     token = parser["HomeAssistant"]['token'] if 'token' in parser["HomeAssistant"] else ""
@@ -23,6 +24,35 @@ def initializeToken():
     "Authorization": "Bearer "+token,
     "content-type": "application/json",
     }
+
+def setHomeAssistantConfiguration(token,server_address=None):
+    # Create a ConfigParser object
+    config = configparser.ConfigParser()
+
+    # If the file already exists, read the existing config
+    if os.path.exists(CONFIGURATION_PATH):
+        config.read(CONFIGURATION_PATH)
+    
+    # Add or update the 'HomeAssistant' section with the new values
+    if 'HomeAssistant' not in config:
+        config['HomeAssistant'] = {}
+    
+    if server_address:
+        config['HomeAssistant']['server_url'] = server_address
+    if token:
+        config['HomeAssistant']['token'] = token
+
+    # Write the updated configuration to the file
+    with open(CONFIGURATION_PATH, 'w') as configfile:
+        config.write(configfile)
+
+    # Check if the values are correctly updated
+    config.read(CONFIGURATION_PATH)
+    if (token and config['HomeAssistant']['token'] == token)or (server_address and config['HomeAssistant']['server_url'] == server_address):
+        initializeToken()
+        return True
+    else:
+        return False
 
 def extractEntityData(entity,skip_services=False):
     device = getDeviceId(entity["entity_id"])
