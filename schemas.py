@@ -54,6 +54,10 @@ class User_Log_List(BaseModel):
 class Automation(BaseModel):
     automation:object
 
+class Home_Assistant_Configuration(BaseModel):
+    token:str | None=None
+    server_address:str | None=None
+
 class Configuration_Value(BaseModel):
     key:str
     value:str
