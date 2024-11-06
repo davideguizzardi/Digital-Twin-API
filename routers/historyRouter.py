@@ -22,10 +22,13 @@ def extractSingleDeviceHistory(device_id, start_timestamp,end_timestamp):
     state_entity_id=device_data["state_entity_id"]
     power_entity_id=device_data["power_entity_id"]
 
-    entities_list=state_entity_id
+    entities_list=[state_entity_id]
     if power_entity_id!="":
-        entities_list=entities_list+","+power_entity_id
+        entities_list=entities_list+[power_entity_id]
 
+    if power_entity_id=="" and state_entity_id=="":
+        logger.warning(f"Get_Device_History for device: {device_data["name"]} didn't received any entity_id to use!")
+        return []
 
     response=getEntitiesHistory(entities_list,start_timestamp,end_timestamp)
 
@@ -36,10 +39,10 @@ def extractSingleDeviceHistory(device_id, start_timestamp,end_timestamp):
     elements_list=states_list if states_list else (powers_list if powers_list else [])
     for i in range(len(elements_list)):
         if power_entity_id!="":
-            power=float(powers_list[i]["state"]) if powers_list[i]["state"]!="unavailable" else 0
+            power=float(powers_list[i]["state"]) if powers_list[i]["state"] not in ["unavailable","unknown"] else 0
             power_unit=powers_list[i]["unit_of_measurement"]
             energy_consumption=powers_list[i]["energy_consumption"]
-            energy_consumption_unit=powers_list[i]["unit_of_measurement"]+"h"
+            energy_consumption_unit=powers_list[i]["unit_of_measurement"]+"h" if powers_list[i]["unit_of_measurement"] !="" else "Wh"
         else:
             power=states_list[i]["power"] if states_list else 0
             power_unit="W"
@@ -58,14 +61,14 @@ def extractSingleDeviceHistory(device_id, start_timestamp,end_timestamp):
     return temp
 
 
-def getEntitiesHistory(entities, start_timestamp,end_timestamp):
+def getEntitiesHistory(entities:list, start_timestamp,end_timestamp):
     start_program=datetime.datetime.now()
     start_timestamp=start_timestamp.astimezone(tz.tzlocal())
     end_timestamp=end_timestamp.astimezone(tz.tzlocal())
     if end_timestamp>datetime.datetime.now(tz.tzlocal()):
         end_timestamp=datetime.datetime.now(tz.tzlocal())
-        
-    response=getHistory(entities_id=entities,start_timestamp=start_timestamp,end_timestamp=end_timestamp)
+    
+    response=getHistory(entities_id=",".join(entities),start_timestamp=start_timestamp,end_timestamp=end_timestamp)
     if response["status_code"]!=200:
         raise HTTPException(status_code=response["status_code"],detail=response["data"])
     else:
@@ -80,7 +83,7 @@ def getEntitiesHistory(entities, start_timestamp,end_timestamp):
             res_pool=pool.starmap(createStateArray,args)
         for el in res_pool:
             res.update(el)
-        logger.debug(f"Get_Entity_History for {len(entities.split(","))} entities, time_range={(end_timestamp-start_timestamp).days} days      elapsed_time={(datetime.datetime.now()-start_program).total_seconds()}[s]")
+        logger.debug(f"Get_Entity_History for {len(entities)} entities, time_range={(end_timestamp-start_timestamp).days} days      elapsed_time={(datetime.datetime.now()-start_program).total_seconds()}[s]")
         return res
     
 
