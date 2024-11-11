@@ -1,5 +1,5 @@
 [HomeAssistant]
-server_url= http://xxxx:8123/api
+server_url= http://192.168.178.143:8123/api
 token = token
 
 [ApiConfiguration]

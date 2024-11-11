@@ -1,0 +1,5 @@
+data/configuration.txt
+__pycache__/*
+data/configuration.txt
+routers/__pycache__/*
+logs/periodic_functions.log

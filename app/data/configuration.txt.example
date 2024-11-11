@@ -1,6 +1,0 @@
-[HomeAssistant]
-server_url= http://xxxx:8123/api
-token = token
-
-[ApiConfiguration]
-w_to_gco2=0.431
