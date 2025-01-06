@@ -571,7 +571,7 @@ def findBetterActivationTime(automation,device_list,saved_automations):
                 
                 index+=1
 
-    return suggestions
+    return {"suggestions":suggestions,"cost":cost}
 
 def getConflicts2(device_list,automations_list,return_only_conflicts=True):
     #Initializing the state matrix
@@ -627,8 +627,10 @@ def getConflicts2(device_list,automations_list,return_only_conflicts=True):
                 if key not in conflicts_list:
                     conflicts_list[key] = {
                         "days": [],
+                        "type":Conflict.EXCESSIVE_ENERGY.type,
                         "start": start_conflict,
                         "end": end_conflict,
+                        "threshold":threshold,
                         "description": Conflict.EXCESSIVE_ENERGY.description.format(
                             treshold=threshold,
                             start=start_conflict,
@@ -740,9 +742,10 @@ def getFeasibilityConflicts(automation):
     if  automation_power>= threshold:
         return {
                 "type":Conflict.NOT_FEASIBLE_AUTOMATION.type,
+                "threshold":threshold,
                 "description":Conflict.NOT_FEASIBLE_AUTOMATION.description.format(
                     treshold=threshold,automation_power=automation_power),
-                    "days":DAYS #FIXME: this is a patchwork to show something in the web app, remove in prod           
+                "days":DAYS #FIXME: this is a patchwork to show something in the web app, remove in prod           
                 }
     else:
         return None
@@ -768,7 +771,7 @@ def getAutomationRouter():
             ret=[]
             for automation in automations_details:
                 if get_suggestions:
-                    automation["suggestions"]=findBetterActivationTime(automation,dev_list,automations_details)
+                    automation["suggestions"]=findBetterActivationTime(automation,dev_list,automations_details)["suggestions"]
                 ret.append(automation)
             return ret
         
@@ -831,8 +834,19 @@ def getAutomationRouter():
 
         #Suggestions identification if no conflict occurs
         suggestions=[]
+        cost={
+            	"mon":0,
+				"tue":0,
+				"wed":0,
+				"thu":0,
+				"fri":0,
+				"sat":0,
+                "sun":0
+        }
         if len(simulation["conflicts"])<=0 and automation["power_drawn"]>5: #TODO: decide a valid default value for the minimum power drawn
-            suggestions=findBetterActivationTime(automation,dev_list,saved_automations)
+            sustainability=findBetterActivationTime(automation,dev_list,saved_automations)
+            suggestions=sustainability["suggestions"]
+            cost=sustainability["cost"]
         
 
 
@@ -844,7 +858,8 @@ def getAutomationRouter():
             "state_matrix":simulation["state_matrix"],
             "cumulative_power_matrix":simulation["cumulative_power_matrix"],
             "conflicts":simulation["conflicts"],
-            "suggestions":suggestions
+            "suggestions":suggestions,
+            "cost":cost
             }
     
     return automation_router
