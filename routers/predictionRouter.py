@@ -16,8 +16,8 @@ from homeassistant_functions import getSingleDeviceFast
 FUTURE_STEPS_RECURSIVE=12
 FUTURE_STEPS_SEQUENTIAL=6
 PREVIOUS_STEPS=24
-FILENAME_SEQUENTIAL="./energy_consumption_prediction/models/15-11-2024-12-38_Prev48_Next6_minmaxscaling"
-FILENAME_RECURSIVE="./energy_consumption_prediction/models/16-12-2024-16-43_Prev24_Next1_noscalerscaling"
+FILENAME_SEQUENTIAL="./prediction_models/15-11-2024-12-38_Prev48_Next6_minmaxscaling"
+FILENAME_RECURSIVE="./prediction_models/16-12-2024-16-43_Prev24_Next1_noscalerscaling"
 
 def predictSequence(model,x_to_predict,use_weighted_average=False,scaler_in=None,future_steps=FUTURE_STEPS_RECURSIVE):
     # Predict the values (assuming the model provides multiple overlapping predictions)
