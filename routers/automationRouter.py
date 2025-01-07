@@ -60,11 +60,10 @@ def format_duration(duration):
     return ", ".join(parts)
 
 def getTriggerDescription(trigger):
-    # Switch statement based on the platform field
+    '''Given the trigger it returns its natural language description'''
     platform = trigger.get('platform', 'unknown platform')
 
     if platform == "device":
-        # Set device name based on device info, default to "Unknown device"
         device_name = "Unknown device"
         if trigger.get('device_id'):
             device_info = getDeviceInfo(trigger.get('device_id'))  # Assuming this function exists
@@ -74,7 +73,6 @@ def getTriggerDescription(trigger):
         description = ""
 
         if domain == 'sensor':
-            # Special handling for sensor domain
             description = f'When "{device_name}" {trigger.get('type', 'unknown type')}'
             
             if 'above' in trigger and 'below' in trigger:
@@ -87,14 +85,12 @@ def getTriggerDescription(trigger):
                 description += " changes"
 
         elif domain == 'bthome':
-            # Special handling for bthome domain
             description = f'When you {trigger.get('subtype', 'unknown action').replace("_"," ")} "{device_name}"'
         
         else:
             # Generic description for other domains
             description = f'When "{device_name}" is {format_action(trigger.get('type', 'unknown action'))}'
             
-        # Check for time condition 'for'
         if 'for' in trigger:
             duration_description = format_duration(trigger['for'])
             if duration_description:
@@ -103,7 +99,6 @@ def getTriggerDescription(trigger):
         return description
 
     elif platform == "time":
-        # Placeholder for time platform logic
         time="unknown time"
         if trigger.get('at'):
             time=trigger.get('at')[:-3] #remoing the seconds part
@@ -122,11 +117,9 @@ def getTriggerDescription(trigger):
             return f"It is the {event}"
 
     elif platform == "time_pattern":
-        # Placeholder for time pattern platform logic
         return "Time pattern-based trigger description"
 
     else:
-        # Default case for unhandled platforms
         return "Unknown platform trigger"
     
 def format_time_offset(seconds):
@@ -144,11 +137,10 @@ def format_time_offset(seconds):
     
 
 def getConditionDescription(condition):
-    # Switch statement based on the platform field
+    '''Given a condition it returns a natural language description of it'''
     platform = condition.get('condition', 'unknown condition')
 
     if platform == "device":
-        # Set device name based on device info, default to "Unknown device"
         device_name = "Unknown device"
         if condition.get('device_id'):
             device_info = getDeviceInfo(condition.get('device_id'))  
@@ -159,7 +151,6 @@ def getConditionDescription(condition):
 
         if domain == 'sensor':
             measured_value=condition.get("type","unknown measure").replace("is_","")
-            # Special handling for sensor domain
             description = f'"{device_name}" {measured_value}'
             
             if 'above' in condition and 'below' in condition:
@@ -174,7 +165,6 @@ def getConditionDescription(condition):
             # Generic description for other domains
             description = f'"{device_name}" {format_action(condition.get('type', 'in unknown state'))}'
             
-        # Check for time condition 'for'
         if 'for' in condition:
             duration_description = format_duration(condition['for'])
             if duration_description:
@@ -183,7 +173,6 @@ def getConditionDescription(condition):
         return description
 
     elif platform == "time":
-        # Placeholder for time platform 
         description=""
 
         if 'before' in condition and 'after' in condition:
@@ -205,9 +194,8 @@ def getConditionDescription(condition):
         """Create a description string based on the sun conditions."""
         description_parts = []
         
-        # Check for before condition
         if 'before' in condition:
-            before_offset = int(condition.get('before_offset', None))  # None if not present
+            before_offset = int(condition.get('before_offset', None))  
             if before_offset is not None:
                 if before_offset > 0:
                     before_time = format_time_offset(before_offset)
@@ -216,10 +204,8 @@ def getConditionDescription(condition):
                     description_parts.append(f"at {condition['before']}")
             else:
                 description_parts.append(f"before {condition['before']}")
-
-        # Check for after condition
         if 'after' in condition:
-            after_offset = int(condition.get('after_offset', None))  # None if not present
+            after_offset = int(condition.get('after_offset', None))
             if after_offset is not None:
                 if after_offset > 0:
                     after_time = format_time_offset(after_offset)
@@ -229,7 +215,6 @@ def getConditionDescription(condition):
             else:
                 description_parts.append(f"after {condition['after']}")
 
-        # Construct the final description
         if description_parts:
             description = f"Sun is {' and '.join(description_parts)}"
         else:
@@ -247,6 +232,7 @@ def formatServiceString(service):
 
 
 def getAutomationDetails(automation,state_map={}):
+    '''Returns a json file representing all the details of an automation.'''
     automation_power_drawn=0
     automation_energy_consumption=0
     temp=[]
@@ -285,18 +271,20 @@ def getAutomationDetails(automation,state_map={}):
 
         if state not in ["on|off","same"]:#TODO:manage also this cases
             usage_data=get_appliance_usage_entry(device_id,state)
-            usage_data.update({
-                "device_id":device_id,
-                "state":state,
-                "service":service,
-                "domain":domain,
-                "description":f"{formatServiceString(service)} {device_name}",
-                "device_name":device_name,
-                "data":action_data
-            })
-            automation_power_drawn+=usage_data["average_power"]
-            automation_energy_consumption+=usage_data["average_power"]*(usage_data["average_duration"]/60) #Remember that use time is express in minutes
-            action_list.append(usage_data)
+            #TODO:if there are no data you should extract static data from somewhere
+            if usage_data:
+                usage_data.update({
+                    "device_id":device_id,
+                    "state":state,
+                    "service":service,
+                    "domain":domain,
+                    "description":f"{formatServiceString(service)} {device_name}",
+                    "device_name":device_name,
+                    "data":action_data
+                })
+                automation_power_drawn+=usage_data["average_power"]
+                automation_energy_consumption+=usage_data["average_power"]*(usage_data["average_duration"]/60) #Remember that use time is express in minutes
+                action_list.append(usage_data)
         else:
             action_list.append({
                 "device_id":device_id,
@@ -639,8 +627,7 @@ def getConflicts2(device_list,automations_list,return_only_conflicts=True):
                     }
                 conflicts_list[key]["days"].append(day)
                 conflict_is_occurring = False  # Reset the flag after recording the conflict
-
-    # Convert conflicts dictionary to a list
+                
     conflicts_list = list(conflicts_list.values())
 
     if return_only_conflicts:

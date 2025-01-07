@@ -16,6 +16,7 @@ from routers.virtualRouter import getVirtualRouter
 from routers.consumptionRouter import getConsumptionRouter
 from routers.historyRouter import getHistoryRouter
 from routers.deviceRouter import getDeviceRouter
+from routers.predictionRouter import getPredictionRouter
 from homeassistant_functions import initializeToken
 
 import uvicorn
@@ -26,6 +27,7 @@ def create_api():
     api=FastAPI(title="Digial Twin API",docs_url="/")
 
     routers=[
+        getPredictionRouter(),
         getEntityRouter(),
         getDeviceRouter(),
         getHomeRouter(),

@@ -33,7 +33,11 @@ def getDeviceRouter():
         devices_list=getDevicesNameAndId()["data"]
         result=defaultdict(lambda:[])
         for data in usage_data:
-            device_name=[x for x in devices_list if x["device_id"]==data["device_id"]][0]["name"]
+            device_name=[x for x in devices_list if x["device_id"]==data["device_id"]]
+            if len(device_name)>0:
+                device_name=device_name[0]["name"]
+            else:
+                continue
             result[device_name].append(
                 {
                     "device_id":data["device_id"],

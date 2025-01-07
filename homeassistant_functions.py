@@ -440,7 +440,7 @@ def createAutomationDirect(automation):
     automation["id"]=str(automation["id"])
     body=automation
     response = post(base_url+"/config/automation/config/"+str(automation["id"]), headers=headers, json=body)
-    return (id,response.text)
+    return (automation["id"],response.text)
 
 
 def getDeviceId(entity_id:str):
