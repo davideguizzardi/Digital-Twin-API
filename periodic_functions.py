@@ -1,8 +1,13 @@
-import logging
-import datetime
+
+import datetime,logging
 from datetime import timedelta
-from homeassistant_functions import getEntities,getHistory,initializeToken
-from homeassistant_functions import getDevicesFast
+from dateutil import tz,parser
+from collections import defaultdict
+
+
+
+
+from homeassistant_functions import initializeToken, getDevicesFast
 from database_functions import (
     add_hourly_consumption_entry,
     get_all_appliances_usage_entries,add_appliances_usage_entry,
@@ -10,10 +15,9 @@ from database_functions import (
     DbPathEnum
     )
 from routers.historyRouter import extractSingleDeviceHistory,getEntitiesHistory
-from dateutil import tz,parser
-from collections import defaultdict
 
 logger = logging.getLogger(__name__)
+
 
 def entitiesHistoryExtractionProcedure(start_timestamp:datetime.datetime=datetime.date.today()):
     start_call=datetime.datetime.now() 

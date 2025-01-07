@@ -427,7 +427,7 @@ def getPowerMatrix(automation):
     return power_matrix
 
 
-def getAutomationStateMatrix2(state_array,power_array, automation,day):
+def getAutomationStateMatrix(state_array,power_array, automation,day):
     if automation["time"]!="":
         activation_time=parser.parse(automation["time"])
         activation_days=automation["days"] if len(automation["days"])>0 else DAYS
@@ -456,29 +456,6 @@ def getAutomationStateMatrix2(state_array,power_array, automation,day):
             
             for j in indexes_empty:
                 dev_state_array[i]=""
-
-
-def getAutomationStateMatrix(state_matrix, aut):
-    if aut["time"]!="":
-        activation_time=parser.parse(aut["time"])
-        activation_days=aut["days"] if len(aut["days"])>0 else DAYS
-        activation_index=activation_time.hour*60+activation_time.minute
-
-        for act in aut["action"]:
-            end_index=min(activation_index+int(act["average_duration"]),1440)
-            for day in activation_days:
-                device = state_matrix[day][act["device_id"]]
-                device["state_list"][activation_index:end_index]=[act["state"]]*(end_index-activation_index)
-                device["state_list"][end_index:]=[""]*(1440-end_index) #Added to fix a bug, could be removed if problems occurs
-                    
-                device["power_list"][activation_index:end_index]=[act["average_power"]]*(end_index-activation_index)
-
-                device["device_id"]=act["device_id"]
-                device["device_name"]=act["device_name"]
-
-
-
-
 
 def getAutomationCost(automation,energy_cost_matrix,day_list=DAYS):
     #energy_cost_matrix=getEnergyCostMatrix()
@@ -561,7 +538,7 @@ def findBetterActivationTime(automation,device_list,saved_automations):
 
     return {"suggestions":suggestions,"cost":cost}
 
-def getConflicts2(device_list,automations_list,return_only_conflicts=True):
+def getConflicts(device_list,automations_list,return_only_conflicts=True):
     #Initializing the state matrix
     state_matrix = {day: {} for day in DAYS}
     state_array={}
@@ -579,7 +556,7 @@ def getConflicts2(device_list,automations_list,return_only_conflicts=True):
         days_automations=[x for x in automations_list if x["days"]==[] or (day in x["days"])]
         sorted_automations=sorted(days_automations,key=lambda x:x["time"]) #sort automations by activation time 
         for aut in sorted_automations:
-            getAutomationStateMatrix2(state_array,power_array, aut,day)
+            getAutomationStateMatrix(state_array,power_array, aut,day)
 
     #Computing the cumulative power matrix for conflicts identification
     cumulative_power_array=[0]*(1440*7)
@@ -627,7 +604,7 @@ def getConflicts2(device_list,automations_list,return_only_conflicts=True):
                     }
                 conflicts_list[key]["days"].append(day)
                 conflict_is_occurring = False  # Reset the flag after recording the conflict
-                
+
     conflicts_list = list(conflicts_list.values())
 
     if return_only_conflicts:
@@ -650,72 +627,6 @@ def getConflicts2(device_list,automations_list,return_only_conflicts=True):
         }
 
 
-def getConflicts(device_list,automations_list,return_only_conflicts=True):
-    #Initializing the state matrix
-    state_matrix = {day: {} for day in DAYS}
-    for day in DAYS:
-        for dev in device_list["data"]:
-            if dev["device_class"] not in ["sensor","event","sun","weather","device_tracker"]:
-                state_matrix[day][dev["device_id"]] = {
-                        "state_list": [""] * 1440,
-                        "power_list": [0] * 1440,
-                        "device_id": dev["device_id"],
-                        "device_name": dev["name"]
-                    }
-
-    #Populating state matrix with automation's actions
-    sorted_automations=sorted(automations_list,key=lambda x:x["time"]) #sort automations by activation time 
-    for aut in sorted_automations:
-        getAutomationStateMatrix(state_matrix, aut)
-
-    #Computing the cumulative power matrix for conflicts identification
-    cumulative_power_matrix = {day: [0] * 1440 for day in DAYS}  
-    for day in DAYS:
-        for dev in state_matrix[day].values():
-            for i in range(1440):
-                cumulative_power_matrix[day][i]+=dev["power_list"][i]
-
-    #Conflicts identification
-    conflicts_list = defaultdict(lambda: {"type": Conflict.EXCESSIVE_ENERGY.type, "days": []})
-
-    threshold = get_configuration_value_by_key("power_threshold")  
-    threshold=float(threshold["value"]) if threshold else POWER_TRESHOLD_DEFAULT
-    
-    for day in DAYS:
-        conflict_is_occurring=False
-        for i in range(1440):
-            if cumulative_power_matrix[day][i] > threshold: 
-                if not conflict_is_occurring:
-                    start=i
-                    conflict_is_occurring=True
-                end=i
-            else:
-                if conflict_is_occurring: #there was a conflict since last minute
-                    start_conflict=f"{start // 60:02}:{start % 60:02}"
-                    end_conflict=f"{end // 60:02}:{end % 60:02}"
-                    key=f"{start_conflict}-{end_conflict}"
-                    conflicts_list[key]["days"].append(day)
-                    conflicts_list[key]["start"] = start_conflict
-                    conflicts_list[key]["end"] = end_conflict
-                    conflicts_list[key]["description"]=Conflict.EXCESSIVE_ENERGY.description.format(
-                        treshold=threshold,
-                        start=start_conflict,
-                        end=end_conflict)
-                    conflict_is_occurring=False
-
-    conflicts_list=list(conflicts_list.values())
-
-    if return_only_conflicts:
-        return conflicts_list 
-    else:
-        return {
-        "state_matrix":state_matrix,
-        "cumulative_power_matrix":cumulative_power_matrix,
-        "conflicts":conflicts_list
-        }
-
-
-    
 def getFeasibilityConflicts(automation):
     '''
     Functions that checks if the given automation could be executed alone.
@@ -812,7 +723,7 @@ def getAutomationRouter():
         dev_list=getDevicesFast()
     
         #Getting conflicts
-        simulation=getConflicts2(device_list=dev_list,automations_list=new_automation_list,return_only_conflicts=False)
+        simulation=getConflicts(device_list=dev_list,automations_list=new_automation_list,return_only_conflicts=False)
 
         #TODO:remove this part in the final version
         feasibilty_conflicts=getFeasibilityConflicts(automation)
