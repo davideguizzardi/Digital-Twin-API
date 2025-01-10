@@ -18,6 +18,13 @@ from routers.historyRouter import extractSingleDeviceHistory,getEntitiesHistory
 
 logger = logging.getLogger(__name__)
 
+#value over which a device is considered on even if the state is unavailable
+UNAVAIABLE_TO_ON = 20
+#value under which the device connected to a smart plug is considered standby
+ACTIVATION_TRESHOLD = 3
+
+STATE_CHANGE_TOLERANCE = 3 #a device state is perceived if it last at least STATE_CHANGE_TOLERANCE minutes
+
 
 def entitiesHistoryExtractionProcedure(start_timestamp:datetime.datetime=datetime.date.today()):
     start_call=datetime.datetime.now() 
@@ -139,27 +146,88 @@ def devicesExtractionProcedure(start_timestamp:datetime.datetime=datetime.date.t
         #endregion
 
         #region Computing appliance use datas
-        use_map=defaultdict(lambda:{"average_duration":0,"average_duration_unit":"min","average_power":0,"average_power_unit":"W","power_samples":0,"duration_samples":0})
-        prev_state=history[0]["state"]
-        current_duration=1
+        #a buffer mechanism is used. The avoids cases in which a new duration is computed when the state of a device changes for a brief second
+        #e.g. if the sequence is state1 state2 state1 the instance of state2 is ignored
+        buffer_state = None  
+        buffer_count = 0  
+
+        use_map = defaultdict(lambda: {
+            "average_duration": 0,
+            "average_duration_unit": "min",
+            "average_power": 0,
+            "average_power_unit": "W",
+            "power_samples": 0,
+            "maximum_power":0,
+            "duration_samples": 0
+        })
+
+        first_element=history[0]
+        prev_state=first_element["state"]
+
+        if first_element["power"]<=0 or first_element["power"]>0 and first_element["power"]<ACTIVATION_TRESHOLD and first_element["state"]!="off":
+            prev_state = "off"
+
+        current_duration = 1
+
         for i in range(len(history)):
-            x=history[i]
-            x["state"]="off" if x["power"]<2 else x["state"]
-            key= x["state"]
-            use_map[key]["average_power"]=((use_map[key]["average_power"]*use_map[key]["power_samples"])+x["power"])/(use_map[key]["power_samples"]+1)
-            use_map[key]["power_samples"]+=1
+            x = history[i]
+            #States preprocessing
+            #For smart plugs a device could be off but still having on as the plug is in the on state, in that case we use the power to understand each state
+            if x["power"]<=0:
+                x["state"]="off"
+            if x["power"]>0 and x["power"]<ACTIVATION_TRESHOLD and x["state"]!="off":
+                x["state"] = "off" 
+
+            #If the state is unavailable but the power is high, we consider the device in the on state
             
-            if x["state"]==prev_state:#current block is still going
-                current_duration+=1
-            if x["state"]!=prev_state or i==len(history)-1: #current block is over or we reached the end of the day
-                use_map[prev_state]["average_duration"]=((use_map[prev_state]["average_duration"]*use_map[prev_state]["duration_samples"])+current_duration)/(use_map[prev_state]["duration_samples"]+1)
-                use_map[prev_state]["duration_samples"]+=1
-                current_duration=1
-                prev_state=x["state"]
-            print(f"Appliance use data extraction step:{i}/{len(history)}",end="\r",flush=True)
+            x["state"] = "on" if x["state"]=="unavailable" and x["power"] > UNAVAIABLE_TO_ON else x["state"]
+            key = x["state"]
+
+            # Update power statistics
+            use_map[key]["average_power"] = (
+                (use_map[key]["average_power"] * use_map[key]["power_samples"]) + x["power"]
+            ) / (use_map[key]["power_samples"] + 1)
+            use_map[key]["power_samples"] += 1
+
+            if x["power"]>use_map[key]["maximum_power"]:
+                use_map[key]["maximum_power"]=x["power"]
+
+
+            if x["state"] != prev_state:
+                if buffer_state is None:  
+                    buffer_state = x["state"]
+                    buffer_count = 1
+                elif buffer_state == x["state"]:  
+                    buffer_count += 1
+                    if buffer_count >= STATE_CHANGE_TOLERANCE: 
+                        use_map[prev_state]["average_duration"] = (
+                            (use_map[prev_state]["average_duration"] * use_map[prev_state]["duration_samples"]) + current_duration
+                        ) / (use_map[prev_state]["duration_samples"] + 1)
+                        use_map[prev_state]["duration_samples"] += 1
+                        current_duration = 1
+                        prev_state = buffer_state
+                        buffer_state = None
+                        buffer_count = 0
+                else:  # Reset buffer if inconsistent
+                    buffer_state = x["state"]
+                    buffer_count = 1
+            else: 
+                buffer_state = None
+                buffer_count = 0
+                current_duration += 1
+
+            # Handling the last entry in history
+            if i == len(history) - 1:
+                use_map[prev_state]["average_duration"] = (
+                    (use_map[prev_state]["average_duration"] * use_map[prev_state]["duration_samples"]) + current_duration
+                ) / (use_map[prev_state]["duration_samples"] + 1)
+                use_map[prev_state]["duration_samples"] += 1
+
+            print(f"Appliance use data extraction step:{i}/{len(history)}", end="\r", flush=True)
+
 
         mode_use_dict[id]=dict(use_map)
-        print("\nAppliance use data extraction: DONE!\n")
+    print("\nAppliance use data extraction: DONE!\n")
 
     temp=[]
     database_data=get_all_appliances_usage_entries()
@@ -185,6 +253,7 @@ def devicesExtractionProcedure(start_timestamp:datetime.datetime=datetime.date.t
                         id,mode,
                         new_average_duration,mode_use_dict[id][mode]["average_duration_unit"],duration_samples,
                         new_average_power,mode_use_dict[id][mode]["average_power_unit"],power_samples,
+                        max(database_element["maximum_power"],mode_use_dict[id][mode]["maximum_power"]),
                         end_timestamp.replace(microsecond=0).timestamp()
                         ))
             else:
@@ -192,6 +261,7 @@ def devicesExtractionProcedure(start_timestamp:datetime.datetime=datetime.date.t
                     id,mode,
                     mode_use_dict[id][mode]["average_duration"],mode_use_dict[id][mode]["average_duration_unit"],mode_use_dict[id][mode]["duration_samples"],
                     mode_use_dict[id][mode]["average_power"],mode_use_dict[id][mode]["average_power_unit"],mode_use_dict[id][mode]["power_samples"],
+                    mode_use_dict[id][mode]["maximum_power"],
                     end_timestamp.replace(microsecond=0).timestamp()
                     ))
     #endregion
@@ -228,8 +298,8 @@ def main():
     initializeToken()
     last_timestamp_usage=fetch_one_element(DbPathEnum.CONSUMPTION,"select max(last_timestamp) from Appliances_Usage")
     last_timestamp_consumption=fetch_one_element(DbPathEnum.CONSUMPTION,"select max(start) from Hourly_Consumption")
-    last_timestamp_consumption=last_timestamp_consumption["max(start)"]
     last_timestamp_usage=last_timestamp_usage["max(last_timestamp)"]
+    last_timestamp_consumption=last_timestamp_consumption["max(start)"]
 
 
     if last_timestamp_usage!=None and last_timestamp_consumption!=None:

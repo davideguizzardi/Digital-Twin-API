@@ -125,7 +125,7 @@ def create_tables():#TODO:refactor this code with new database structure
         'CREATE TABLE "Hourly_Consumption" ("device_id" TEXT,"energy_consumption" REAL,"energy_consumption_unit"	TEXT,"from"	INTEGER,"to" INTEGER,PRIMARY KEY("device_id","from"))',
         'CREATE TABLE "Device_History" ("device_id"	TEXT,"timestamp" INTEGER,"state"	TEXT,"power" REAL, "power_unit" TEXT,"energy_consumption" REAL,"energy_consumption_unit"	INTEGER,PRIMARY KEY("device_id","timestamp"));',
         'CREATE TABLE "Entity_History" ("entity_id" TEXT, "date" TEXT, "state" TEXT, "power" REAL, "unit_of_measurement" TEXT, "energy_consumption" REAL, PRIMARY KEY("entity_id","date"));',
-        'CREATE TABLE "Appliances_Usage" ("device_id"	TEXT,"state"	TEXT,"average_duration"	REAL,"duration_unit"	TEXT,"duration_samples"	INTEGER,"average_power"	REAL,"average_power_unit"	TEXT,"power_samples"	INTEGER,"last_timestamp"	INTEGER,PRIMARY KEY("device_id","state"))',
+        'CREATE TABLE "Appliances_Usage" ("device_id"	TEXT,"state"	TEXT,"average_duration"	REAL,"duration_unit"	TEXT,"duration_samples"	INTEGER,"average_power"	REAL,"average_power_unit" TEXT,"power_samples" INTEGER,"average_duration"	REAL,"last_timestamp"	INTEGER,PRIMARY KEY("device_id","state"))',
         'CREATE TABLE "User_Preferences" ("user_id"	TEXT NOT NULL,"preferences"	TEXT,"data_collection"	INTEGER,"data_disclosure"	INTEGER,PRIMARY KEY("user_id"))'
     ]
     success=True
@@ -368,6 +368,9 @@ def get_energy_slot_by_day(day:int):
 def get_minimum_cost_slot():
     return fetch_one_element(DbPathEnum.CONFIGURATION,"SELECT MIN(value) as cost FROM Configuration WHERE key LIKE 'cost_slot_%'")
 
+def get_maximum_cost_slot():
+    return fetch_one_element(DbPathEnum.CONFIGURATION,"SELECT MAX(value) as cost FROM Configuration WHERE key LIKE 'cost_slot_%'")
+
 def get_energy_slot_by_slot(slot:int):
     query = "SELECT * FROM Energy_Timeslot WHERE slot= ?"
     params = (slot,) 
@@ -441,8 +444,8 @@ def get_all_entity_history_entries():
 #region Appliances usage
 def add_appliances_usage_entry(entry_list:list):
     query="""INSERT or REPLACE into Appliances_Usage
-                    (device_id,state,average_duration,duration_unit,duration_samples,average_power,average_power_unit,power_samples,last_timestamp) 
-                    VALUES (?,?,?,?,?,?,?,?,?)"""
+                    (device_id,state,average_duration,duration_unit,duration_samples,average_power,average_power_unit,power_samples,maximum_power,last_timestamp) 
+                    VALUES (?,?,?,?,?,?,?,?,?,?)"""
     return add_multiple_elements(DbPathEnum.CONSUMPTION,query,entry_list)
 
 def get_all_appliances_usage_entries():
