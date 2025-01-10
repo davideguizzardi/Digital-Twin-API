@@ -1,0 +1,20 @@
+from dataclasses import dataclass,asdict,field
+from typing import List
+
+@dataclass
+class Suggestion:
+    def to_dict(self) -> dict:
+        return asdict(self)
+
+@dataclass
+class BetterActivationTimeSuggestion(Suggestion):
+    suggestion_type:str="better_activation"
+    days:List[str]= field(default_factory=list) 
+    new_activation_time:str=''
+    monthly_saved_money:float=0.0
+
+@dataclass
+class ConflictResolutionActivationTimeSuggestion(Suggestion):
+    new_activation_time:str=''
+    suggestion_type:str="conflict_time_change"
+    

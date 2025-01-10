@@ -9,16 +9,17 @@ from homeassistant_functions import (
 from database_functions import (
     get_configuration_value_by_key,
     get_appliance_usage_entry,
-    get_all_energy_slots_with_cost,get_minimum_cost_slot,get_minimum_energy_slots
+    get_all_energy_slots_with_cost,get_minimum_cost_slot,get_minimum_energy_slots,get_maximum_cost_slot
     )
 from schemas import (
     Automation
     )
-
+from classes import BetterActivationTimeSuggestion,ConflictResolutionActivationTimeSuggestion
 import datetime,json,logging
 from dateutil import parser,tz
 from collections import defaultdict
 from enum import Enum
+from datetime import timedelta
 
 class Conflict(Enum):
     def __new__(cls, *args, **kwds):
@@ -35,7 +36,8 @@ class Conflict(Enum):
 
 DAYS=["mon","tue","wed","thu","fri","sat","sun"]
 POWER_TRESHOLD_DEFAULT=150 #TODO:change this value
-MINIMUM_SAVED_VALUE=0.001 #TODO:think if you can extract this value from user preferences
+MINIMUM_SAVED_VALUE=0.01 #TODO:think if you can extract this value from user preferences
+MIN_AUTOMATION_POWER = 5  #TODO: decide a valid default value for the minimum power drawn
 
 logger = logging.getLogger('uvicorn.error')
 
@@ -66,7 +68,7 @@ def getTriggerDescription(trigger):
     if platform == "device":
         device_name = "Unknown device"
         if trigger.get('device_id'):
-            device_info = getDeviceInfo(trigger.get('device_id'))  # Assuming this function exists
+            device_info = getDeviceInfo(trigger.get('device_id')) 
             device_name = device_info["name_by_user"] if device_info["name_by_user"] != "None" else device_info["name"]
 
         domain = trigger.get('domain', 'unknown domain')
@@ -88,7 +90,6 @@ def getTriggerDescription(trigger):
             description = f'When you {trigger.get('subtype', 'unknown action').replace("_"," ")} "{device_name}"'
         
         else:
-            # Generic description for other domains
             description = f'When "{device_name}" is {format_action(trigger.get('type', 'unknown action'))}'
             
         if 'for' in trigger:
@@ -162,7 +163,6 @@ def getConditionDescription(condition):
             else:
                 description += " changes"
         else:
-            # Generic description for other domains
             description = f'"{device_name}" {format_action(condition.get('type', 'in unknown state'))}'
             
         if 'for' in condition:
@@ -235,11 +235,15 @@ def getAutomationDetails(automation,state_map={}):
     '''Returns a json file representing all the details of an automation.'''
     automation_power_drawn=0
     automation_energy_consumption=0
+    minimum_automation_cost=-1
+    maximum_automation_cost=-1
+    monthly_cost=-1
     temp=[]
     action_list=[]
     activation_days=[]
 
     activation_time=getAutomationTime(automation["trigger"])
+
     for trigger in automation["trigger"]:
         if trigger["platform"]=="device":
             device_info = getDeviceInfo(trigger.get('device_id'))  
@@ -295,8 +299,9 @@ def getAutomationDetails(automation,state_map={}):
                 "device_name":device_name,
                 "data":action_data
                 })
+            
 
-    return {
+    automation_out={
         "id":automation["id"],
         "entity_id":automation["entity_id"] if automation.get("entity_id") else "",
         "state":automation["state"]if automation.get("state") else "",
@@ -310,6 +315,26 @@ def getAutomationDetails(automation,state_map={}):
         "power_drawn":automation_power_drawn,
         "energy_consumption":automation_energy_consumption
         }
+
+    if activation_time!="":
+        monthly_cost=getMonthlyAutomationCost(automation_out,None,activation_days if len(activation_days)>0 else DAYS)
+    else:
+        minimum_cost_slot=get_minimum_cost_slot()
+        maximum_cost_slot=get_maximum_cost_slot()
+        if len(minimum_cost_slot)>0:
+            minimum_automation_cost=(automation_energy_consumption/1000)*float(minimum_cost_slot["cost"]) #FIXME: assumption consumption in Wh and cost in euro/kW
+        
+        if len(maximum_cost_slot)>0:
+            maximum_automation_cost=(automation_energy_consumption/1000)*float(maximum_cost_slot["cost"]) #FIXME: assumption consumption in Wh and cost in euro/kW    
+    
+
+    automation_out.update({
+        "monthly_cost":monthly_cost,
+        "maximum_cost_per_run":maximum_automation_cost,
+        "minimum_cost_per_run":minimum_automation_cost
+    })
+    
+    return automation_out
 
 def extract_action_operations(action):
     pairs=[]
@@ -452,12 +477,13 @@ def getAutomationStateMatrix(state_array,power_array, automation,day):
             
             for i in indexes_state:
                 dev_state_array[i]=act["state"]
-                dev_power_array[i]+=act["average_power"]
+                dev_power_array[i]=act["average_power"]
             
             for j in indexes_empty:
                 dev_state_array[i]=""
 
 def getAutomationCost(automation,energy_cost_matrix,day_list=DAYS):
+    '''Returns the monthly cost of running an automation'''
     #energy_cost_matrix=getEnergyCostMatrix()
     power_matrix=getPowerMatrix(automation)
     cost_matrix={day: 0.0 for day in day_list}  
@@ -471,20 +497,39 @@ def getAutomationCost(automation,energy_cost_matrix,day_list=DAYS):
 
     return cost_matrix
 
+def getMonthlyAutomationCost(automation,energy_cost_matrix,day_list=DAYS):
+    '''Returns the monthly cost of running an automation'''
+    if not energy_cost_matrix:
+        energy_cost_matrix=getEnergyCostMatrix()
+    power_matrix=getPowerMatrix(automation)
+    cost=0
+    for day in day_list:
+        for i in range(1440):
+            #power is in W so we need to divide by 1000 to get kW
+            #energy_cost is in euro/kWh
+            #we are computing the cost of 1 minute =>1/60 kWh each minute
+            #TODO:remember that this formula works only for €/kWh unit, power_matrix is in W
+            cost+=(power_matrix[day][i]/1000)*(energy_cost_matrix[day][i])*(1/60)
+
+    return cost*4 #assumption, each month is composed of 4 weeks
+
 def findBetterActivationTime(automation,device_list,saved_automations):
     temp_automation=automation.copy()
+    automation_days=automation["days"] if len(automation["days"])>0 else DAYS
+
     energy_cost_matrix=getEnergyCostMatrix()
     cost=getAutomationCost(automation,energy_cost_matrix)
+    monthlycost=getMonthlyAutomationCost(automation,energy_cost_matrix)
     minimum_cost_slot=get_minimum_cost_slot()
 
     ideal_cost=float(minimum_cost_slot["cost"])*(automation["energy_consumption"]/1000) if minimum_cost_slot else 0 # placeholder for ideal in the case in which the db is down
 
     less_cost_index=get_minimum_energy_slots() #for each day
 
-    suggestions=[]
+    suggestions=defaultdict(lambda:{"suggestion_type":"better_activation","days":[],"new_activation_time":"","monthly_saved_money": 0})
     if automation["time"]!="":
         activation_hour=float(automation["time"].split(":")[0])
-        for day in automation["days"] if len(automation["days"])>0 else DAYS:
+        for day in automation_days:
             if cost[day]<=ideal_cost:
                 continue
 
@@ -507,10 +552,10 @@ def findBetterActivationTime(automation,device_list,saved_automations):
                     
                     new_activation=f"{new_activation_hour:02d}:{minute}:00"
                     temp_automation["time"]=new_activation
-                    temp_automation["days"]=[day]#used to check conflicts only on the current day TODO: change this
+                    #temp_automation["days"]=[day]#used to check conflicts only on the current day TODO: change this
 
-                    new_cost=getAutomationCost(temp_automation,energy_cost_matrix,day_list=[day])
-                    saved_money=cost[day]-new_cost[day]
+                    new_cost=getMonthlyAutomationCost(temp_automation,energy_cost_matrix,day_list=automation_days)
+                    saved_money=monthlycost-new_cost #NOTICE ME
 
                     if saved_money>MINIMUM_SAVED_VALUE:
                         #Checking for conflicts with the new activation time
@@ -520,23 +565,15 @@ def findBetterActivationTime(automation,device_list,saved_automations):
                             return_only_conflicts=True)
                         
                         if len(conflicts)<=0:
-                            #new_cost=getAutomationCost(temp_automation,energy_cost_matrix,day_list=[day])
-                            
-                            #if new_cost[day]<cost[day]:
-                            #if new_cost[day]<=ideal_cost:
                             new_activation_found=True
-                            #saved_money=cost[day]-new_cost[day]
-                            suggestions.append(
-                                {
-                                    "day":day,
-                                    "new_activation_time":new_activation,
-                                    "saved_money": saved_money
-                                }
-                            )
+                            suggestions[new_activation]["days"].append(day)
+                            suggestions[new_activation]["new_activation_time"]=new_activation
+                            suggestions[new_activation]["monthly_saved_money"]=saved_money
                 
                 index+=1
+    
 
-    return {"suggestions":suggestions,"cost":cost}
+    return list(suggestions.values())
 
 def getConflicts(device_list,automations_list,return_only_conflicts=True):
     #Initializing the state matrix
@@ -566,10 +603,10 @@ def getConflicts(device_list,automations_list,return_only_conflicts=True):
 
 
     #Conflicts identification
-    conflicts_list = defaultdict(lambda: {"type": Conflict.EXCESSIVE_ENERGY.type, "days": []})
 
     threshold = get_configuration_value_by_key("power_threshold")  
     threshold=float(threshold["value"]) if threshold else POWER_TRESHOLD_DEFAULT
+    conflicts_list = defaultdict(lambda: {"type": Conflict.EXCESSIVE_ENERGY.type, "days": [],"threshold":threshold})
     
     conflict_is_occurring = False
     for i in range(len(cumulative_power_array)):  # Loop through all the minutes in the week (10080 minutes)
@@ -590,18 +627,15 @@ def getConflicts(device_list,automations_list,return_only_conflicts=True):
 
                 # If conflict already exists, append the current day; otherwise, initialize a new conflict
                 if key not in conflicts_list:
-                    conflicts_list[key] = {
-                        "days": [],
-                        "type":Conflict.EXCESSIVE_ENERGY.type,
+                    conflicts_list[key].update({
                         "start": start_conflict,
                         "end": end_conflict,
-                        "threshold":threshold,
                         "description": Conflict.EXCESSIVE_ENERGY.description.format(
                             treshold=threshold,
                             start=start_conflict,
                             end=end_conflict
                         )
-                    }
+                    })
                 conflicts_list[key]["days"].append(day)
                 conflict_is_occurring = False  # Reset the flag after recording the conflict
 
@@ -647,7 +681,49 @@ def getFeasibilityConflicts(automation):
                 }
     else:
         return None
+    
+def searchFutureActivationTime(device_list,automation_to_add,saved_automations):
+    # Get the list of conflicts
+    conflicts = getConflicts(device_list,[automation_to_add]+saved_automations,return_only_conflicts=True)
+    
+    # Base case: If there are no conflicts, return the current time
+    if len(conflicts)<=0:
+        return automation_to_add["time"]
+    
+    # Recursive case: Adjust the time to one unit after the end of the first conflict
+    first_conflict_end = conflicts[0]["end"]
+    if first_conflict_end>=automation_to_add["time"] and first_conflict_end<="23>59":
+        automation_to_add["time"] = (datetime.datetime.strptime(first_conflict_end, "%H:%M") + timedelta(minutes=1)).strftime("%H:%M")
+        # Recurse to resolve further conflicts
+        return searchFutureActivationTime(device_list,automation_to_add,saved_automations)
+    else:
+        return ""
 
+def searchPastActivationTime(device_list,automation_to_add,saved_automations):
+    # Get the list of conflicts
+    conflicts = getConflicts(device_list,[automation_to_add]+saved_automations,return_only_conflicts=True)
+    
+    # Base case: If there are no conflicts, return the current time
+    if len(conflicts)<=0:
+        return automation_to_add["time"]
+    
+    start_time = datetime.datetime.strptime(conflicts[0]["start"], "%H:%M")
+    end_time = datetime.datetime.strptime(conflicts[0]["end"], "%H:%M")
+    
+    conflict_duration = (end_time - start_time).seconds // 60  
+    automation_time = datetime.datetime.strptime(automation_to_add["time"], "%H:%M")
+
+    new_automation_time = automation_time - timedelta(minutes=(conflict_duration +1))
+    new_automation_time=new_automation_time.strftime("%H:%M")
+    if new_automation_time<=automation_to_add["time"] and new_automation_time>="00:00":
+        automation_to_add["time"] = new_automation_time
+        return searchPastActivationTime(device_list,automation_to_add,saved_automations)
+    else:
+        return ""
+
+
+
+    
 
 def getAutomationRouter():
     automation_router=APIRouter(tags=["Automation"],prefix="/automation")
@@ -669,7 +745,7 @@ def getAutomationRouter():
             ret=[]
             for automation in automations_details:
                 if get_suggestions:
-                    automation["suggestions"]=findBetterActivationTime(automation,dev_list,automations_details)["suggestions"]
+                    automation["suggestions"]=findBetterActivationTime(automation,dev_list,automations_details)
                 ret.append(automation)
             return ret
         
@@ -706,8 +782,9 @@ def getAutomationRouter():
     
     
     @automation_router.post("/simulate")
-    def Simulate_Automation_Addition(automation_in:Automation):
+    def Simulate_Automation_Addition(automation_in:Automation,return_state_matrix:bool=True):
         start_call=datetime.datetime.now()
+        suggestions=[]
 
         #Get automations saved and details of the one we want to add
         automation=getAutomationDetails(automation_in.automation)
@@ -725,13 +802,30 @@ def getAutomationRouter():
         #Getting conflicts
         simulation=getConflicts(device_list=dev_list,automations_list=new_automation_list,return_only_conflicts=False)
 
+
+        if len(simulation["conflicts"])>0:
+            automation_in_future=automation.copy()
+            automation_in_past=automation.copy()
+
+            first_conflict_end=simulation["conflicts"][0]["end"]
+            automation_in_future["time"] = (datetime.datetime.strptime(first_conflict_end, "%H:%M") + timedelta(minutes=1)).strftime("%H:%M")
+            new_activation_time=searchFutureActivationTime(dev_list,automation_in_future,saved_automations)
+            suggestions.append(ConflictResolutionActivationTimeSuggestion(new_activation_time=new_activation_time).to_dict())
+
+            start_time = datetime.datetime.strptime(simulation["conflicts"][0]["start"], "%H:%M")
+            end_time = datetime.datetime.strptime(simulation["conflicts"][0]["end"], "%H:%M")
+            
+            conflict_duration = (end_time - start_time).seconds // 60  
+            automation_in_past["time"] = (datetime.datetime.strptime(automation_in_past["time"], "%H:%M")- timedelta(minutes=(conflict_duration +1))).strftime("%H:%M")
+            new_activation_time=searchPastActivationTime(dev_list,automation_in_past,saved_automations)
+            suggestions.append(ConflictResolutionActivationTimeSuggestion(new_activation_time=new_activation_time).to_dict())
+        
         #TODO:remove this part in the final version
         feasibilty_conflicts=getFeasibilityConflicts(automation)
         if feasibilty_conflicts:
             simulation["conflicts"]=[feasibilty_conflicts]
 
         #Suggestions identification if no conflict occurs
-        suggestions=[]
         cost={
             	"mon":0,
 				"tue":0,
@@ -741,10 +835,9 @@ def getAutomationRouter():
 				"sat":0,
                 "sun":0
         }
-        if len(simulation["conflicts"])<=0 and automation["power_drawn"]>5: #TODO: decide a valid default value for the minimum power drawn
-            sustainability=findBetterActivationTime(automation,dev_list,saved_automations)
-            suggestions=sustainability["suggestions"]
-            cost=sustainability["cost"]
+
+        if len(simulation["conflicts"])<=0 and automation["power_drawn"]>MIN_AUTOMATION_POWER:
+            suggestions=findBetterActivationTime(automation,dev_list,saved_automations)
         
 
 
@@ -752,12 +845,16 @@ def getAutomationRouter():
         
         logger.debug(f"Simulate_Automation_Addition required {(datetime.datetime.now()-start_call).total_seconds()} [s]")
 
-        return {
-            "state_matrix":simulation["state_matrix"],
-            "cumulative_power_matrix":simulation["cumulative_power_matrix"],
+        ret={
+            "automation":automation,
             "conflicts":simulation["conflicts"],
             "suggestions":suggestions,
-            "cost":cost
-            }
+        }
+
+        if return_state_matrix:
+            ret.update({
+            "state_matrix":simulation["state_matrix"],
+            "cumulative_power_matrix":simulation["cumulative_power_matrix"]})
+        return ret
     
     return automation_router
