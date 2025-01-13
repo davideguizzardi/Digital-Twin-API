@@ -18,3 +18,8 @@ class ConflictResolutionActivationTimeSuggestion(Suggestion):
     new_activation_time:str=''
     suggestion_type:str="conflict_time_change"
     
+
+@dataclass
+class ConflictResolutionSplitSuggestion(Suggestion):
+    actions_split:list=field(default_factory=list) 
+    suggestion_type:str="conflict_split_automation"
