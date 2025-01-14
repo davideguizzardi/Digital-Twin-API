@@ -434,7 +434,7 @@ def add_entity_history_entry(entry_list):
 
 def get_entity_history_entries(entities_list,start_timestamp,end_timestamp):
     entities_list=[f'"{x}"' for x in entities_list]
-    query=f"SELECT * FROM Entity_History where timestamp>={start_timestamp} and timestamp<={end_timestamp} and entity_id in ({",".join(entities_list)})"
+    query=f"SELECT * FROM Entity_History where timestamp>={start_timestamp} and timestamp<={end_timestamp} and entity_id in ({','.join(entities_list)})"
     return fetch_multiple_elements(DbPathEnum.ENTITY_HISTORY,query)
 
 def get_all_entity_history_entries():

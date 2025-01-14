@@ -183,7 +183,7 @@ def getConsumptionRouter():
                 temp.append(element)
             return temp
         
-        logger.debug(f"Get_Entities_Consumption for {len(entities.split(","))} entities, time_range={(end_timestamp-start_timestamp).days} days, split={group}      elapsed_time={(datetime.datetime.now()-start_call).total_seconds()}[s]")
+        logger.debug(f"Get_Entities_Consumption for {len(entities.split(','))} entities, time_range={(end_timestamp-start_timestamp).days} days, split={group}      elapsed_time={(datetime.datetime.now()-start_call).total_seconds()}[s]")
         return res
     
     @consumption_router.get("/device")

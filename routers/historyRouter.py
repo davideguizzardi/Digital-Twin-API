@@ -27,7 +27,7 @@ def extractSingleDeviceHistory(device_id, start_timestamp,end_timestamp):
         entities_list=entities_list+[power_entity_id]
 
     if power_entity_id=="" and state_entity_id=="":
-        logger.warning(f"Get_Device_History for device: {device_data["name"]} didn't received any entity_id to use!")
+        logger.warning(f"Get_Device_History for device: {device_data['name']} didn't received any entity_id to use!")
         return []
 
     response=getEntitiesHistory(entities_list,start_timestamp,end_timestamp)
@@ -57,7 +57,7 @@ def extractSingleDeviceHistory(device_id, start_timestamp,end_timestamp):
             "energy_consumption": energy_consumption,
             "energy_consumption_unit":energy_consumption_unit
         })
-    logger.debug(f"Get_Device_History for device: {device_data["name"]} ({device_id}) elapsed_time={(datetime.datetime.now()-start_program).total_seconds()}[s]")
+    logger.debug(f"Get_Device_History for device: {device_data['name']} ({device_id}) elapsed_time={(datetime.datetime.now()-start_program).total_seconds()}[s]")
     return temp
 
 
@@ -74,7 +74,7 @@ def getEntitiesHistory(entities:list, start_timestamp,end_timestamp):
     else:
         entities_states=response["data"]
         if len(entities_states)==0:
-            logger.info(f"Get_Entity_History for entities {",".join(entities)} didn't produced any results..skipping...")
+            logger.info(f"Get_Entity_History for entities {','.join(entities)} didn't produced any results..skipping...")
             return {}
         res_pool={}
         res={}

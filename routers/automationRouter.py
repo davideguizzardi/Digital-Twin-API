@@ -79,7 +79,7 @@ def getTriggerDescription(trigger):
         description = ""
 
         if domain == 'sensor':
-            description = f'When "{device_name}" {trigger.get('type', 'unknown type')}'
+            description = f'When "{device_name}" {trigger.get("type", "unknown type")}'
             
             if 'above' in trigger and 'below' in trigger:
                 description += f" is between {trigger['above']} and {trigger['below']}"
@@ -91,10 +91,10 @@ def getTriggerDescription(trigger):
                 description += " changes"
 
         elif domain == 'bthome':
-            description = f'When you {trigger.get('subtype', 'unknown action').replace("_"," ")} "{device_name}"'
+            description = f'When you {trigger.get("subtype", "unknown action").replace("_"," ")} "{device_name}"'
         
         else:
-            description = f'When "{device_name}" is {format_action(trigger.get('type', 'unknown action'))}'
+            description = f'When "{device_name}" is {format_action(trigger.get("type", "unknown action"))}'
             
         if 'for' in trigger:
             duration_description = format_duration(trigger['for'])
@@ -167,7 +167,7 @@ def getConditionDescription(condition):
             else:
                 description += " changes"
         else:
-            description = f'"{device_name}" {format_action(condition.get('type', 'in unknown state'))}'
+            description = f'"{device_name}" {format_action(condition.get("type", "in unknown state"))}'
             
         if 'for' in condition:
             duration_description = format_duration(condition['for'])
@@ -187,7 +187,7 @@ def getConditionDescription(condition):
             description += f"Time is below {condition['after']}"
 
         if condition.get('weekday'):
-            days_string=f"Day is {",".join(condition.get('weekday'))}"
+            days_string=f"Day is {','.join(condition.get('weekday'))}"
             if description!="":
                 description+=f"and {days_string}"
             else:

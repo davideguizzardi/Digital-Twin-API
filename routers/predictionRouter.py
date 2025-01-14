@@ -229,7 +229,7 @@ def getPredictionRouter():
         y_predict=y_predict.tolist()
 
         for i in range(FUTURE_STEPS_SEQUENTIAL):
-            date_str=f"{last_date.strftime("%d-%m-%Y %H-")}{(last_date+timedelta(hours=1)).strftime("%H")}"
+            date_str=f"{last_date.strftime('%d-%m-%Y %H-')}{(last_date+timedelta(hours=1)).strftime('%H')}"
             energy_cons=y_predict[i]
             result.append({"date":date_str,"energy_consumption":energy_cons,"energy_consumption_unit":unit})
             last_date+=timedelta(hours=1)
@@ -291,7 +291,7 @@ def getPredictionRouter():
         y_predict=predictSequenceRecursive(model,dataset_complete,scaler,last_date)
 
         for i in range(FUTURE_STEPS_RECURSIVE):
-            date_str=f"{last_date.strftime("%d-%m-%Y %H-")}{(last_date+timedelta(hours=1)).strftime("%H")}"
+            date_str=f"{last_date.strftime('%d-%m-%Y %H-')}{(last_date+timedelta(hours=1)).strftime('%H')}"
             energy_cons=y_predict[i]
             result.append({"date":date_str,"energy_consumption":float(energy_cons),"energy_consumption_unit":unit})
             last_date+=timedelta(hours=1)
@@ -381,7 +381,7 @@ def getPredictionRouter():
         y_predict=predictSequenceRecursive(model,dataset_complete,scaler,last_date,consumption_delta)
 
         for i in range(FUTURE_STEPS_RECURSIVE):
-            date_str=f"{last_date.strftime("%d-%m-%Y %H-")}{(last_date+timedelta(hours=1)).strftime("%H")}"
+            date_str=f"{last_date.strftime('%d-%m-%Y %H-')}{(last_date+timedelta(hours=1)).strftime('%H')}"
             energy_cons=y_predict[i]
             result.append({"date":date_str,"energy_consumption":float(energy_cons),"energy_consumption_unit":unit})
             last_date+=timedelta(hours=1)
