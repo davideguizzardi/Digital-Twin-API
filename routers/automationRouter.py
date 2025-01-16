@@ -14,7 +14,7 @@ from database_functions import (
 from schemas import (
     Automation
     )
-from classes import BetterActivationTimeSuggestion,ConflictResolutionActivationTimeSuggestion,ConflictResolutionSplitSuggestion
+from classes import BetterActivationTimeSuggestion,ConflictResolutionActivationTimeSuggestion,ConflictResolutionSplitSuggestion,ConflictResolutionDeactivateAutomationsSuggestion
 import datetime,json,logging
 from dateutil import parser,tz
 from collections import defaultdict
@@ -819,7 +819,7 @@ def searchPastActivationTime(device_list,automation_to_add,saved_automations):
     
 
 
-def getConflictSolvingSuggestions(first_conflict:dict, automation:dict, dev_list:list, saved_automations:list)->list[ConflictResolutionActivationTimeSuggestion]:
+def getChangeTimeSuggestions(first_conflict:dict, automation:dict, dev_list:list, saved_automations:list)->list[ConflictResolutionActivationTimeSuggestion]:
     """
     Search for possible suggestions that could solve excessive power demand conflicts.
 
@@ -832,21 +832,8 @@ def getConflictSolvingSuggestions(first_conflict:dict, automation:dict, dev_list
     Returns:
         list: A list of conflict resolution suggestions.
     """
-    suggestions = []
-
-    # Resolve future conflict
-    automation_in_future = automation.copy()
-    first_conflict_end = first_conflict["end"]
-    automation_in_future["time"] = (
-        datetime.datetime.strptime(first_conflict_end, "%H:%M") + timedelta(minutes=1)
-    ).strftime("%H:%M")
-
-    new_activation_time_future = searchFutureActivationTime(dev_list, automation_in_future, saved_automations)
-    if new_activation_time_future!="":
-        suggestions.append(
-            ConflictResolutionActivationTimeSuggestion(new_activation_time=new_activation_time_future).to_dict()
-        )
-
+    new_time_list=[]
+    
     # Resolve past conflict
     automation_in_past = automation.copy()
     start_time = datetime.datetime.strptime(first_conflict["start"], "%H:%M")
@@ -859,10 +846,43 @@ def getConflictSolvingSuggestions(first_conflict:dict, automation:dict, dev_list
 
     new_activation_time_past = searchPastActivationTime(dev_list, automation_in_past, saved_automations)
     if new_activation_time_past!="":
-        suggestions.append(
-            ConflictResolutionActivationTimeSuggestion(new_activation_time=new_activation_time_past).to_dict()
-        )
+        new_time_list.append(new_activation_time_past)
 
+    # Resolve future conflict
+    automation_in_future = automation.copy()
+    first_conflict_end = first_conflict["end"]
+    automation_in_future["time"] = (
+        datetime.datetime.strptime(first_conflict_end, "%H:%M") + timedelta(minutes=1)
+    ).strftime("%H:%M")
+
+    new_activation_time_future = searchFutureActivationTime(dev_list, automation_in_future, saved_automations)
+    if new_activation_time_future!="":
+        new_time_list.append(new_activation_time_future)
+
+
+    return [ConflictResolutionActivationTimeSuggestion(new_activation_time=new_time_list)] if new_time_list else []
+
+
+def getAutomationsToDeactivateSuggestions(conflict_list,saved_automations):
+    suggestions=[]
+    conflicting_automations = []
+
+    for conflict in conflict_list:
+        #Deactivate overlapping automations
+        conflict_time=datetime.datetime.strptime(conflict["start"], "%H:%M")
+        #i need to find automations whose time is before conflict_time and time+maximum_duration after conflict time 
+        for auto in [x for x in saved_automations if x["time"]!=""]:
+            # Convert the automation time to a datetime object
+            auto_time = datetime.datetime.strptime(auto["time"], "%H:%M:%S")
+            duration=max(act["average_duration"] for act in auto["action"] if auto.get("action"))
+            # Calculate the end time (automation_time + duration)
+            auto_end_time = auto_time + timedelta(minutes=duration)
+            
+            # Check the conditions
+            if auto_time <= conflict_time <= auto_end_time:
+                conflicting_automations.append(auto["name"])
+    if len(conflicting_automations)>0:
+        suggestions.append(ConflictResolutionDeactivateAutomationsSuggestion(automations_list=conflicting_automations))
     return suggestions
 
 #endregion
@@ -934,6 +954,8 @@ def getAutomationRouter():
         #Get automations saved and details of the one we want to add
         automation=getAutomationDetails(automation_in.automation)
         saved_automations = Get_Automations()
+        #TODO:de-comment this part in the final release
+        #saved_automations=[a for a in saved_automations if a["state"]=="on"]
         new_automation_list=saved_automations+[automation]
 
         #Getting the list of devices
@@ -942,8 +964,6 @@ def getAutomationRouter():
         feasibilty_conflicts=getFeasibilityConflicts(automation)
         if feasibilty_conflicts:
             conflicts=[feasibilty_conflicts]
-
-            #TODO:Look for suggestions on how to solve the conflict
 
             sorted_actions=sorted(automation["action"], key=lambda x: x["average_power"])
 
@@ -969,7 +989,10 @@ def getAutomationRouter():
             #If there are conflicts i look for suggestions on how to solve them
             if len(excessive_energy_conflicts)>0:
                 conflicts+=excessive_energy_conflicts
-                suggestions+=getConflictSolvingSuggestions(excessive_energy_conflicts[0],automation,dev_list,saved_automations)
+                suggestions+=getChangeTimeSuggestions(excessive_energy_conflicts[0],automation,dev_list,saved_automations)
+                suggestions+=getAutomationsToDeactivateSuggestions(excessive_energy_conflicts,saved_automations)
+
+                
                 
         
 

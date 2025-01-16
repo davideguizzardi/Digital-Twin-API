@@ -453,7 +453,7 @@ def get_all_appliances_usage_entries():
 
 
 def get_appliance_usage_entry(device_id:str, state:str):
-    query='select average_power,average_power_unit,average_duration,duration_unit from Appliances_Usage where device_id=? and state=?'
+    query='select average_power,average_power_unit,average_duration,duration_unit,maximum_power from Appliances_Usage where device_id=? and state=?'
     params=(device_id,state)
     return fetch_one_element(DbPathEnum.CONSUMPTION,query,params)
 

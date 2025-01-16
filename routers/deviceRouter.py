@@ -43,7 +43,8 @@ def getDeviceRouter():
                     "device_id":data["device_id"],
                     "state":data["state"],
                     "average_duration":data["average_duration"],
-                    "average_power":data["average_power"]
+                    "average_power":data["average_power"],
+                    "max_power":data["maximum_power"]
                 }
             )
 

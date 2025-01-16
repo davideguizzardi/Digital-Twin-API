@@ -15,8 +15,13 @@ class BetterActivationTimeSuggestion(Suggestion):
 
 @dataclass
 class ConflictResolutionActivationTimeSuggestion(Suggestion):
-    new_activation_time:str=''
+    new_activation_time:list[str]=field(default_factory=list)
     suggestion_type:str="conflict_time_change"
+
+@dataclass
+class ConflictResolutionDeactivateAutomationsSuggestion(Suggestion):
+    automations_list:list[str]=field(default_factory=list)
+    suggestion_type:str="conflict_deactivate_automations"
     
 
 @dataclass
