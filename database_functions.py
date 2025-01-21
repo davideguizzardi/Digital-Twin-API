@@ -297,7 +297,7 @@ def delete_map_entry(entity_id:str):
 def delete_floor_map_configuration(floor:int):
     query = "DELETE FROM Map_config WHERE floor=?"
     params = (floor,)
-    return execute_one_query(query,params)
+    return execute_one_query(DbPathEnum.CONFIGURATION,query,params)
 
 def get_all_map_entities():
     return fetch_multiple_elements(DbPathEnum.CONFIGURATION,"SELECT * FROM Map_config")

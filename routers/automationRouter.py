@@ -240,7 +240,7 @@ def formatServiceString(service):
 #region Support functions
 def getAutomationDetails(automation,state_map={}):
     '''Returns a json file representing all the details of an automation.'''
-    automation_power_drawn=0
+    automation_average_power_drawn=0
     automation_energy_consumption=0
     minimum_automation_cost=-1
     maximum_automation_cost=-1
@@ -293,7 +293,7 @@ def getAutomationDetails(automation,state_map={}):
                     "device_name":device_name,
                     "data":action_data
                 })
-                automation_power_drawn+=usage_data["average_power"]
+                automation_average_power_drawn+=usage_data["average_power"]
                 automation_energy_consumption+=usage_data["average_power"]*(usage_data["average_duration"]/60) #Remember that use time is express in minutes
                 action_list.append(usage_data)
         else:
@@ -319,7 +319,7 @@ def getAutomationDetails(automation,state_map={}):
         "time":activation_time,
         "days":activation_days,
         "action":action_list,
-        "power_drawn":automation_power_drawn,
+        "average_power_drawn":automation_average_power_drawn,
         "energy_consumption":automation_energy_consumption
         }
 
@@ -490,7 +490,8 @@ def getAutomationStateMatrix(state_array,power_array, automation,day):
             
             for i in indexes_state:
                 dev_state_array[i]=act["state"]
-                dev_power_array[i]=act["average_power"]
+                dev_power_array[i]=act["maximum_power"]
+                #dev_power_array[i]=act["average_power"]
             
             for j in indexes_empty:
                 dev_state_array[i]=""
@@ -760,7 +761,7 @@ def getFeasibilityConflicts(automation):
     threshold = get_configuration_value_by_key("power_threshold")  
     threshold=float(threshold["value"]) if threshold else POWER_TRESHOLD_DEFAULT
 
-    automation_power=automation.get("power_drawn",0)
+    automation_power=sum([x["maximum_power"] for x in automation["action"]])
     if  automation_power>= threshold:
         return {
                 "type":Conflict.NOT_FEASIBLE_AUTOMATION.type,
@@ -997,7 +998,7 @@ def getAutomationRouter():
         
 
         #Suggestions identification if no conflict occurs
-        if len(conflicts)<=0 and automation["power_drawn"]>MIN_AUTOMATION_POWER:
+        if len(conflicts)<=0 and automation["average_power_drawn"]>MIN_AUTOMATION_POWER:
             suggestions+=findBetterActivationTime(automation,dev_list,saved_automations)
         
 

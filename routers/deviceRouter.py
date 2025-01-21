@@ -15,6 +15,10 @@ def getDeviceRouter():
             res=getDevicesNameAndId()
         else:    
             res=getDevicesFast()
+            if res["status_code"]==200:
+                for dev in res['data']:
+                    dev["name"]=dev["name_by_user"] if dev["name_by_user"] else dev["name"]
+                    dev.pop("name_by_user",None)
         if res["status_code"]!=200:
             raise HTTPException(status_code=res["status_code"],detail=res["data"])
         return res["data"]
