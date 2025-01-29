@@ -53,19 +53,19 @@ def getDeviceRouter():
             )
 
         #TODO: remove this part in the future, it is used only to test purposed
-        virtual_devices=["washing_machine","microwave"]
-        with open("./data/appliances_consumption_map.json") as file:
-            consumption_map=json.load(file)
-            for device in virtual_devices:
-                for state in consumption_map[device]:
-                    result[device].append(
-                    {
-                        "device_id":f"virtual.{device}",
-                        "state":state["name"],
-                        "average_duration":state.get("default_duration",0)/60,
-                        "average_power":state["power_consumption"]
-                    }
-            )
+        #virtual_devices=["washing_machine","microwave"]
+        #with open("./data/appliances_consumption_map.json") as file:
+        #    consumption_map=json.load(file)
+        #    for device in virtual_devices:
+        #        for state in consumption_map[device]:
+        #            result[device].append(
+        #            {
+        #                "device_id":f"virtual.{device}",
+        #                "state":state["name"],
+        #                "average_duration":state.get("default_duration",0)/60,
+        #                "average_power":state["power_consumption"]
+        #            }
+        #    )
 
         return dict(result)
         

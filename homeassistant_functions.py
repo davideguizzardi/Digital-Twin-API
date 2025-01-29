@@ -325,7 +325,9 @@ def getServicesByEntity(entity_id:str):
                     #per ogni servizio controllo che il suo valore "supported_features" sia presente nella lista estratta all'inizio
                     #se è presente allora lo aggiungo al risultato
                     for key in services:
-                        service_supported_features=services[key]["target"]["entity"][0].get("supported_features")
+                        service_supported_features=None
+                        if services[key].get("target",None):
+                            service_supported_features=services[key]["target"]["entity"][0].get("supported_features")
                         #alcuni servizi non dispongono del campo supported features,in quel caso il servizio è ritenuto
                         #supportato di default
                         if service_supported_features:
@@ -489,13 +491,24 @@ def getListOfSupported(supported_features:int)->list[int]:
         i=i+1
     return res
 
-
-
+from collections import defaultdict
+from database_functions import add_multiple_elements
 
 def main():
     initializeToken()
-    obj=getHistory("switch.shellyplusplugit_80646fc994c8_switch_0",datetime.datetime.now()-datetime.timedelta(days=13),datetime.datetime.now())
-    print("Done")
+    new_list=[]
+    devices=defaultdict(lambda:[])
+    res=getDevicesFast()
+    if res["status_code"]==200:
+        for dev in res['data']:
+            if dev["device_class"] not in ["update","sensor","number","weather","device_tracker"]:
+                dev["name"]=dev["name_by_user"] if dev["name_by_user"] else dev["name"]
+                dev.pop("name_by_user",None)
+                devices[dev["device_class"]].append({"name":dev["name"],"device_id":dev["device_id"],"class":dev["device_class"]})
+
+        with open("cnr_usable_device.json", "w") as json_file:
+            json.dump({"devices":dict(devices)}, json_file, indent=4) 
+
 
 if __name__ == "__main__":
     main()

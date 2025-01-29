@@ -67,7 +67,7 @@ def format_duration(duration):
 
 def getTriggerDescription(trigger):
     '''Given the trigger it returns its natural language description'''
-    platform = trigger.get('platform', 'unknown platform')
+    platform = trigger.get('platform', 'unknown platform') if "platform" in trigger else trigger.get('trigger', 'unknown platform')
 
     if platform == "device":
         device_name = "Unknown device"
@@ -89,6 +89,8 @@ def getTriggerDescription(trigger):
                 description += f" is below {trigger['below']}"
             else:
                 description += " changes"
+        elif domain == 'binary_sensor':
+            description = f'When "{device_name}" is {trigger.get("type", "unknown type")}'
 
         elif domain == 'bthome':
             description = f'When you {trigger.get("subtype", "unknown action").replace("_"," ")} "{device_name}"'
@@ -248,26 +250,38 @@ def getAutomationDetails(automation,state_map={}):
     temp=[]
     action_list=[]
     activation_days=[]
+    
+    #Section required for integration with CNR
+    trigger_key="trigger" if "trigger" in automation else "triggers"
+    condition_key="condition" if "condition" in automation else "conditions"
+    action_key="action" if "action" in automation else "actions"
 
-    activation_time=getAutomationTime(automation["trigger"])
+    activation_time=getAutomationTime(automation.get(trigger_key,{}))
 
-    for trigger in automation["trigger"]:
-        if trigger["platform"]=="device":
+    for trigger in automation.get(trigger_key,[]):
+        if trigger.get("platform")=="device" or trigger.get("trigger")=="device":
             device_info = getDeviceInfo(trigger.get('device_id'))  
             trigger["device_name"] = device_info["name_by_user"] if device_info["name_by_user"] != "None" else device_info["name"]
+        if "entity_id" in trigger:
+            device_info = getDeviceInfo(getDeviceId(trigger.get('entity_id')))  
+            trigger["device_name"] = device_info["name_by_user"] if device_info["name_by_user"] != "None" else device_info["name"]
+        
         trigger["description"]=getTriggerDescription(trigger)
 
-    for condition in automation["condition"]:
+    for condition in automation.get(condition_key,[]):
         if condition["condition"]=="device":
             device_info = getDeviceInfo(condition.get('device_id'))  
             condition["device_name"] = device_info["name_by_user"] if device_info["name_by_user"] != "None" else device_info["name"]
+        if "entity_id" in condition:
+            device_info = getDeviceInfo(getDeviceId(trigger.get('entity_id')))  
+            condition["device_name"] = device_info["name_by_user"] if device_info["name_by_user"] != "None" else device_info["name"]
         condition["description"]=getConditionDescription(condition) 
 
-    time_condition=[x for x in automation["condition"] if x["condition"]=="time"]
+    time_condition=[x for x in automation.get(condition_key,[]) if x["condition"]=="time"]
     if len(time_condition)>0:
         activation_days=time_condition[0].get("weekday", []) #we assume only one time trigger
 
-    for action in automation["action"]:
+    for action in automation.get(action_key,[]):
         temp.extend(extract_action_operations(action))
 
     if not state_map:
@@ -296,6 +310,16 @@ def getAutomationDetails(automation,state_map={}):
                 automation_average_power_drawn+=usage_data["average_power"]
                 automation_energy_consumption+=usage_data["average_power"]*(usage_data["average_duration"]/60) #Remember that use time is express in minutes
                 action_list.append(usage_data)
+            else:
+                action_list.append({
+                    "device_id":device_id,
+                    "state":state,
+                    "service":service,
+                    "domain":domain,
+                    "description":f"{formatServiceString(service)} {device_name}",
+                    "device_name":device_name,
+                    "data":action_data
+                })
         else:
             action_list.append({
                 "device_id":device_id,
@@ -309,13 +333,13 @@ def getAutomationDetails(automation,state_map={}):
             
 
     automation_out={
-        "id":automation["id"],
+        "id":automation.get("id",""),
         "entity_id":automation["entity_id"] if automation.get("entity_id") else "",
         "state":automation["state"]if automation.get("state") else "",
-        "description":automation["description"],
-        "trigger":automation["trigger"],
-        "condition":automation["condition"],
-        "name":automation["alias"],
+        "description":automation.get("description",""),
+        "trigger":automation.get(trigger_key,""),
+        "condition":automation.get(condition_key,[]),
+        "name":automation.get("alias",""),
         "time":activation_time,
         "days":activation_days,
         "action":action_list,
@@ -350,11 +374,11 @@ def extract_action_operations(action):
         #if contains "device_id" then it is an action on device, the "type" field represent the service
         pairs.append((action["device_id"],action["type"],action["domain"],action_data))
 
-    if action.get("service")!=None:
+    if action.get("service")!=None or action.get("action")!=None:
         #if contains "service" then is a service type of action, target->entity_id/device_id is the recipient 
         # while "service" is the service
-        service=action["service"].split(".")[1]
-        domain=action["service"].split(".")[0]
+        service=action["service"].split(".")[1] if "service" in action else action["action"].split(".")[1]
+        domain=action["service"].split(".")[0] if "service" in action else action["action"].split(".")[0]
         #some actions (like notify) don't have target in that case we assume no action
         target=action.get("target")
         if target: 
@@ -373,16 +397,18 @@ def extract_action_operations(action):
                     pairs.extend([(device, service,domain,action_data) for device in devices_ids])
                 else:
                     pairs.append((devices_ids, service,domain,action_data))
+        elif "entity_id" in action:
+            pairs.append((getDeviceId(action.get("entity_id")),service,domain,action_data))
     return pairs
 
 def getAutomationTime(trigger):
     activation_time=""
 
-    time_trigger=[x for x in trigger if x["platform"]=="time"]
+    time_trigger=[x for x in trigger if x.get("platform","")=="time"]
     if len(time_trigger)>0:
         activation_time=time_trigger[0]["at"] #we assume only one time trigger
 
-    sun_trigger=[x for x in trigger if x["platform"]=="sun"]
+    sun_trigger=[x for x in trigger if x.get("platform","")=="sun"]
     if len(sun_trigger)>0:
         resp=getEntity("sun.sun")
         if resp["status_code"]==200:
@@ -440,24 +466,24 @@ def getPowerMatrix(automation):
     '''
     power_matrix = {day: [0] * 1440 for day in DAYS} 
     power_array=[0]*(1440*7)
-    if automation["time"]!="":
+    if automation.get("time","")!="":
         activation_time=parser.parse(automation["time"])
         activation_days=automation["days"] if len(automation["days"])>0 else DAYS
         for act in automation["action"]:
             indexes=[]
             for day in activation_days:
                 activation_index=(activation_time.hour*60+activation_time.minute)+1440*DAYS.index(day)
-                end_index=activation_index+int(act["average_duration"])
+                end_index=activation_index+int(act.get("average_duration",0))
                 if end_index>len(power_array): 
                     #an activation of sunday overflow into monday
-                    offset=activation_index+int(act["average_duration"])-len(power_array)
+                    offset=activation_index+int(act.get("average_duration",0))-len(power_array)
                     indexes+=list(range(activation_index,len(power_array)))
                     indexes+=list(range(0,offset))
                 else:
                     indexes+=list(range(activation_index,end_index))
                     
             for i in indexes:
-                power_array[i]+=act["average_power"]
+                power_array[i]+=act.get("average_power",0)
 
         for d in range(len(DAYS)):
             power_matrix[DAYS[d]]=power_array[1440*d:1440*(d+1)]
@@ -477,10 +503,10 @@ def getAutomationStateMatrix(state_array,power_array, automation,day):
             dev_power_array=power_array[act["device_id"]]
 
             activation_index=(activation_time.hour*60+activation_time.minute)+1440*DAYS.index(day)
-            end_index=activation_index+int(act["average_duration"])
+            end_index=activation_index+int(act.get("average_duration",0))
             if end_index>len(dev_state_array): 
                 #an activation of sunday overflow into monday
-                offset=activation_index+int(act["average_duration"])-len(dev_power_array)
+                offset=activation_index+int(act.get("average_duration",0))-len(dev_power_array)
                 indexes_state+=list(range(activation_index,len(dev_power_array)))
                 indexes_state+=list(range(0,offset))
             else:
@@ -489,12 +515,12 @@ def getAutomationStateMatrix(state_array,power_array, automation,day):
                     indexes_empty+=list(range(end_index,1440*(DAYS.index(day)+1)))#Added to fix a bug, could be removed if problems occurs
             
             for i in indexes_state:
-                dev_state_array[i]=act["state"]
-                dev_power_array[i]=act["maximum_power"]
+                dev_state_array[i]=act.get("state","")
+                dev_power_array[i]=act.get("maximum_power",0)
                 #dev_power_array[i]=act["average_power"]
             
             for j in indexes_empty:
-                dev_state_array[i]=""
+                dev_state_array[j]=""
 
 def getAutomationCost(automation,energy_cost_matrix,day_list=DAYS):
     '''Returns the monthly cost of running an automation'''
@@ -874,7 +900,7 @@ def getAutomationsToDeactivateSuggestions(conflict_list,saved_automations):
         #i need to find automations whose time is before conflict_time and time+maximum_duration after conflict time 
         for auto in [x for x in saved_automations if x["time"]!=""]:
             # Convert the automation time to a datetime object
-            auto_time = datetime.datetime.strptime(auto["time"], "%H:%M:%S")
+            auto_time = datetime.datetime.strptime(auto["time"], "%H:%M:%S" if len(auto["time"].split(":")) == 3 else "%H:%M")
             duration=max(act["average_duration"] for act in auto["action"] if auto.get("action"))
             # Calculate the end time (automation_time + duration)
             auto_end_time = auto_time + timedelta(minutes=duration)
