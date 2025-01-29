@@ -72,7 +72,7 @@ def historyExtractionProcedure(start_timestamp:datetime.datetime=datetime.date.t
         logger.error("getDevicesFast returned "+res["status_code"]+", "+res["data"])
         return
     
-    devicesToRemove=["sensor","device_tracker","weather","event"]
+    devicesToRemove=["sensor","device_tracker","weather","event","update"]
     devices_list=[x["device_id"] for x in res["data"] if x["device_class"] not in devicesToRemove and x["name"]!='Sun']
 
     device_history=[]

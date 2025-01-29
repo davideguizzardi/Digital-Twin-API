@@ -140,3 +140,5 @@ actions={
 				}
 			}
 }
+
+CONFIGURATION_PATH="./data/configuration.txt"

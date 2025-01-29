@@ -1,10 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from routers_old import (
-    getTestRouter
-    ,getHomeRouter
-    )
 from routers.entityRouter import getEntityRouter
 from routers.automationRouter import getAutomationRouter
 from routers.serviceRouter import getServiceRouter
@@ -12,25 +8,25 @@ from routers.configurationRouter import getConfigurationRouter
 from routers.configurationRouter import getMapConfigurationRouter
 from routers.configurationRouter import getEnergyCalendarConfigurationRouter
 from routers.configurationRouter import getUserRouter
-from routers.virtualRouter import getVirtualRouter
 from routers.consumptionRouter import getConsumptionRouter
 from routers.historyRouter import getHistoryRouter
 from routers.deviceRouter import getDeviceRouter
-from routers.predictionRouter import getPredictionRouter
+
 from homeassistant_functions import initializeToken
+from schemas import CONFIGURATION_PATH
+import configparser
 
 import uvicorn
 
 
 
-def create_api():
+def create_api(enable_prediction:False):
     api=FastAPI(title="Digial Twin API",docs_url="/")
 
     routers=[
-        getPredictionRouter(),
         getEntityRouter(),
         getDeviceRouter(),
-        getHomeRouter(),
+        #getHomeRouter(),
         getHistoryRouter(),
         getConsumptionRouter(),
         getAutomationRouter(),
@@ -39,9 +35,13 @@ def create_api():
         getUserRouter(),
         getMapConfigurationRouter(),
         getEnergyCalendarConfigurationRouter(),
-        getVirtualRouter(),
-        getTestRouter()
+        #getVirtualRouter(),
+        #getTestRouter()
     ]
+
+    if enable_prediction:
+        from routers.predictionRouter import getPredictionRouter
+        routers.append(getPredictionRouter())
 
     for router in routers:
         api.include_router(router)
@@ -61,8 +61,15 @@ def create_api():
 
 def main():
     initializeToken()
-    api = create_api()
-    uvicorn.run(api, host="0.0.0.0",port=8000,log_level="debug")
+    parser=configparser.ConfigParser()
+    parser.read(CONFIGURATION_PATH)
+    
+    host=parser["Network"]["host"] if 'host' in parser["Network"] else "0.0.0.0"
+    port = int(parser["Network"]['port']) if 'port' in parser["Network"] else 8000
+
+    enable_prediction=parser.getboolean("ApiConfiguration","enable_prediction")
+    api = create_api(enable_prediction)
+    uvicorn.run(api, host=host,port=port,log_level="debug")
 
 if __name__ == "__main__":
     main()

@@ -3,3 +3,9 @@ __pycache__/*
 data/configuration.txt
 routers/__pycache__/*
 logs/periodic_functions.log
+logs/periodic_functions.log
+data/configuration.txt
+data/digital_twin_configuration.db
+data/digital_twin_consumption - Copy.db
+data/digital_twin_consumption.db
+data/digital_twin_entity_history.db
