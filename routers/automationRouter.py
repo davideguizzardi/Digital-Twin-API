@@ -406,7 +406,10 @@ def getAutomationTime(trigger):
 
     time_trigger=[x for x in trigger if x.get("platform","")=="time"]
     if len(time_trigger)>0:
-        activation_time=time_trigger[0]["at"] #we assume only one time trigger
+        if len(time_trigger[0]["at"].split(":")) == 3:
+            activation_time=time_trigger[0]["at"][:-3]
+        else:
+            activation_time=time_trigger[0]["at"] #we assume only one time trigger
 
     sun_trigger=[x for x in trigger if x.get("platform","")=="sun"]
     if len(sun_trigger)>0:
@@ -787,7 +790,7 @@ def getFeasibilityConflicts(automation):
     threshold = get_configuration_value_by_key("power_threshold")  
     threshold=float(threshold["value"]) if threshold else POWER_TRESHOLD_DEFAULT
 
-    automation_power=sum([x["maximum_power"] for x in automation["action"]])
+    automation_power=sum([x.get("maximum_power",0) for x in automation["action"]])
     if  automation_power>= threshold:
         return {
                 "type":Conflict.NOT_FEASIBLE_AUTOMATION.type,
