@@ -9,3 +9,8 @@ data/digital_twin_configuration.db
 data/digital_twin_consumption - Copy.db
 data/digital_twin_consumption.db
 data/digital_twin_entity_history.db
+api/ignore/*
+api/__pycache__/*
+api/logs/*
+api/routers/__pycache__/*
+ignore/*

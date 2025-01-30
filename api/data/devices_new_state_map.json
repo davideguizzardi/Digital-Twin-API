@@ -1,0 +1,13 @@
+{
+	"turn_on": "on",
+	"turn_off": "off",
+	"toggle": "on|off",
+	"volume_up": "same",
+	"volume_down": "same",
+	"media_play": "playing",
+	"media_pause": "paused",
+	"media_stop": "idle",
+	"volume_set": "same",
+	"volume_mute": "same",
+	"play_media": "playing"
+}
