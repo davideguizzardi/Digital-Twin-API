@@ -2,7 +2,9 @@ from fastapi import APIRouter,HTTPException
 from homeassistant_functions import (
     getDevicesFast,getDevicesNameAndId,
     getSingleDeviceFast)
-from database_functions import (get_all_appliances_usage_entries)
+from database_functions import (
+    get_all_appliances_usage_entries,get_usage_entry_for_appliance,get_configuration_of_device,get_names_and_id_configuration,
+    get_map_entity)
 from collections import defaultdict
 import json
 
@@ -12,13 +14,28 @@ def getDeviceRouter():
     @device_router.get("")
     def Get_All_Devices(get_only_names:bool=False):
         if get_only_names:
+            return get_names_and_id_configuration()
             res=getDevicesNameAndId()
         else:    
             res=getDevicesFast()
             if res["status_code"]==200:
                 for dev in res['data']:
                     dev["name"]=dev["name_by_user"] if dev["name_by_user"] else dev["name"]
+                    dev["category"]=dev["device_class"]
+                    dev["show"]=True
                     dev.pop("name_by_user",None)
+                    configuration_data=get_configuration_of_device(dev["device_id"])
+                    if configuration_data:
+                        dev["name"]=configuration_data["name"]
+                        dev["category"]=configuration_data["category"]
+                        dev["show"]=configuration_data["show"]==1
+                    map_data=get_map_entity(dev["device_id"])
+                    if map_data:
+                        dev["map_data"]={
+                            "x":map_data["x"],
+                            "y":map_data["y"],
+                            "floor":map_data["floor"]
+                        }
         if res["status_code"]!=200:
             raise HTTPException(status_code=res["status_code"],detail=res["data"])
         return res["data"]
@@ -30,6 +47,23 @@ def getDeviceRouter():
             raise HTTPException(status_code=res["status_code"],detail=res["data"])
         return res["data"]
     
+    @device_router.get("/usage/single/{device_id}")
+    def Get_Single_Device_Usage_Data(device_id:str):
+        usage_data=get_usage_entry_for_appliance(device_id)
+        device=getSingleDeviceFast(device_id)
+        if device["status_code"]==200:
+            device=device["data"]
+        res=[]
+        for data in usage_data:
+            res.append({
+                    "device_id":device_id,
+                    "entity_id":device.get("state_entity_id",""),
+                    "state":data["state"],
+                    "average_duration":data["average_duration"],
+                    "average_power":data["average_power"],
+                    "max_power":data["maximum_power"]
+            })
+        return {device.get("name"):res}
 
     @device_router.get("/usage/all")
     def Get_All_Device_Usage_Data():

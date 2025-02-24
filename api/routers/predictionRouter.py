@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 import sqlite3,json,os
 
-from database_functions import fetch_multiple_elements,DbPathEnum,get_appliance_usage_entry
+from database_functions import fetch_multiple_elements,DbPathEnum,get_usage_entry_for_appliance_state
 from homeassistant_functions import getSingleDeviceFast
 
 FUTURE_STEPS_RECURSIVE=12
@@ -370,8 +370,8 @@ def getPredictionRouter():
             device_info=getSingleDeviceFast(device_id)
             current_state=device_info["data"]["state"]
             if state!=current_state:
-                old_state_data=get_appliance_usage_entry(device_id,current_state)
-                new_state_data=get_appliance_usage_entry(device_id,state)
+                old_state_data=get_usage_entry_for_appliance_state(device_id,current_state)
+                new_state_data=get_usage_entry_for_appliance_state(device_id,state)
 
                 remaining_time=new_state_data["average_duration"]
                 time_delta=min(60-selected_date.minute,remaining_time)

@@ -39,6 +39,14 @@ QUERIES={
         "where start>={from_time} and end<={to_time} {device_filter}"
         "GROUP by strftime('%m-%Y',start,'unixepoch','localtime') {device_id_grouping} order by start"
         ),
+    "total_consumption":
+        ("select "
+        "{device_id_field}"  
+        "strftime('%d-%m-%Y',min(start),'unixepoch','localtime') as 'date',"
+        "sum(energy_consumption) as 'energy_consumption',energy_consumption_unit " 
+        "from Hourly_Consumption "
+        "where start>={from_time} {device_filter}"
+        ),
     "energy_slots":'''
         SELECT 
             CASE et.day 
@@ -119,14 +127,15 @@ def initialize_database():
 def create_tables():#TODO:refactor this code with new database structure
     table_creation_queries=[
         'CREATE TABLE "Configuration" ("key" TEXT NOT NULL,"value" TEXT NOT NULL,"unit"	TEXT,PRIMARY KEY("key"));',
-        'CREATE TABLE "Map_config" ("entity_id" TEXT NOT NULL,"x" INTEGER NOT NULL,"y" INTEGER NOT NULL,"floor" INTEGER NOT NULL,PRIMARY KEY("entity_id"));',
+        'CREATE TABLE "Map_config" ("id" TEXT NOT NULL,"x" INTEGER NOT NULL,"y" INTEGER NOT NULL,"floor" INTEGER NOT NULL,PRIMARY KEY("entity_id"));',
         'CREATE TABLE "Service_logs" ("user"	TEXT NOT NULL,"service"	TEXT NOT NULL,"target"	TEXT,"payload"	TEXT,"timestamp"	INTEGER NOT NULL);',
         'CREATE TABLE "Energy_Timeslot" ("day"	INTEGER,"hour"	INTEGER,"slot"	INTEGER);',
         'CREATE TABLE "Hourly_Consumption" ("device_id" TEXT,"energy_consumption" REAL,"energy_consumption_unit"	TEXT,"from"	INTEGER,"to" INTEGER,PRIMARY KEY("device_id","from"))',
         'CREATE TABLE "Device_History" ("device_id"	TEXT,"timestamp" INTEGER,"state"	TEXT,"power" REAL, "power_unit" TEXT,"energy_consumption" REAL,"energy_consumption_unit"	INTEGER,PRIMARY KEY("device_id","timestamp"));',
         'CREATE TABLE "Entity_History" ("entity_id" TEXT, "date" TEXT, "state" TEXT, "power" REAL, "unit_of_measurement" TEXT, "energy_consumption" REAL, PRIMARY KEY("entity_id","date"));',
         'CREATE TABLE "Appliances_Usage" ("device_id"	TEXT,"state"	TEXT,"average_duration"	REAL,"duration_unit"	TEXT,"duration_samples"	INTEGER,"average_power"	REAL,"average_power_unit" TEXT,"power_samples" INTEGER,"average_duration"	REAL,"last_timestamp"	INTEGER,PRIMARY KEY("device_id","state"))',
-        'CREATE TABLE "User_Preferences" ("user_id"	TEXT NOT NULL,"preferences"	TEXT,"data_collection"	INTEGER,"data_disclosure"	INTEGER,PRIMARY KEY("user_id"))'
+        'CREATE TABLE "User_Preferences" ("user_id"	TEXT NOT NULL,"preferences"	TEXT,"data_collection"	INTEGER,"data_disclosure"	INTEGER,PRIMARY KEY("user_id"))',
+        'CREATE TABLE "Device" ("device_id"	TEXT,"name"	TEXT,"category"	TEXT,"show"	INTEGER,PRIMARY KEY("device_id"))'
     ]
     success=True
     with get_db_connection() as con:
@@ -282,7 +291,7 @@ def add_map_entities(entities_list:list):
     Args:
     ----------
     entities_list:
-    lista di tuple nella forma (entity_id,x,y,floor)
+    lista di tuple nella forma (id,x,y,floor)
 
     """
     query="INSERT or REPLACE into Map_config VALUES (?,?,?,?)"
@@ -290,7 +299,7 @@ def add_map_entities(entities_list:list):
 
 
 def delete_map_entry(entity_id:str):
-    query = "DELETE FROM Map_config WHERE entity_id= ?"
+    query = "DELETE FROM Map_config WHERE id= ?"
     params = (entity_id,)
     return execute_one_query(DbPathEnum.CONFIGURATION,query,params)
 
@@ -304,7 +313,7 @@ def get_all_map_entities():
 
 
 def get_map_entity(id):
-    query = "SELECT * FROM Map_config WHERE entity_id = ?"
+    query = "SELECT * FROM Map_config WHERE id = ?"
     params = (id,) 
     return fetch_one_element(DbPathEnum.CONFIGURATION,query,params)
 
@@ -405,12 +414,18 @@ def get_total_consumption(from_timestamp:int,to_timestamp:int,group:str="hourly"
         device_id_field="device_id, "
         device_filter="and device_id="+"'"+device_id+"'"
     key=group+"_consumption"
-    query=QUERIES[key].format(
-        from_time=from_timestamp,
-        to_time=to_timestamp,
-        device_filter=device_filter,
-        device_id_field=device_id_field,
-        device_id_grouping=device_id_grouping)
+    if group=="total":
+        query=QUERIES[key].format(
+            from_time=from_timestamp,
+            device_filter=device_filter,
+            device_id_field=device_id_field)
+    else:
+        query=QUERIES[key].format(
+            from_time=from_timestamp,
+            to_time=to_timestamp,
+            device_filter=device_filter,
+            device_id_field=device_id_field,
+            device_id_grouping=device_id_grouping)
     res=cur.execute(query)
     res=res.fetchall()
     con.close()
@@ -451,10 +466,35 @@ def add_appliances_usage_entry(entry_list:list):
 def get_all_appliances_usage_entries():
     return fetch_multiple_elements(DbPathEnum.CONSUMPTION,"SELECT * FROM Appliances_Usage")
 
+def get_usage_entry_for_appliance(device_id:str):
+    query='select state,average_power,average_power_unit,average_duration,duration_unit,maximum_power from Appliances_Usage where device_id=?'
+    params=(device_id,)
+    return fetch_multiple_elements(DbPathEnum.CONSUMPTION,query,params)
 
-def get_appliance_usage_entry(device_id:str, state:str):
+
+def get_usage_entry_for_appliance_state(device_id:str, state:str):
     query='select average_power,average_power_unit,average_duration,duration_unit,maximum_power from Appliances_Usage where device_id=? and state=?'
     params=(device_id,state)
     return fetch_one_element(DbPathEnum.CONSUMPTION,query,params)
+#endregion
 
 
+#region Devices configuration
+def add_devices_configuration(entry_list:list):
+    query="""INSERT or REPLACE into Device
+                    (device_id,name,category,show) 
+                    VALUES (?,?,?,?)"""
+    return add_multiple_elements(DbPathEnum.CONFIGURATION,query,entry_list)
+
+
+def get_all_devices_configuration():
+    return fetch_multiple_elements(DbPathEnum.CONFIGURATION,"SELECT * FROM Device")
+
+def get_names_and_id_configuration():
+    return fetch_multiple_elements(DbPathEnum.CONFIGURATION,"SELECT device_id,name FROM Device where show=1")
+
+def get_configuration_of_device(device_id:str):
+    query='select name,category,show from Device where device_id=?'
+    params=(device_id,)
+    return fetch_one_element(DbPathEnum.CONFIGURATION,query,params)
+#endregion

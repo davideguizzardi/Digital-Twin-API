@@ -70,6 +70,16 @@ class Energy_Plan_Calendar(BaseModel):
     data:list[list[int]]
 
 
+class Device_Configuration(BaseModel):
+    device_id:str
+    name:str
+    category:str
+    show:int = 1
+
+class Device_Configuration_List(BaseModel):
+    data:list[Device_Configuration]
+
+
 
 triggers={
     "device_trigger":{

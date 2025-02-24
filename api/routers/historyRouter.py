@@ -95,7 +95,7 @@ def getHistoryRouter():
     def Get_Entity_History(entities:str,start_timestamp:datetime.datetime=datetime.date.today(),end_timestamp:datetime.datetime|None=None):
         if end_timestamp==None:
             end_timestamp=start_timestamp+datetime.timedelta(days=1)
-        return getEntitiesHistory(entities, start_timestamp,end_timestamp)
+        return getEntitiesHistory(entities.split(","), start_timestamp,end_timestamp)
 
     @history_router.get("/device/{device_id}")
     def Get_Device_History(device_id:str,start_timestamp:datetime.datetime=datetime.date.today(),end_timestamp:datetime.datetime|None=None):

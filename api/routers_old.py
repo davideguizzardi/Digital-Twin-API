@@ -14,7 +14,7 @@ from database_functions import (
     add_map_entities, get_all_map_entities,get_map_entity,delete_map_entry,delete_floor_map_configuration,
     get_all_service_logs,add_service_logs,get_service_logs_by_user,
     get_energy_slot_by_day,get_all_energy_slots,add_energy_slots,delete_energy_slots,
-    get_total_consumption,get_appliance_usage_entry,
+    get_total_consumption,get_usage_entry_for_appliance_state,
     get_all_user_preferences,add_user_preferences,get_user_preferences_by_user,delete_user_preferences_by_user,
     get_all_energy_slots_with_cost,get_minimum_cost_slot,get_minimum_energy_slots
     )
@@ -417,7 +417,7 @@ def getAutomationDetails(automation): #TODO:could be moved outside
             device_info=getDeviceInfo(device_id)
             device_name=device_info["name_by_user"] if device_info["name_by_user"]!="None" else device_info["name"]
             if state not in ["on|off","same"]:#TODO:manage also this cases
-                usage_data=get_appliance_usage_entry(device_id,state)
+                usage_data=get_usage_entry_for_appliance_state(device_id,state)
                 usage_data.update({
                     "device_id":device_id,"state":state,"service":service,"device_name":device_name
                 })
@@ -710,7 +710,7 @@ def getAutomationRouter():
                     device_info=getDeviceInfo(device_id)
                     device_name=device_info["name_by_user"] if device_info["name_by_user"]!="None" else device_info["name"]
                     if state not in ["on|off","same"]:#TODO:manage also this cases
-                        usage_data=get_appliance_usage_entry(device_id,state)
+                        usage_data=get_usage_entry_for_appliance_state(device_id,state)
                         usage_data.update({
                             "device_id":device_id,"state":state,"service":service,"device_name":device_name
                         })

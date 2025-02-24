@@ -25,7 +25,7 @@ def initializeToken():
     "content-type": "application/json",
     }
 
-def setHomeAssistantConfiguration(token,server_address=None):
+def setHomeAssistantConfiguration(token,server_address=None): #TODO:think it is better to move this elsewhere
     # Create a ConfigParser object
     config = configparser.ConfigParser()
 
@@ -53,6 +53,25 @@ def setHomeAssistantConfiguration(token,server_address=None):
         return True
     else:
         return False
+    
+def getHomeAssistantConfiguration():
+    # Create a ConfigParser object
+    config = configparser.ConfigParser()
+
+    # If the file already exists, read the existing config
+    if os.path.exists(CONFIGURATION_PATH):
+        config.read(CONFIGURATION_PATH)
+        if 'HomeAssistant' in config:
+            return {
+                "server_url":config['HomeAssistant']['server_url'],
+                "token":config['HomeAssistant']['token']
+        }
+        else:
+            raise Exception("Configuration file is missing field HomeAssistant...")
+
+    else:
+        raise Exception("Configuration file is missing...")
+    
 
 def extractEntityData(entity,skip_services=False):
     device = getDeviceId(entity["entity_id"])

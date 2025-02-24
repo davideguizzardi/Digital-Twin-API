@@ -8,9 +8,12 @@ from routers.configurationRouter import getConfigurationRouter
 from routers.configurationRouter import getMapConfigurationRouter
 from routers.configurationRouter import getEnergyCalendarConfigurationRouter
 from routers.configurationRouter import getUserRouter
+from routers.configurationRouter import getDeviceConfigurationRouter
 from routers.consumptionRouter import getConsumptionRouter
+from routers.configurationRouter import getHomeAssistantConfigurationRouter
 from routers.historyRouter import getHistoryRouter
 from routers.deviceRouter import getDeviceRouter
+from routers.virtualRouter import getVirtualRouter
 
 from homeassistant_functions import initializeToken
 from schemas import CONFIGURATION_PATH
@@ -26,17 +29,17 @@ def create_api(enable_prediction:False):
     routers=[
         getEntityRouter(),
         getDeviceRouter(),
-        #getHomeRouter(),
         getHistoryRouter(),
         getConsumptionRouter(),
         getAutomationRouter(),
         getServiceRouter(),
         getConfigurationRouter(),
+        getHomeAssistantConfigurationRouter(),
+        getDeviceConfigurationRouter(),
         getUserRouter(),
         getMapConfigurationRouter(),
         getEnergyCalendarConfigurationRouter(),
-        #getVirtualRouter(),
-        #getTestRouter()
+        getVirtualRouter(),
     ]
 
     if enable_prediction:
