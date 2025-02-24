@@ -8,7 +8,7 @@ from homeassistant_functions import (
     getDeviceInfo)
 from database_functions import (
     get_configuration_value_by_key,
-    get_appliance_usage_entry,
+    get_usage_entry_for_appliance_state,
     get_all_energy_slots_with_cost,get_minimum_cost_slot,get_minimum_energy_slots,get_maximum_cost_slot
     )
 from schemas import (
@@ -273,7 +273,7 @@ def getAutomationDetails(automation,state_map={}):
             device_info = getDeviceInfo(condition.get('device_id'))  
             condition["device_name"] = device_info["name_by_user"] if device_info["name_by_user"] != "None" else device_info["name"]
         if "entity_id" in condition:
-            device_info = getDeviceInfo(getDeviceId(trigger.get('entity_id')))  
+            device_info = getDeviceInfo(getDeviceId(condition.get('entity_id')))  
             condition["device_name"] = device_info["name_by_user"] if device_info["name_by_user"] != "None" else device_info["name"]
         condition["description"]=getConditionDescription(condition) 
 
@@ -295,7 +295,7 @@ def getAutomationDetails(automation,state_map={}):
         device_name=device_info["name_by_user"] if device_info["name_by_user"]!="None" else device_info["name"]
 
         if state not in ["on|off","same"]:#TODO:manage also this cases
-            usage_data=get_appliance_usage_entry(device_id,state)
+            usage_data=get_usage_entry_for_appliance_state(device_id,state)
             #TODO:if there are no data you should extract static data from somewhere
             if usage_data:
                 usage_data.update({
@@ -404,7 +404,7 @@ def extract_action_operations(action):
 def getAutomationTime(trigger):
     activation_time=""
 
-    time_trigger=[x for x in trigger if x.get("platform","")=="time"]
+    time_trigger=[x for x in trigger if x.get("platform","")=="time" or x.get("trigger","")=="time"]
     if len(time_trigger)>0:
         if len(time_trigger[0]["at"].split(":")) == 3:
             activation_time=time_trigger[0]["at"][:-3]
@@ -898,10 +898,11 @@ def getAutomationsToDeactivateSuggestions(conflict_list,saved_automations):
     conflicting_automations = []
 
     for conflict in conflict_list:
+        conflicting_automations = []
         #Deactivate overlapping automations
         conflict_time=datetime.datetime.strptime(conflict["start"], "%H:%M")
         #i need to find automations whose time is before conflict_time and time+maximum_duration after conflict time 
-        for auto in [x for x in saved_automations if x["time"]!=""]:
+        for auto in [x for x in saved_automations if x["time"]!="" and x.get("average_power_drawn",0)>=2]:
             # Convert the automation time to a datetime object
             auto_time = datetime.datetime.strptime(auto["time"], "%H:%M:%S" if len(auto["time"].split(":")) == 3 else "%H:%M")
             duration=max(act["average_duration"] for act in auto["action"] if auto.get("action"))
@@ -910,9 +911,12 @@ def getAutomationsToDeactivateSuggestions(conflict_list,saved_automations):
             
             # Check the conditions
             if auto_time <= conflict_time <= auto_end_time:
-                conflicting_automations.append(auto["name"])
-    if len(conflicting_automations)>0:
-        suggestions.append(ConflictResolutionDeactivateAutomationsSuggestion(automations_list=conflicting_automations))
+                conflicting_automations.append({"name":auto["name"],"id":auto["id"]})
+
+        if len(conflicting_automations)>0:
+            conflict["conflicting_automations"]=conflicting_automations
+            suggestions.append(ConflictResolutionDeactivateAutomationsSuggestion(automations_list=conflicting_automations))
+
     return suggestions
 
 #endregion
@@ -1020,7 +1024,7 @@ def getAutomationRouter():
             if len(excessive_energy_conflicts)>0:
                 conflicts+=excessive_energy_conflicts
                 suggestions+=getChangeTimeSuggestions(excessive_energy_conflicts[0],automation,dev_list,saved_automations)
-                suggestions+=getAutomationsToDeactivateSuggestions(excessive_energy_conflicts,saved_automations)
+                getAutomationsToDeactivateSuggestions(excessive_energy_conflicts,saved_automations)
 
                 
                 
