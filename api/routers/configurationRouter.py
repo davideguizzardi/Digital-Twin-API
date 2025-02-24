@@ -7,17 +7,19 @@ from database_functions import (
     add_map_entities, get_all_map_entities,get_map_entity,delete_map_entry,delete_floor_map_configuration,
     get_energy_slot_by_day,get_all_energy_slots,add_energy_slots,delete_energy_slots,
     get_all_user_preferences,add_user_preferences,get_user_preferences_by_user,delete_user_preferences_by_user,
-    get_all_user_privacy_settings,add_user_privacy_settings,get_user_privacy_settings_by_user
+    get_all_user_privacy_settings,add_user_privacy_settings,get_user_privacy_settings_by_user,
+    add_devices_configuration,get_all_devices_configuration,get_configuration_of_device
     )
 from schemas import (
     Operation_Out,Map_Entity_List,
     Map_Entity,Configuration_Value,
     Configuration_Value_List,Energy_Plan_Calendar,
     User_Preference_List,User_Privacy_List,
-    Home_Assistant_Configuration
+    Home_Assistant_Configuration,
+    Device_Configuration_List
     )
 
-from homeassistant_functions import setHomeAssistantConfiguration
+from homeassistant_functions import setHomeAssistantConfiguration,getHomeAssistantConfiguration
 
 
 #region ConfigurationRouter
@@ -35,14 +37,7 @@ def getConfigurationRouter():
     @configuration_router.get("/{key}",response_model=Configuration_Value)
     def Get_Configuration_Value_By_Key(key):
         return get_configuration_value_by_key(key)
-    
-    @configuration_router.put("/homeassistant",response_model=Operation_Out)
-    def Add_Home_Assistant_Configuration(configuration:Home_Assistant_Configuration):
-        if configuration.token and len(configuration.token)!=183:
-            raise HTTPException(status_code=400,detail="Format of the token not correct")
-        return {"success":setHomeAssistantConfiguration(configuration.token,configuration.server_address)}
-        
-    
+       
     @configuration_router.put("",response_model=Operation_Out)
     def Add_Configuration_Values(values_list:Configuration_Value_List):
         return {"success":add_configuration_values([tuple(d.__dict__.values()) for d in values_list.data])}
@@ -57,6 +52,28 @@ def getConfigurationRouter():
         return {"success":delete_configuration_value(key)}
 
     return configuration_router
+#endregion
+
+#region HomeAssistantConfiguration
+
+def getHomeAssistantConfigurationRouter():
+    router=APIRouter(tags=["HomeAssistant Configuration"],prefix="/homeassistant")
+
+    @router.get("")
+    def Get_Home_Assistant_Configuraiton():
+        try:
+            return getHomeAssistantConfiguration()
+        except Exception as e:
+            raise HTTPException(status_code=404,detail=e)
+        
+    @router.put("",response_model=Operation_Out)
+    def Add_Home_Assistant_Configuration(configuration:Home_Assistant_Configuration):
+        if configuration.token and len(configuration.token)!=183:
+            raise HTTPException(status_code=400,detail="Format of the token not correct")
+        return {"success":setHomeAssistantConfiguration(configuration.token,configuration.server_address)}
+    
+    return router
+
 #endregion
 
 #region EnergyCalendar
@@ -182,4 +199,24 @@ def getUserRouter():
 
     
     return user_router
+#endregion
+
+#region Device_Configuration
+
+def getDeviceConfigurationRouter():
+    device_configuration_router=APIRouter(tags=["Device configuration"],prefix="/device_configuration")
+
+    @device_configuration_router.get("")
+    def Get_All_Entities():
+        return get_all_devices_configuration()
+    
+    @device_configuration_router.get("/{device_id}")
+    def Get_Single_Device_Configuration(device_id:str):
+        return get_configuration_of_device(device_id)
+    
+    @device_configuration_router.put("",response_model=Operation_Out)
+    def Add_Devices_Configuration(entities_list:Device_Configuration_List):
+        return {"success":add_devices_configuration([tuple(d.__dict__.values()) for d in entities_list.data])}
+    
+    return device_configuration_router
 #endregion
