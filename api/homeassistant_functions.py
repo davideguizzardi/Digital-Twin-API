@@ -63,8 +63,8 @@ def getHomeAssistantConfiguration():
         config.read(CONFIGURATION_PATH)
         if 'HomeAssistant' in config:
             return {
-                "server_url":config['HomeAssistant']['server_url'],
-                "token":config['HomeAssistant']['token']
+            "server_url":config['HomeAssistant']['server_url'],
+               "token":config['HomeAssistant']['token']
         }
         else:
             raise Exception("Configuration file is missing field HomeAssistant...")

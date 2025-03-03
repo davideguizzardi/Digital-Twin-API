@@ -298,8 +298,8 @@ def getPredictionRouter():
 
         return result
     
-    @prediction_router.get("/service/{device_id}/{state}")
-    def Predict_With_Service_Activation(device_id,state):
+    @prediction_router.get("/service/{device_id}/{service}")
+    def Predict_With_Service_Activation(device_id,service):
         model=keras.saving.load_model(f"{FILENAME_RECURSIVE}.keras", custom_objects=None, compile=False, safe_mode=True)
         model.compile(optimizer="adam",loss="mse",metrics=["mse"])
 
@@ -349,6 +349,10 @@ def getPredictionRouter():
         dataset_complete=dataset_complete[dataset_complete.columns[3:]]
 
         #Increasing the last element in the dataset with the activation value
+        with open("./data/devices_new_state_map.json") as file: #TODO:extract path
+            state_map=json.load(file)
+
+        state=state_map.get(service,"")
 
         consumption_delta=[]
         if device_id.split(".")[0]=="virtual":
@@ -365,18 +369,23 @@ def getPredictionRouter():
                     remaining_time-=time_delta
                     time_delta=min(60,remaining_time)
 
-
         else:
             device_info=getSingleDeviceFast(device_id)
-            current_state=device_info["data"]["state"]
-            if state!=current_state:
-                old_state_data=get_usage_entry_for_appliance_state(device_id,current_state)
-                new_state_data=get_usage_entry_for_appliance_state(device_id,state)
+            if device_info["status_code"]==200:
+                device_info=device_info["data"]
+                current_state=device_info["state"]
+                power_entity=[x for x in device_info["list_of_entities"] if x["entity_id"]==device_info["power_entity_id"]]
+                if len(power_entity)>0:
+                    current_state=current_state if float(power_entity[0]["state"])>2 else "off"
 
-                remaining_time=new_state_data["average_duration"]
-                time_delta=min(60-selected_date.minute,remaining_time)
-                power_delta=new_state_data["average_power"]-old_state_data["average_power"]
-                consumption_delta.append(power_delta*(time_delta/60)) #need to convert it into Wh
+                if state!=current_state and state not in ["same","on|off"]:
+                    old_state_data=get_usage_entry_for_appliance_state(device_id,current_state)
+                    new_state_data=get_usage_entry_for_appliance_state(device_id,state)
+
+                    remaining_time=new_state_data["average_duration"]
+                    time_delta=min(60-selected_date.minute,remaining_time)
+                    power_delta=new_state_data["average_power"]-old_state_data["average_power"]
+                    consumption_delta.append(power_delta*(time_delta/60)) #need to convert it into Wh
 
         y_predict=predictSequenceRecursive(model,dataset_complete,scaler,last_date,consumption_delta)
 
