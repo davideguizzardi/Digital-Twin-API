@@ -196,12 +196,12 @@ def getConsumptionRouter():
         return get_total_consumption(from_ts,to_ts,group,device_id)
     
     @consumption_router.get("/total")
-    def Get_Total_Consumption_Fast(start_timestamp:datetime.date=datetime.date.today(),end_timestamp:datetime.date=datetime.date.today(),group:str="hourly"):
+    def Get_Total_Consumption_Fast(start_timestamp:datetime.date=datetime.date.today(),end_timestamp:datetime.date=datetime.date.today(),group:str="hourly",minutes=60):
         start_timestamp=datetime.datetime.combine(start_timestamp, datetime.time.min).astimezone(tz.tzlocal())
         end_timestamp=datetime.datetime.combine(end_timestamp,  datetime.time(23, 59)).astimezone(tz.tzlocal())
 
         from_ts=int(start_timestamp.replace(microsecond=0).timestamp())
         to_ts=int(end_timestamp.replace(microsecond=0).timestamp())
-        return get_total_consumption(from_ts,to_ts,group)
+        return get_total_consumption(from_ts,to_ts,group,minutes=minutes)
 
     return consumption_router

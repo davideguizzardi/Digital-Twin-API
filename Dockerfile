@@ -1,6 +1,10 @@
 # Use the official Python image
 FROM python:3.11
 
+# Set timezone in the container
+ENV TZ=Europe/Berlin
+RUN echo $TZ > /etc/timezone
+
 # Set the working directory
 WORKDIR /app
 

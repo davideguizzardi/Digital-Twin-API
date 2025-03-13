@@ -108,20 +108,20 @@ def extractEntityData(entity,skip_services=False):
 
 
 def getEntities(skip_services=False):
-        '''
-        Ritorna la lista di tutte le entità di HA
-        '''
-        start_time = time.time()
-        response = get(base_url+"/states", headers=headers)
-        if response.status_code!=200:
-            return buildError(response)
-        
-        entity_list=response.json()
-        res_list=[]
-        for entity in entity_list:
-            res_list.append(extractEntityData(entity,skip_services))
-        print("Time to get all entities:"+str((time.time()-start_time)*1000)+" ms")
-        return {"status_code":200,"data":res_list}
+    '''
+    Ritorna la lista di tutte le entità di HA
+    '''
+    start_time = time.time()
+    response = get(base_url+"/states", headers=headers)
+    if response.status_code!=200:
+        return buildError(response)
+    
+    entity_list=response.json()
+    res_list=[]
+    for entity in entity_list:
+        res_list.append(extractEntityData(entity,skip_services))
+    #print("Time to get all entities:"+str((time.time()-start_time)*1000)+" ms") #TODO: add debug logs
+    return {"status_code":200,"data":res_list}
 
 
 def getSingleDeviceFast(device_id:str):
@@ -151,7 +151,7 @@ def getSingleDeviceFast(device_id:str):
     response = post(base_url+"/template", headers=headers, json={"template":templ})
     res= json.loads(response.text)
     
-    print("getSingleDevice:"+device_id+" elapsed time "+str((datetime.datetime.now()-start).total_seconds()))
+    #print("getSingleDevice:"+device_id+" elapsed time "+str((datetime.datetime.now()-start).total_seconds())) #TODO:add log in debug
     return {"status_code":200,"data":res}
 
 def getDevicesNameAndId():
@@ -170,7 +170,7 @@ def getDevicesNameAndId():
     response = post(base_url+"/template", headers=headers, json={"template":templ})
     res= json.loads(response.text)
     
-    print("getDevicesNameAndId: elapsed time "+str((datetime.datetime.now()-start).total_seconds()))
+    #print("getDevicesNameAndId: elapsed time "+str((datetime.datetime.now()-start).total_seconds())) #TODO: add logs in debug
     return {"status_code":200,"data":res}
     
 
@@ -206,7 +206,7 @@ def getDevicesFast():
     response = post(base_url+"/template", headers=headers, json={"template":templ})
     res= json.loads(response.text)
     
-    print("getDevicesFast: elapsed time "+str((datetime.datetime.now()-start).total_seconds()))
+    #print("getDevicesFast: elapsed time "+str((datetime.datetime.now()-start).total_seconds())) #TODO:add debug logs
     return {"status_code":200,"data":res}
 
 def getDevices(skip_services=False):
@@ -247,7 +247,7 @@ def getDevices(skip_services=False):
 
         del dev_list["None"] #removing entities that are not associated with a device
 
-        print("Time to get all entities:"+str((time.time()-start_time)*1000)+" ms")
+        #print("Time to get all entities:"+str((time.time()-start_time)*1000)+" ms") #TODO:add debug logs
         return {"status_code":200,"data":list(dev_list.values())}
 
 def getEntity(entity_id:str):
@@ -385,7 +385,7 @@ def getServicesByEntity(entity_id:str):
     #TODO:ottimizzare la cosa evitando di fare un ciclo aggiuntivo
     for service_key in supported_services:
         supported_services[service_key].pop("target",None)
-    print("getServicesByEntity required "+str((datetime.datetime.now()-start_function).total_seconds())+"[s]")
+    #print("getServicesByEntity required "+str((datetime.datetime.now()-start_function).total_seconds())+"[s]") TODO: add debug logs
     return {"status_code":200,"data":supported_services}
 
 

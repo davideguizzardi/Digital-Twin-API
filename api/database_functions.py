@@ -15,37 +15,37 @@ QUERIES={
     "hourly_consumption":
         ("select "
         "{device_id_field}" 
-        "strftime('%d-%m-%Y %H',start,'unixepoch','localtime') ||'-'|| strftime('%H',end,'unixepoch','localtime') as 'date',"
+        "strftime('%d-%m-%Y %H:', timestamp, 'unixepoch', 'localtime') || printf('%02d', (strftime('%M', timestamp, 'unixepoch', 'localtime') / {minutes}) * {minutes}) || '-' ||strftime('%H:', timestamp+(60*{minutes}), 'unixepoch', 'localtime') || printf('%02d', ((strftime('%M', timestamp+(60*{minutes}), 'unixepoch', 'localtime') / {minutes}) * {minutes}) % 60) AS 'date',"
         "sum(energy_consumption) as 'energy_consumption',energy_consumption_unit " 
-        "from Hourly_Consumption "
-        "where start>={from_time} and end<={to_time} {device_filter}"
-        "GROUP by strftime('%d-%m-%Y %H',start,'unixepoch','localtime') ||'-'|| strftime('%H',end,'unixepoch','localtime') {device_id_grouping} order by start"
+        "from Device_History "
+        "where timestamp>={from_time} and timestamp<={to_time} {device_filter}"
+        "GROUP by \"date\" {device_id_grouping} order by \"date\""
         ),
     "daily_consumption":
         ("select "
         "{device_id_field}" 
-        "strftime('%d-%m-%Y',start,'unixepoch','localtime') as 'date',"
+        "strftime('%d-%m-%Y',timestamp,'unixepoch','localtime') as 'date',"
         "sum(energy_consumption) as 'energy_consumption',energy_consumption_unit " 
-        "from Hourly_Consumption "
-        "where start>={from_time} and end<={to_time} {device_filter}"
-        "GROUP by strftime('%d-%m-%Y',start,'unixepoch','localtime') {device_id_grouping} order by start"
+        "from Device_History "
+        "where timestamp>={from_time} and timestamp<={to_time} {device_filter}"
+        "GROUP by \"date\" {device_id_grouping} order by \"date\""
         ),
     "monthly_consumption":
         ("select "
         "{device_id_field}"  
-        "strftime('%m-%Y',start,'unixepoch','localtime') as 'date',"
+        "strftime('%m-%Y',timestamp,'unixepoch','localtime') as 'date',"
         "sum(energy_consumption) as 'energy_consumption',energy_consumption_unit " 
-        "from Hourly_Consumption "
-        "where start>={from_time} and end<={to_time} {device_filter}"
-        "GROUP by strftime('%m-%Y',start,'unixepoch','localtime') {device_id_grouping} order by start"
+        "from Device_History "
+        "where timestamp>={from_time} and timestamp<={to_time} {device_filter}"
+        "GROUP by \"date\" {device_id_grouping} order by \"date\""
         ),
     "total_consumption":
         ("select "
         "{device_id_field}"  
-        "strftime('%d-%m-%Y',min(start),'unixepoch','localtime') as 'date',"
+        "strftime('%d-%m-%Y',min(timestamp),'unixepoch','localtime') as 'date',"
         "sum(energy_consumption) as 'energy_consumption',energy_consumption_unit " 
-        "from Hourly_Consumption "
-        "where start>={from_time} {device_filter}"
+        "from Device_History "
+        "where timestamp>={from_time} {device_filter}"
         ),
     "energy_slots":'''
         SELECT 
@@ -403,7 +403,7 @@ def add_hourly_consumption_entry(entry_list:list):
 def get_all_hourly_consumption_entries():
     return fetch_multiple_elements(DbPathEnum.CONSUMPTION,"SELECT * FROM Hourly_Consumption")
 
-def get_total_consumption(from_timestamp:int,to_timestamp:int,group:str="hourly",device_id:str=""):
+def get_total_consumption(from_timestamp:int,to_timestamp:int,group:str="hourly",device_id:str="",minutes:int=60):
     con=sqlite3.connect(DbPathEnum.CONSUMPTION,)
     cur=con.cursor()
     cur.row_factory=row_to_dict
@@ -425,7 +425,7 @@ def get_total_consumption(from_timestamp:int,to_timestamp:int,group:str="hourly"
             to_time=to_timestamp,
             device_filter=device_filter,
             device_id_field=device_id_field,
-            device_id_grouping=device_id_grouping)
+            device_id_grouping=device_id_grouping,minutes=minutes)
     res=cur.execute(query)
     res=res.fetchall()
     con.close()
