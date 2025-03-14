@@ -16,7 +16,7 @@ from database_functions import (
     )
 from routers.historyRouter import extractSingleDeviceHistory,getEntitiesHistory
 
-logger = logging.getLogger(__name__)
+logger = {}
 
 #value over which a device is considered on even if the state is unavailable
 UNAVAIABLE_TO_ON = 20
@@ -24,6 +24,33 @@ UNAVAIABLE_TO_ON = 20
 ACTIVATION_TRESHOLD = 3
 
 STATE_CHANGE_TOLERANCE = 3 #a device state is perceived if it last at least STATE_CHANGE_TOLERANCE minutes
+
+
+def initializeLogger():
+    global logger
+    # Create a logger
+    logger = logging.getLogger(__name__)
+
+    # Set the overall logging level
+    logger.setLevel(logging.INFO)
+
+    # Create a file handler to log messages to a file
+    file_handler = logging.FileHandler('./logs/periodic_functions.log', encoding='utf-8')
+    file_handler.setLevel(logging.INFO)
+
+    # Create a console handler to log messages to the console
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.INFO)
+
+    # Create a formatter and set it for both handlers
+    formatter = logging.Formatter('%(levelname)s-%(asctime)s: %(message)s', datefmt='%d/%m/%Y %H:%M:%S')
+    file_handler.setFormatter(formatter)
+    console_handler.setFormatter(formatter)
+
+    # Add the handlers to the logger
+    logger.addHandler(file_handler)
+    logger.addHandler(console_handler)
+
 
 
 def entitiesHistoryExtractionProcedure(start_timestamp:datetime.datetime=datetime.date.today()):
@@ -189,7 +216,6 @@ def getAppliancesUsageData(start_timestamp:datetime.datetime=datetime.date.today
                     (use_map[prev_state]["average_duration"] * use_map[prev_state]["duration_samples"]) + current_duration
                 ) / (use_map[prev_state]["duration_samples"] + 1)
                 use_map[prev_state]["duration_samples"] += 1
-
 
 
         mode_use_dict[id]=dict(use_map)
@@ -367,7 +393,6 @@ def getHourlyAndUsageData(start_timestamp:datetime.datetime=datetime.date.today(
                 use_map[prev_state]["duration_samples"] += 1
 
         mode_use_dict[id]=dict(use_map)
-
     temp=[]
     database_data=get_all_appliances_usage_entries()
     for id in mode_use_dict.keys():
@@ -431,7 +456,8 @@ def getHourlyAndUsageData(start_timestamp:datetime.datetime=datetime.date.today(
 
 
 def main():
-    logging.basicConfig(format='%(levelname)s-%(asctime)s: %(message)s',datefmt='%d/%m/%Y %H:%M:%S',filename='./logs/periodic_functions.log', encoding='utf-8', level=logging.INFO)
+    #logging.basicConfig(format='%(levelname)s-%(asctime)s: %(message)s',datefmt='%d/%m/%Y %H:%M:%S',filename='./logs/periodic_functions.log', encoding='utf-8', level=logging.INFO)
+    initializeLogger()
     initializeToken()
 
     last_timestamp_device_history=fetch_one_element(DbPathEnum.CONSUMPTION,"select max(timestamp) from Device_History")
@@ -455,6 +481,17 @@ def main():
     
     if (datetime.datetime.now().astimezone(tz.tzlocal())-starting_date).total_seconds()>60*60:
         getAppliancesUsageData(start_timestamp=starting_date)
+
+    #last_timestamp_consumption=fetch_one_element(DbPathEnum.CONSUMPTION,"select max(start) from Hourly_Consumption")
+    #last_timestamp_consumption=last_timestamp_consumption["max(start)"]
+
+
+    #if last_timestamp_usage!=None and last_timestamp_consumption!=None:
+    #    starting_date=datetime.datetime.fromtimestamp(min(last_timestamp_usage,last_timestamp_consumption)).astimezone(tz.tzlocal())
+    #    starting_date=starting_date.replace(minute=0,second=0)
+    #else:
+    #     starting_date=datetime.datetime.combine(datetime.date.today(), datetime.time.min).astimezone(tz.tzlocal())
+    #getHourlyAndUsageData(start_timestamp=starting_date)
 
     last_timestamp_entity_history=fetch_one_element(DbPathEnum.ENTITY_HISTORY,"select max(timestamp) from Entity_History")
     if last_timestamp_entity_history["max(timestamp)"]!=None:
