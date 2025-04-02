@@ -6,16 +6,19 @@ from database_functions import (
     get_all_appliances_usage_entries,get_usage_entry_for_appliance,get_configuration_of_device,get_names_and_id_configuration,
     get_map_entity)
 from collections import defaultdict
+from demo_functions import get_all_demo_devices
 import json
 
 
-def getDeviceRouter():
+def getDeviceRouter(enable_demo=False):
     device_router=APIRouter(tags=["Device"],prefix="/device")
     @device_router.get("")
     def Get_All_Devices(get_only_names:bool=False):
+        if enable_demo:
+            return get_all_demo_devices(get_only_names)
+        
         if get_only_names:
             return get_names_and_id_configuration()
-            res=getDevicesNameAndId()
         else:    
             res=getDevicesFast()
             if res["status_code"]==200:
@@ -85,22 +88,6 @@ def getDeviceRouter():
                     "max_power":data["maximum_power"]
                 }
             )
-
-        #TODO: remove this part in the future, it is used only to test purposed
-        #virtual_devices=["washing_machine","microwave"]
-        #with open("./data/appliances_consumption_map.json") as file:
-        #    consumption_map=json.load(file)
-        #    for device in virtual_devices:
-        #        for state in consumption_map[device]:
-        #            result[device].append(
-        #            {
-        #                "device_id":f"virtual.{device}",
-        #                "state":state["name"],
-        #                "average_duration":state.get("default_duration",0)/60,
-        #                "average_power":state["power_consumption"]
-        #            }
-        #    )
-
         return dict(result)
         
 

@@ -1,0 +1,13 @@
+[HomeAssistant]
+server_url = http://localhost:8123/api
+token = token
+
+[ApiConfiguration]
+w_to_gco2 = 0.431
+enable_prediction = 1
+enable_demo=1
+
+[Network]
+host = 0.0.0.0
+port = 8000
+

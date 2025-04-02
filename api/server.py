@@ -23,15 +23,15 @@ import uvicorn
 
 
 
-def create_api(enable_prediction:False):
+def create_api(enable_prediction:False,enable_demo:False):
     api=FastAPI(title="Digial Twin API",docs_url="/")
 
     routers=[
-        getEntityRouter(),
-        getDeviceRouter(),
+        getEntityRouter(enable_demo),
+        getDeviceRouter(enable_demo),
         getHistoryRouter(),
         getConsumptionRouter(),
-        getAutomationRouter(),
+        getAutomationRouter(enable_demo),
         getServiceRouter(),
         getConfigurationRouter(),
         getHomeAssistantConfigurationRouter(),
@@ -71,7 +71,8 @@ def main():
     port = int(parser["Network"]['port']) if 'port' in parser["Network"] else 8000
 
     enable_prediction=parser.getboolean("ApiConfiguration","enable_prediction")
-    api = create_api(enable_prediction)
+    enable_demo=parser.getboolean("ApiConfiguration","enable_demo")
+    api = create_api(enable_prediction,enable_demo)
     uvicorn.run(api, host=host,port=port,log_level="debug")
 
 if __name__ == "__main__":

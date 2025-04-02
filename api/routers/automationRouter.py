@@ -20,6 +20,7 @@ from dateutil import parser,tz
 from collections import defaultdict
 from enum import Enum
 from datetime import timedelta
+from demo_functions import get_demo_automations
 #endregion 
 
 #region Constants
@@ -923,11 +924,14 @@ def getAutomationsToDeactivateSuggestions(conflict_list,saved_automations):
 
     
 #region GetRouterFunction
-def getAutomationRouter():
+def getAutomationRouter(enable_demo=False):
     automation_router=APIRouter(tags=["Automation"],prefix="/automation")
 
     @automation_router.get("")
     def Get_Automations(get_suggestions:bool=False):
+        if enable_demo:
+            return get_demo_automations()
+        
         res=getAutomations()
         if res["status_code"]!=200:
             raise HTTPException(status_code=res["status_code"],detail=res["data"])
@@ -1028,8 +1032,7 @@ def getAutomationRouter():
 
                 
                 
-        
-
+    
         #Suggestions identification if no conflict occurs
         if len(conflicts)<=0 and automation["average_power_drawn"]>MIN_AUTOMATION_POWER:
             suggestions+=findBetterActivationTime(automation,dev_list,saved_automations)
