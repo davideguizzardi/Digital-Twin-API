@@ -2,6 +2,7 @@ import sqlite3
 from contextlib import contextmanager
 
 from enum import StrEnum
+import os.path,logging
 
 #DB_PATH="./data/digital_twin.db"
 
@@ -120,34 +121,65 @@ def get_db_connection(db_path:DbPathEnum=DbPathEnum.CONFIGURATION):
         if connection:
             connection.close()  # Ensure the connection is always closed
 
+def table_exists(db_path, table_name):
+    """Check if a table exists in the SQLite database."""
+    with get_db_connection(db_path) as con:
+        cur = con.cursor()
+        cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name=?;", (table_name,))
+        return cur.fetchone() is not None  # True if table exists, False otherwise
+
 def initialize_database():
-    create_tables()
+    logger = logging.getLogger(__name__)
 
+    configuration_db_tables = {
+        "Configuration": 'CREATE TABLE "Configuration" ("key" TEXT NOT NULL, "value" TEXT NOT NULL, "unit" TEXT, PRIMARY KEY("key"));',
+        "Device": 'CREATE TABLE "Device" ("device_id" TEXT, "name" TEXT, "category" TEXT, "show" INTEGER, PRIMARY KEY("device_id"));',
+        "Energy_Timeslot": 'CREATE TABLE "Energy_Timeslot" ("day" INTEGER, "hour" INTEGER, "slot" INTEGER);',
+        "Map_config": 'CREATE TABLE "Map_config" ("id" TEXT NOT NULL, "x" INTEGER NOT NULL, "y" INTEGER NOT NULL, "floor" INTEGER NOT NULL, PRIMARY KEY("id"));',
+        "Service_logs": 'CREATE TABLE "Service_logs" ("user" TEXT NOT NULL, "service" TEXT NOT NULL, "target" TEXT, "payload" TEXT, "timestamp" INTEGER NOT NULL);',
+        "User_Preferences": 'CREATE TABLE "User_Preferences" ("user_id" TEXT NOT NULL, "preferences" TEXT, "data_collection" INTEGER, "data_disclosure" INTEGER, PRIMARY KEY("user_id"));'
+    }
 
-def create_tables():#TODO:refactor this code with new database structure
-    table_creation_queries=[
-        'CREATE TABLE "Configuration" ("key" TEXT NOT NULL,"value" TEXT NOT NULL,"unit"	TEXT,PRIMARY KEY("key"));',
-        'CREATE TABLE "Map_config" ("id" TEXT NOT NULL,"x" INTEGER NOT NULL,"y" INTEGER NOT NULL,"floor" INTEGER NOT NULL,PRIMARY KEY("entity_id"));',
-        'CREATE TABLE "Service_logs" ("user"	TEXT NOT NULL,"service"	TEXT NOT NULL,"target"	TEXT,"payload"	TEXT,"timestamp"	INTEGER NOT NULL);',
-        'CREATE TABLE "Energy_Timeslot" ("day"	INTEGER,"hour"	INTEGER,"slot"	INTEGER);',
-        'CREATE TABLE "Hourly_Consumption" ("device_id" TEXT,"energy_consumption" REAL,"energy_consumption_unit"	TEXT,"from"	INTEGER,"to" INTEGER,PRIMARY KEY("device_id","from"))',
-        'CREATE TABLE "Device_History" ("device_id"	TEXT,"timestamp" INTEGER,"state"	TEXT,"power" REAL, "power_unit" TEXT,"energy_consumption" REAL,"energy_consumption_unit"	INTEGER,PRIMARY KEY("device_id","timestamp"));',
-        'CREATE TABLE "Entity_History" ("entity_id" TEXT, "date" TEXT, "state" TEXT, "power" REAL, "unit_of_measurement" TEXT, "energy_consumption" REAL, PRIMARY KEY("entity_id","date"));',
-        'CREATE TABLE "Appliances_Usage" ("device_id"	TEXT,"state"	TEXT,"average_duration"	REAL,"duration_unit"	TEXT,"duration_samples"	INTEGER,"average_power"	REAL,"average_power_unit" TEXT,"power_samples" INTEGER,"average_duration"	REAL,"last_timestamp"	INTEGER,PRIMARY KEY("device_id","state"))',
-        'CREATE TABLE "User_Preferences" ("user_id"	TEXT NOT NULL,"preferences"	TEXT,"data_collection"	INTEGER,"data_disclosure"	INTEGER,PRIMARY KEY("user_id"))',
-        'CREATE TABLE "Device" ("device_id"	TEXT,"name"	TEXT,"category"	TEXT,"show"	INTEGER,PRIMARY KEY("device_id"))'
+    consumption_db_tables = {
+        "Appliances_Usage": 'CREATE TABLE "Appliances_Usage" ("device_id" TEXT, "state" TEXT, "average_duration" REAL, "duration_unit" TEXT, "duration_samples" INTEGER, "average_power" REAL, "average_power_unit" TEXT, "power_samples" INTEGER, "last_timestamp" INTEGER, PRIMARY KEY("device_id", "state"));',
+        "Device_History": 'CREATE TABLE "Device_History" ("device_id" TEXT, "timestamp" INTEGER, "state" TEXT, "power" REAL, "power_unit" TEXT, "energy_consumption" REAL, "energy_consumption_unit" TEXT, PRIMARY KEY("device_id", "timestamp"));',
+        "Hourly_Consumption": 'CREATE TABLE "Hourly_Consumption" ("device_id" TEXT, "energy_consumption" REAL, "energy_consumption_unit" TEXT, "from" INTEGER, "to" INTEGER, PRIMARY KEY("device_id", "from"));'
+    }
+
+    entity_history_db_tables = {
+        "Entity_History": 'CREATE TABLE "Entity_History" ("entity_id" TEXT, "date" TEXT, "state" TEXT, "power" REAL, "unit_of_measurement" TEXT, "energy_consumption" REAL, PRIMARY KEY("entity_id", "date"));'
+    }
+
+    databases = [
+        (DbPathEnum.CONFIGURATION, configuration_db_tables, "Configuration"),
+        (DbPathEnum.CONSUMPTION, consumption_db_tables, "Consumption"),
+        (DbPathEnum.ENTITY_HISTORY, entity_history_db_tables, "Entity History"),
     ]
+
+    for db_path, tables, db_name in databases:
+        missing_tables = [query for table, query in tables.items() if not table_exists(db_path, table)]
+
+        if missing_tables:
+            logger.info(f"{db_name} database is missing {len(missing_tables)} tables, running migration...")
+            create_tables(db_path, missing_tables)
+            logger.info(f"{db_name} database migration completed.")
+        else:
+            logger.info(f"All tables are present in {db_name} database, no migration needed.")
+
+
+def create_tables(databasePath:DbPathEnum,queriesList:list):#TODO:refactor this code with new database structure
+    logger = logging.getLogger(__name__)
     success=True
-    with get_db_connection() as con:
+    with get_db_connection(databasePath) as con:
         try:
             cur = con.cursor()
             # Execute each table creation query
-            for query in table_creation_queries:
+            for query in queriesList:
                 cur.execute(query)
                 success=True if cur.rowcount>0 else False
             con.commit()  # Commit the changes after creating tables
         except sqlite3.Error as e:
-            print(f"An error occurred while creating tables: {e}")
+            logger.error(f"An error occurred while creating tables for database {databasePath}: {e}")
             con.rollback()  # Rollback if an error occurs
             success=False
     return success

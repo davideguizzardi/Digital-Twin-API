@@ -16,11 +16,21 @@ from routers.deviceRouter import getDeviceRouter
 from routers.virtualRouter import getVirtualRouter
 
 from homeassistant_functions import initializeToken
+from database_functions import initialize_database
 from schemas import CONFIGURATION_PATH
 import configparser
-
+import logging
 import uvicorn
 
+# Configure logging with Uvicorn-like format
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(levelprefix)s %(message)s",  # Matches Uvicorn's format
+    datefmt="%Y-%m-%d %H:%M:%S"
+)
+
+# Required for "levelprefix" to work (Uvicorn uses this)
+logging.getLogger().handlers[0].setFormatter(uvicorn.logging.DefaultFormatter("%(levelprefix)s %(message)s"))
 
 
 def create_api(enable_prediction:False,enable_demo:False):
@@ -63,7 +73,10 @@ def create_api(enable_prediction:False,enable_demo:False):
 
 
 def main():
-    initializeToken()
+    logger = logging.getLogger(__name__)
+
+    initialize_database()
+    
     parser=configparser.ConfigParser()
     parser.read(CONFIGURATION_PATH)
     
@@ -72,6 +85,14 @@ def main():
 
     enable_prediction=parser.getboolean("ApiConfiguration","enable_prediction")
     enable_demo=parser.getboolean("ApiConfiguration","enable_demo")
+    
+
+    if enable_demo:
+        logger.info("Running server in demo mode.")
+    else:
+        logger.info("Initializing home assistant configuration and token...")
+        initializeToken()
+
     api = create_api(enable_prediction,enable_demo)
     uvicorn.run(api, host=host,port=port,log_level="debug")
 
