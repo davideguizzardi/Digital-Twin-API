@@ -14,31 +14,35 @@ def getDeviceRouter(enable_demo=False):
     device_router=APIRouter(tags=["Device"],prefix="/device")
     @device_router.get("")
     def Get_All_Devices(get_only_names:bool=False):
-        if enable_demo:
-            return get_all_demo_devices(get_only_names)
-        
         if get_only_names:
-            return get_names_and_id_configuration()
+            if enable_demo:
+                return get_all_demo_devices(get_only_names)
+            else:    
+                return get_names_and_id_configuration()
+
+        if enable_demo:
+            res={"status_code":200,"data":get_all_demo_devices(False)} 
         else:    
             res=getDevicesFast()
-            if res["status_code"]==200:
-                for dev in res['data']:
-                    dev["name"]=dev["name_by_user"] if dev["name_by_user"] else dev["name"]
-                    dev["category"]=dev["device_class"]
-                    dev["show"]=True
-                    dev.pop("name_by_user",None)
-                    configuration_data=get_configuration_of_device(dev["device_id"])
-                    if configuration_data:
-                        dev["name"]=configuration_data["name"]
-                        dev["category"]=configuration_data["category"]
-                        dev["show"]=configuration_data["show"]==1
-                    map_data=get_map_entity(dev["device_id"])
-                    if map_data:
-                        dev["map_data"]={
-                            "x":map_data["x"],
-                            "y":map_data["y"],
-                            "floor":map_data["floor"]
-                        }
+        
+        if res["status_code"]==200:
+            for dev in res['data']:
+                dev["name"]=dev["name_by_user"] if dev["name_by_user"] else dev["name"]
+                dev["category"]=dev["device_class"]
+                dev["show"]=True
+                dev.pop("name_by_user",None)
+                configuration_data=get_configuration_of_device(dev["device_id"])
+                if configuration_data:
+                    dev["name"]=configuration_data["name"]
+                    dev["category"]=configuration_data["category"]
+                    dev["show"]=configuration_data["show"]==1
+                map_data=get_map_entity(dev["device_id"])
+                if map_data:
+                    dev["map_data"]={
+                        "x":map_data["x"],
+                        "y":map_data["y"],
+                        "floor":map_data["floor"]
+                    }
         if res["status_code"]!=200:
             raise HTTPException(status_code=res["status_code"],detail=res["data"])
         return res["data"]

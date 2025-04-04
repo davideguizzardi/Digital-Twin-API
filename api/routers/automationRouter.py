@@ -930,9 +930,9 @@ def getAutomationRouter(enable_demo=False):
     @automation_router.get("")
     def Get_Automations(get_suggestions:bool=False):
         if enable_demo:
-            return get_demo_automations()
-        
-        res=getAutomations()
+            res={"status_code":200,"data":get_demo_automations()} 
+        else:
+            res=getAutomations()
         if res["status_code"]!=200:
             raise HTTPException(status_code=res["status_code"],detail=res["data"])
         else:

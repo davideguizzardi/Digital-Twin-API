@@ -30,486 +30,439 @@
 		}
 	],
 	"device_context": [
-		{
-			"device_class": "sensor",
-			"device_id": "2333fdc84f9e56701c6b6bfd6f93d5c5",
-			"energy_entity_id": "",
-			"list_of_entities": [
-				{
-					"entity_class": "timestamp",
-					"entity_id": "sensor.sun_next_dawn",
-					"state": "2025-04-03T04:24:25+00:00",
-					"unit_of_measurement": null
-				},
-				{
-					"entity_class": "timestamp",
-					"entity_id": "sensor.sun_next_dusk",
-					"state": "2025-04-02T18:19:36+00:00",
-					"unit_of_measurement": null
-				},
-				{
-					"entity_class": "timestamp",
-					"entity_id": "sensor.sun_next_midnight",
-					"state": "2025-04-02T23:22:14+00:00",
-					"unit_of_measurement": null
-				},
-				{
-					"entity_class": "timestamp",
-					"entity_id": "sensor.sun_next_noon",
-					"state": "2025-04-02T11:22:39+00:00",
-					"unit_of_measurement": null
-				},
-				{
-					"entity_class": "timestamp",
-					"entity_id": "sensor.sun_next_rising",
-					"state": "2025-04-03T04:55:16+00:00",
-					"unit_of_measurement": null
-				},
-				{
-					"entity_class": "timestamp",
-					"entity_id": "sensor.sun_next_setting",
-					"state": "2025-04-02T17:48:41+00:00",
-					"unit_of_measurement": null
-				}
-			],
-			"manufacturer": null,
-			"model": null,
-			"name": "Sun",
-			"power_entity_id": "",
-			"state": "",
-			"state_entity_id": "",
-			"category": "sensor",
-			"show": false
-		},
-		{
-			"device_class": "media_player",
-			"device_id": "03693bc2884b932931228261a1972360",
-			"energy_entity_id": "media_player.tv_sala",
-			"list_of_entities": [
-				{
-					"entity_class": "power",
-					"entity_id": "sensor.tv_sala_power",
-					"state": "0",
-					"unit_of_measurement": "W"
-				},
-				{
-					"entity_class": "tv",
-					"entity_id": "media_player.tv_sala",
-					"state": "off",
-					"unit_of_measurement": null
-				}
-			],
-			"manufacturer": "LG",
-			"model": "OLED55G26LA",
-			"name": "Tv Living room DEMO",
-			"power_entity_id": "sensor.tv_sala_power",
-			"state": "off",
-			"state_entity_id": "media_player.tv_sala",
-			"category": "tv",
-			"show": true,
-			"map_data": {
-				"x": 41,
-				"y": 59,
-				"floor": 2
-			}
-		},
-		{
-			"device_class": "device_tracker",
-			"device_id": "b9bd882c62e2b8f18c3563fa621fc00b",
-			"energy_entity_id": "device_tracker.oneplus_di_davide",
-			"list_of_entities": [
-				{
-					"entity_class": null,
-					"entity_id": "device_tracker.oneplus_di_davide",
-					"state": "unknown",
-					"unit_of_measurement": null
-				},
-				{
-					"entity_class": "battery",
-					"entity_id": "sensor.oneplus_di_davide_battery_level",
-					"state": "80",
-					"unit_of_measurement": "%"
-				},
-				{
-					"entity_class": "enum",
-					"entity_id": "sensor.oneplus_di_davide_battery_state",
-					"state": "not_charging",
-					"unit_of_measurement": null
-				},
-				{
-					"entity_class": "enum",
-					"entity_id": "sensor.oneplus_di_davide_charger_type",
-					"state": "none",
-					"unit_of_measurement": null
-				}
-			],
-			"manufacturer": "OnePlus",
-			"model": "DN2103",
-			"name": "OnePlus di Davide ",
-			"power_entity_id": "",
-			"state": "unknown",
-			"state_entity_id": "device_tracker.oneplus_di_davide",
-			"category": "device_tracker",
-			"show": false
-		},
-		{
-			"device_class": "sensor",
-			"device_id": "0b042e5ec2945e276355fa2cc749947f",
-			"energy_entity_id": "",
-			"list_of_entities": [
-				{
-					"entity_class": "temperature",
-					"entity_id": "sensor.shellyht_3b9c81_temperature",
-					"state": "17.38",
-					"unit_of_measurement": "°C"
-				},
-				{
-					"entity_class": "humidity",
-					"entity_id": "sensor.shellyht_3b9c81_humidity",
-					"state": "56.0",
-					"unit_of_measurement": "%"
-				},
-				{
-					"entity_class": "battery",
-					"entity_id": "sensor.shellyht_3b9c81_battery",
-					"state": "85",
-					"unit_of_measurement": "%"
-				}
-			],
-			"manufacturer": "Shelly",
-			"model": "Shelly H&T",
-			"name": "Sensore H&T cucina",
-			"power_entity_id": "",
-			"state": "",
-			"state_entity_id": "",
-			"category": "thermostat",
-			"show": true,
-			"map_data": {
-				"x": 10,
-				"y": 52,
-				"floor": 2
-			}
-		},
-		{
-			"device_class": "switch",
-			"device_id": "73f90a95e5dba7d52e5ad10517b1dec6",
-			"energy_entity_id": "sensor.shellyplusplugs_c82e180c35e8_switch_0_energy",
-			"list_of_entities": [
-				{
-					"entity_class": "problem",
-					"entity_id": "binary_sensor.shellyplusplugs_c82e180c35e8_switch_0_overheating",
-					"state": "off",
-					"unit_of_measurement": null
-				},
-				{
-					"entity_class": "problem",
-					"entity_id": "binary_sensor.shellyplusplugs_c82e180c35e8_switch_0_overpowering",
-					"state": "off",
-					"unit_of_measurement": null
-				},
-				{
-					"entity_class": "problem",
-					"entity_id": "binary_sensor.shellyplusplugs_c82e180c35e8_switch_0_overvoltage",
-					"state": "off",
-					"unit_of_measurement": null
-				},
-				{
-					"entity_class": "power",
-					"entity_id": "sensor.shellyplusplugs_c82e180c35e8_switch_0_power",
-					"state": "0.8",
-					"unit_of_measurement": "W"
-				},
-				{
-					"entity_class": "energy",
-					"entity_id": "sensor.shellyplusplugs_c82e180c35e8_switch_0_energy",
-					"state": "43.074496",
-					"unit_of_measurement": "kWh"
-				},
-				{
-					"entity_class": null,
-					"entity_id": "switch.shellyplusplugs_c82e180c35e8_switch_0",
-					"state": "on",
-					"unit_of_measurement": null
-				},
-				{
-					"entity_class": "problem",
-					"entity_id": "binary_sensor.shellyplusplugs_c82e180c35e8_switch_0_overcurrent",
-					"state": "off",
-					"unit_of_measurement": null
-				}
-			],
-			"manufacturer": "Shelly",
-			"model": "Shelly Plus Plug S",
-			"name": "Washing machine",
-			"power_entity_id": "sensor.shellyplusplugs_c82e180c35e8_switch_0_power",
-			"state": "on",
-			"state_entity_id": "switch.shellyplusplugs_c82e180c35e8_switch_0",
-			"category": "washing_machine",
-			"show": true,
-			"map_data": {
-				"x": 19,
-				"y": 27,
-				"floor": 2
-			}
-		},
-		{
-			"device_class": "switch",
-			"device_id": "81faa423066ee532f37f15f1897a699d",
-			"energy_entity_id": "sensor.shellyplusplugs_e465b8454284_switch_0_energy",
-			"list_of_entities": [
-				{
-					"entity_class": "problem",
-					"entity_id": "binary_sensor.shellyplusplugs_e465b8454284_switch_0_overheating",
-					"state": "off",
-					"unit_of_measurement": null
-				},
-				{
-					"entity_class": "problem",
-					"entity_id": "binary_sensor.shellyplusplugs_e465b8454284_switch_0_overpowering",
-					"state": "off",
-					"unit_of_measurement": null
-				},
-				{
-					"entity_class": "problem",
-					"entity_id": "binary_sensor.shellyplusplugs_e465b8454284_switch_0_overvoltage",
-					"state": "off",
-					"unit_of_measurement": null
-				},
-				{
-					"entity_class": "power",
-					"entity_id": "sensor.shellyplusplugs_e465b8454284_switch_0_power",
-					"state": "74.1",
-					"unit_of_measurement": "W"
-				},
-				{
-					"entity_class": "energy",
-					"entity_id": "sensor.shellyplusplugs_e465b8454284_switch_0_energy",
-					"state": "72567.734",
-					"unit_of_measurement": "Wh"
-				},
-				{
-					"entity_class": null,
-					"entity_id": "switch.shellyplusplugs_e465b8454284_switch_0",
-					"state": "on",
-					"unit_of_measurement": null
-				},
-				{
-					"entity_class": "problem",
-					"entity_id": "binary_sensor.shellyplusplugs_e465b8454284_switch_0_overcurrent",
-					"state": "off",
-					"unit_of_measurement": null
-				}
-			],
-			"manufacturer": "Shelly",
-			"model": "Shelly Plus Plug S",
-			"name": "Desktop",
-			"power_entity_id": "sensor.shellyplusplugs_e465b8454284_switch_0_power",
-			"state": "on",
-			"state_entity_id": "switch.shellyplusplugs_e465b8454284_switch_0",
-			"category": "desktop",
-			"show": true,
-			"map_data": {
-				"x": 12,
-				"y": 43,
-				"floor": 0
-			}
-		},
-		{
-			"device_class": "light",
-			"device_id": "f5f0c29d9170693dcf446ca8bb049a82",
-			"energy_entity_id": "button.shellycolorbulb_485519ee0a6a_reboot",
-			"list_of_entities": [
-				{
-					"entity_class": "restart",
-					"entity_id": "button.shellycolorbulb_485519ee0a6a_reboot",
-					"state": "unknown",
-					"unit_of_measurement": null
-				},
-				{
-					"entity_class": null,
-					"entity_id": "light.shellycolorbulb_485519ee0a6a",
-					"state": "off",
-					"unit_of_measurement": null
-				},
-				{
-					"entity_class": "power",
-					"entity_id": "sensor.shellycolorbulb_485519ee0a6a_power",
-					"state": "0.0",
-					"unit_of_measurement": "W"
-				}
-			],
-			"manufacturer": "Shelly",
-			"model": "Shelly Bulb RGBW",
-			"name": "Luce Ufficio",
-			"power_entity_id": "sensor.shellycolorbulb_485519ee0a6a_power",
-			"state": "off",
-			"state_entity_id": "light.shellycolorbulb_485519ee0a6a",
-			"category": "light",
-			"show": true,
-			"map_data": {
-				"x": 19,
-				"y": 37,
-				"floor": 0
-			}
-		},
-		{
-			"device_class": "switch",
-			"device_id": "60eb315bfa05ddf285ce4bf519497d3e",
-			"energy_entity_id": "sensor.shellyplusplugit_80646fc994c8_switch_0_energy",
-			"list_of_entities": [
-				{
-					"entity_class": "problem",
-					"entity_id": "binary_sensor.shellyplusplugit_80646fc994c8_switch_0_overheating",
-					"state": "off",
-					"unit_of_measurement": null
-				},
-				{
-					"entity_class": "problem",
-					"entity_id": "binary_sensor.shellyplusplugit_80646fc994c8_switch_0_overpowering",
-					"state": "off",
-					"unit_of_measurement": null
-				},
-				{
-					"entity_class": "problem",
-					"entity_id": "binary_sensor.shellyplusplugit_80646fc994c8_switch_0_overvoltage",
-					"state": "off",
-					"unit_of_measurement": null
-				},
-				{
-					"entity_class": "power",
-					"entity_id": "sensor.shellyplusplugit_80646fc994c8_switch_0_power",
-					"state": "0.0",
-					"unit_of_measurement": "W"
-				},
-				{
-					"entity_class": "energy",
-					"entity_id": "sensor.shellyplusplugit_80646fc994c8_switch_0_energy",
-					"state": "48554.719",
-					"unit_of_measurement": "Wh"
-				},
-				{
-					"entity_class": null,
-					"entity_id": "switch.shellyplusplugit_80646fc994c8_switch_0",
-					"state": "on",
-					"unit_of_measurement": null
-				},
-				{
-					"entity_class": "problem",
-					"entity_id": "binary_sensor.shellyplusplugit_80646fc994c8_switch_0_overcurrent",
-					"state": "off",
-					"unit_of_measurement": null
-				}
-			],
-			"manufacturer": "Shelly",
-			"model": "Shelly Plus Plug IT",
-			"name": "Kitchen TV",
-			"power_entity_id": "sensor.shellyplusplugit_80646fc994c8_switch_0_power",
-			"state": "on",
-			"state_entity_id": "switch.shellyplusplugit_80646fc994c8_switch_0",
-			"category": "tv",
-			"show": true,
-			"map_data": {
-				"x": 21,
-				"y": 51,
-				"floor": 2
-			}
-		},
-		{
-			"device_class": "weather",
-			"device_id": "8d77325c13d4ba23aa7c68ebbbda80b4",
-			"energy_entity_id": "weather.forecast_home",
-			"list_of_entities": [
-				{
-					"entity_class": null,
-					"entity_id": "weather.forecast_home",
-					"state": "cloudy",
-					"unit_of_measurement": null
-				}
-			],
-			"manufacturer": "Met.no",
-			"model": "Forecast",
-			"name": "Forecast",
-			"power_entity_id": "",
-			"state": "cloudy",
-			"state_entity_id": "weather.forecast_home",
-			"category": "weather",
-			"show": false
-		},
-		{
-			"device_class": "event",
-			"device_id": "893d6954dd2779cf1e402d47cf5be7e7",
-			"energy_entity_id": "event.shelly_blu_button1_bbab_button",
-			"list_of_entities": [
-				{
-					"entity_class": "button",
-					"entity_id": "event.shelly_blu_button1_bbab_button",
-					"state": "2024-11-10T20:09:44.682+00:00",
-					"unit_of_measurement": null
-				},
-				{
-					"entity_class": "battery",
-					"entity_id": "sensor.shelly_blu_button1_bbab_battery",
-					"state": "100",
-					"unit_of_measurement": "%"
-				}
-			],
-			"manufacturer": "Shelly",
-			"model": "BLU Button1",
-			"name": "Shelly BLU Button1 BBAB",
-			"power_entity_id": "",
-			"state": "2024-11-10T20:09:44.682+00:00",
-			"state_entity_id": "event.shelly_blu_button1_bbab_button",
-			"category": "event",
-			"show": false
-		},
-		{
-			"device_class": "media_player",
-			"device_id": "8cd1e3328e88ccd5ef0f03e2eac04a59",
-			"energy_entity_id": "media_player.test",
-			"list_of_entities": [
-				{
-					"entity_class": "speaker",
-					"entity_id": "media_player.test",
-					"state": "unavailable",
-					"unit_of_measurement": null
-				}
-			],
-			"manufacturer": "Google Inc.",
-			"model": "Google Home Mini",
-			"name": "Google Home Mini",
-			"power_entity_id": "",
-			"state": "unavailable",
-			"state_entity_id": "media_player.test",
-			"category": "media_player",
-			"show": true,
-			"map_data": {
-				"x": 27,
-				"y": 43,
-				"floor": 0
-			}
-		},
-		{
-			"device_class": "media_player",
-			"device_id": "21d5e1589f7b5d08af0d2fbe86900ecc",
-			"energy_entity_id": "media_player.lg_webos_tv_oled55g26la",
-			"list_of_entities": [
-				{
-					"entity_class": null,
-					"entity_id": "media_player.lg_webos_tv_oled55g26la",
-					"state": "off",
-					"unit_of_measurement": null
-				}
-			],
-			"manufacturer": "LGE",
-			"model": "OLED55G26LA",
-			"name": "[LG] webOS TV OLED55G26LA",
-			"power_entity_id": "",
-			"state": "off",
-			"state_entity_id": "media_player.lg_webos_tv_oled55g26la",
-			"category": "media_player",
-			"show": false
-		}
-	],
+        {
+            "device_class": "sensor",
+            "device_id": "2333fdc84f9e56701c6b6bfd6f93d5c5",
+            "energy_entity_id": "",
+            "list_of_entities": [
+                {
+                    "entity_class": "timestamp",
+                    "entity_id": "sensor.sun_next_dawn",
+                    "state": "2025-04-05T04:20:30+00:00",
+                    "unit_of_measurement": null
+                },
+                {
+                    "entity_class": "timestamp",
+                    "entity_id": "sensor.sun_next_dusk",
+                    "state": "2025-04-04T18:22:22+00:00",
+                    "unit_of_measurement": null
+                },
+                {
+                    "entity_class": "timestamp",
+                    "entity_id": "sensor.sun_next_midnight",
+                    "state": "2025-04-04T23:21:39+00:00",
+                    "unit_of_measurement": null
+                },
+                {
+                    "entity_class": "timestamp",
+                    "entity_id": "sensor.sun_next_noon",
+                    "state": "2025-04-04T11:22:04+00:00",
+                    "unit_of_measurement": null
+                },
+                {
+                    "entity_class": "timestamp",
+                    "entity_id": "sensor.sun_next_rising",
+                    "state": "2025-04-05T04:51:29+00:00",
+                    "unit_of_measurement": null
+                },
+                {
+                    "entity_class": "timestamp",
+                    "entity_id": "sensor.sun_next_setting",
+                    "state": "2025-04-04T17:51:20+00:00",
+                    "unit_of_measurement": null
+                }
+            ],
+            "manufacturer": null,
+            "model": null,
+            "name": "Sun",
+            "name_by_user": null,
+            "power_entity_id": "",
+            "state": "",
+            "state_entity_id": ""
+        },
+        {
+            "device_class": "media_player",
+            "device_id": "03693bc2884b932931228261a1972360",
+            "energy_entity_id": "media_player.tv_sala",
+            "list_of_entities": [
+                {
+                    "entity_class": "power",
+                    "entity_id": "sensor.tv_sala_power",
+                    "state": "0",
+                    "unit_of_measurement": "W"
+                },
+                {
+                    "entity_class": "tv",
+                    "entity_id": "media_player.tv_sala",
+                    "state": "off",
+                    "unit_of_measurement": null
+                }
+            ],
+            "manufacturer": "LG",
+            "model": "OLED55G26LA",
+            "name": "Tv Sala",
+            "name_by_user": null,
+            "power_entity_id": "sensor.tv_sala_power",
+            "state": "off",
+            "state_entity_id": "media_player.tv_sala"
+        },
+        {
+            "device_class": "device_tracker",
+            "device_id": "b9bd882c62e2b8f18c3563fa621fc00b",
+            "energy_entity_id": "device_tracker.oneplus_di_davide",
+            "list_of_entities": [
+                {
+                    "entity_class": null,
+                    "entity_id": "device_tracker.oneplus_di_davide",
+                    "state": "unknown",
+                    "unit_of_measurement": null
+                },
+                {
+                    "entity_class": "battery",
+                    "entity_id": "sensor.oneplus_di_davide_battery_level",
+                    "state": "80",
+                    "unit_of_measurement": "%"
+                },
+                {
+                    "entity_class": "enum",
+                    "entity_id": "sensor.oneplus_di_davide_battery_state",
+                    "state": "not_charging",
+                    "unit_of_measurement": null
+                },
+                {
+                    "entity_class": "enum",
+                    "entity_id": "sensor.oneplus_di_davide_charger_type",
+                    "state": "none",
+                    "unit_of_measurement": null
+                }
+            ],
+            "manufacturer": "OnePlus",
+            "model": "DN2103",
+            "name": "OnePlus di Davide ",
+            "name_by_user": null,
+            "power_entity_id": "",
+            "state": "unknown",
+            "state_entity_id": "device_tracker.oneplus_di_davide"
+        },
+        {
+            "device_class": "sensor",
+            "device_id": "0b042e5ec2945e276355fa2cc749947f",
+            "energy_entity_id": "",
+            "list_of_entities": [
+                {
+                    "entity_class": "temperature",
+                    "entity_id": "sensor.shellyht_3b9c81_temperature",
+                    "state": "17.88",
+                    "unit_of_measurement": "\u00b0C"
+                },
+                {
+                    "entity_class": "humidity",
+                    "entity_id": "sensor.shellyht_3b9c81_humidity",
+                    "state": "56.0",
+                    "unit_of_measurement": "%"
+                },
+                {
+                    "entity_class": "battery",
+                    "entity_id": "sensor.shellyht_3b9c81_battery",
+                    "state": "85",
+                    "unit_of_measurement": "%"
+                }
+            ],
+            "manufacturer": "Shelly",
+            "model": "Shelly H&T",
+            "name": "shellyht-3B9C81",
+            "name_by_user": "Sensore H&T cucina",
+            "power_entity_id": "",
+            "state": "",
+            "state_entity_id": ""
+        },
+        {
+            "device_class": "switch",
+            "device_id": "73f90a95e5dba7d52e5ad10517b1dec6",
+            "energy_entity_id": "sensor.shellyplusplugs_c82e180c35e8_switch_0_energy",
+            "list_of_entities": [
+                {
+                    "entity_class": "problem",
+                    "entity_id": "binary_sensor.shellyplusplugs_c82e180c35e8_switch_0_overheating",
+                    "state": "off",
+                    "unit_of_measurement": null
+                },
+                {
+                    "entity_class": "problem",
+                    "entity_id": "binary_sensor.shellyplusplugs_c82e180c35e8_switch_0_overpowering",
+                    "state": "off",
+                    "unit_of_measurement": null
+                },
+                {
+                    "entity_class": "problem",
+                    "entity_id": "binary_sensor.shellyplusplugs_c82e180c35e8_switch_0_overvoltage",
+                    "state": "off",
+                    "unit_of_measurement": null
+                },
+                {
+                    "entity_class": "power",
+                    "entity_id": "sensor.shellyplusplugs_c82e180c35e8_switch_0_power",
+                    "state": "0.0",
+                    "unit_of_measurement": "W"
+                },
+                {
+                    "entity_class": "energy",
+                    "entity_id": "sensor.shellyplusplugs_c82e180c35e8_switch_0_energy",
+                    "state": "44.361109",
+                    "unit_of_measurement": "kWh"
+                },
+                {
+                    "entity_class": null,
+                    "entity_id": "switch.shellyplusplugs_c82e180c35e8_switch_0",
+                    "state": "on",
+                    "unit_of_measurement": null
+                },
+                {
+                    "entity_class": "problem",
+                    "entity_id": "binary_sensor.shellyplusplugs_c82e180c35e8_switch_0_overcurrent",
+                    "state": "off",
+                    "unit_of_measurement": null
+                }
+            ],
+            "manufacturer": "Shelly",
+            "model": "Shelly Plus Plug S",
+            "name": "shellyplusplugs-c82e180c35e8",
+            "name_by_user": "Lavatrice",
+            "power_entity_id": "sensor.shellyplusplugs_c82e180c35e8_switch_0_power",
+            "state": "on",
+            "state_entity_id": "switch.shellyplusplugs_c82e180c35e8_switch_0"
+        },
+        {
+            "device_class": "switch",
+            "device_id": "81faa423066ee532f37f15f1897a699d",
+            "energy_entity_id": "sensor.shellyplusplugs_e465b8454284_switch_0_energy",
+            "list_of_entities": [
+                {
+                    "entity_class": "problem",
+                    "entity_id": "binary_sensor.shellyplusplugs_e465b8454284_switch_0_overheating",
+                    "state": "off",
+                    "unit_of_measurement": null
+                },
+                {
+                    "entity_class": "problem",
+                    "entity_id": "binary_sensor.shellyplusplugs_e465b8454284_switch_0_overpowering",
+                    "state": "off",
+                    "unit_of_measurement": null
+                },
+                {
+                    "entity_class": "problem",
+                    "entity_id": "binary_sensor.shellyplusplugs_e465b8454284_switch_0_overvoltage",
+                    "state": "off",
+                    "unit_of_measurement": null
+                },
+                {
+                    "entity_class": "power",
+                    "entity_id": "sensor.shellyplusplugs_e465b8454284_switch_0_power",
+                    "state": "79.3",
+                    "unit_of_measurement": "W"
+                },
+                {
+                    "entity_class": "energy",
+                    "entity_id": "sensor.shellyplusplugs_e465b8454284_switch_0_energy",
+                    "state": "74085.789",
+                    "unit_of_measurement": "Wh"
+                },
+                {
+                    "entity_class": null,
+                    "entity_id": "switch.shellyplusplugs_e465b8454284_switch_0",
+                    "state": "on",
+                    "unit_of_measurement": null
+                },
+                {
+                    "entity_class": "problem",
+                    "entity_id": "binary_sensor.shellyplusplugs_e465b8454284_switch_0_overcurrent",
+                    "state": "off",
+                    "unit_of_measurement": null
+                }
+            ],
+            "manufacturer": "Shelly",
+            "model": "Shelly Plus Plug S",
+            "name": "shellyplusplugs-e465b8454284",
+            "name_by_user": "PC Fisso",
+            "power_entity_id": "sensor.shellyplusplugs_e465b8454284_switch_0_power",
+            "state": "on",
+            "state_entity_id": "switch.shellyplusplugs_e465b8454284_switch_0"
+        },
+        {
+            "device_class": "light",
+            "device_id": "f5f0c29d9170693dcf446ca8bb049a82",
+            "energy_entity_id": "button.shellycolorbulb_485519ee0a6a_reboot",
+            "list_of_entities": [
+                {
+                    "entity_class": "restart",
+                    "entity_id": "button.shellycolorbulb_485519ee0a6a_reboot",
+                    "state": "unknown",
+                    "unit_of_measurement": null
+                },
+                {
+                    "entity_class": null,
+                    "entity_id": "light.shellycolorbulb_485519ee0a6a",
+                    "state": "off",
+                    "unit_of_measurement": null
+                },
+                {
+                    "entity_class": "power",
+                    "entity_id": "sensor.shellycolorbulb_485519ee0a6a_power",
+                    "state": "0.0",
+                    "unit_of_measurement": "W"
+                }
+            ],
+            "manufacturer": "Shelly",
+            "model": "Shelly Bulb RGBW",
+            "name": "shellycolorbulb-485519EE0A6A",
+            "name_by_user": null,
+            "power_entity_id": "sensor.shellycolorbulb_485519ee0a6a_power",
+            "state": "off",
+            "state_entity_id": "light.shellycolorbulb_485519ee0a6a"
+        },
+        {
+            "device_class": "switch",
+            "device_id": "60eb315bfa05ddf285ce4bf519497d3e",
+            "energy_entity_id": "sensor.shellyplusplugit_80646fc994c8_switch_0_energy",
+            "list_of_entities": [
+                {
+                    "entity_class": "problem",
+                    "entity_id": "binary_sensor.shellyplusplugit_80646fc994c8_switch_0_overheating",
+                    "state": "off",
+                    "unit_of_measurement": null
+                },
+                {
+                    "entity_class": "problem",
+                    "entity_id": "binary_sensor.shellyplusplugit_80646fc994c8_switch_0_overpowering",
+                    "state": "off",
+                    "unit_of_measurement": null
+                },
+                {
+                    "entity_class": "problem",
+                    "entity_id": "binary_sensor.shellyplusplugit_80646fc994c8_switch_0_overvoltage",
+                    "state": "off",
+                    "unit_of_measurement": null
+                },
+                {
+                    "entity_class": "power",
+                    "entity_id": "sensor.shellyplusplugit_80646fc994c8_switch_0_power",
+                    "state": "0.0",
+                    "unit_of_measurement": "W"
+                },
+                {
+                    "entity_class": "energy",
+                    "entity_id": "sensor.shellyplusplugit_80646fc994c8_switch_0_energy",
+                    "state": "48586.778",
+                    "unit_of_measurement": "Wh"
+                },
+                {
+                    "entity_class": null,
+                    "entity_id": "switch.shellyplusplugit_80646fc994c8_switch_0",
+                    "state": "on",
+                    "unit_of_measurement": null
+                },
+                {
+                    "entity_class": "problem",
+                    "entity_id": "binary_sensor.shellyplusplugit_80646fc994c8_switch_0_overcurrent",
+                    "state": "off",
+                    "unit_of_measurement": null
+                }
+            ],
+            "manufacturer": "Shelly",
+            "model": "Shelly Plus Plug IT",
+            "name": "shellyplusplugit-80646fc994c8",
+            "name_by_user": "Tv Cucina",
+            "power_entity_id": "sensor.shellyplusplugit_80646fc994c8_switch_0_power",
+            "state": "on",
+            "state_entity_id": "switch.shellyplusplugit_80646fc994c8_switch_0"
+        },
+        {
+            "device_class": "weather",
+            "device_id": "8d77325c13d4ba23aa7c68ebbbda80b4",
+            "energy_entity_id": "weather.forecast_home",
+            "list_of_entities": [
+                {
+                    "entity_class": null,
+                    "entity_id": "weather.forecast_home",
+                    "state": "sunny",
+                    "unit_of_measurement": null
+                }
+            ],
+            "manufacturer": "Met.no",
+            "model": "Forecast",
+            "name": "Forecast",
+            "name_by_user": null,
+            "power_entity_id": "",
+            "state": "sunny",
+            "state_entity_id": "weather.forecast_home"
+        },
+        {
+            "device_class": "event",
+            "device_id": "893d6954dd2779cf1e402d47cf5be7e7",
+            "energy_entity_id": "event.shelly_blu_button1_bbab_button",
+            "list_of_entities": [
+                {
+                    "entity_class": "button",
+                    "entity_id": "event.shelly_blu_button1_bbab_button",
+                    "state": "2024-11-10T20:09:44.682+00:00",
+                    "unit_of_measurement": null
+                },
+                {
+                    "entity_class": "battery",
+                    "entity_id": "sensor.shelly_blu_button1_bbab_battery",
+                    "state": "100",
+                    "unit_of_measurement": "%"
+                }
+            ],
+            "manufacturer": "Shelly",
+            "model": "BLU Button1",
+            "name": "Shelly BLU Button1 BBAB",
+            "name_by_user": null,
+            "power_entity_id": "",
+            "state": "2024-11-10T20:09:44.682+00:00",
+            "state_entity_id": "event.shelly_blu_button1_bbab_button"
+        },
+        {
+            "device_class": "media_player",
+            "device_id": "8cd1e3328e88ccd5ef0f03e2eac04a59",
+            "energy_entity_id": "media_player.test",
+            "list_of_entities": [
+                {
+                    "entity_class": "speaker",
+                    "entity_id": "media_player.test",
+                    "state": "unavailable",
+                    "unit_of_measurement": null
+                }
+            ],
+            "manufacturer": "Google Inc.",
+            "model": "Google Home Mini",
+            "name": "Test",
+            "name_by_user": null,
+            "power_entity_id": "",
+            "state": "unavailable",
+            "state_entity_id": "media_player.test"
+        },
+        {
+            "device_class": "media_player",
+            "device_id": "21d5e1589f7b5d08af0d2fbe86900ecc",
+            "energy_entity_id": "media_player.lg_webos_tv_oled55g26la",
+            "list_of_entities": [
+                {
+                    "entity_class": null,
+                    "entity_id": "media_player.lg_webos_tv_oled55g26la",
+                    "state": "off",
+                    "unit_of_measurement": null
+                }
+            ],
+            "manufacturer": "LGE",
+            "model": "OLED55G26LA",
+            "name": "[LG] webOS TV OLED55G26LA",
+            "name_by_user": null,
+            "power_entity_id": "",
+            "state": "off",
+            "state_entity_id": "media_player.lg_webos_tv_oled55g26la"
+        }
+    ],
 	"entities_context": [
 		{
 			"entity_id": "person.davide_guizzardi",
@@ -3157,183 +3110,122 @@
 		}
 	],
 	"automation_context": [
-		{
-			"id": "1725286989727",
-			"entity_id": "automation.automazione_media_player",
-			"state": "off",
-			"description": "",
-			"trigger": [
-				{
-					"platform": "time_pattern",
-					"hours": "8",
-					"description": "Time pattern-based trigger description"
-				}
-			],
-			"condition": [],
-			"name": "automazione media player",
-			"time": "",
-			"days": [],
-			"action": [
-				{
-					"average_power": 5,
-					"average_power_unit": "W",
-					"average_duration": 35.31858407079646,
-					"duration_unit": "min",
-					"maximum_power": 5,
-					"device_id": "8cd1e3328e88ccd5ef0f03e2eac04a59",
-					"state": "playing",
-					"service": "media_play",
-					"domain": "media_player",
-					"description": "Media play Test",
-					"device_name": "Test",
-					"data": {}
-				}
-			],
-			"average_power_drawn": 5,
-			"energy_consumption": 2.9432153392330385,
-			"monthly_cost": -1,
-			"maximum_cost_per_run": 0.00035318584070796456,
-			"minimum_cost_per_run": 0.0002648893805309734,
-			"suggestions": []
-		},
-		{
-			"id": "1727252339602",
-			"entity_id": "automation.automazione_ricorrenza_temporale",
-			"state": "off",
-			"description": "",
-			"trigger": [
-				{
-					"platform": "time_pattern",
-					"hours": "1",
-					"minutes": "1",
-					"seconds": "1",
-					"description": "Time pattern-based trigger description"
-				}
-			],
-			"condition": [],
-			"name": "Automazione ricorrenza temporale",
-			"time": "",
-			"days": [],
-			"action": [
-				{
-					"average_power": 5,
-					"average_power_unit": "W",
-					"average_duration": 35.31858407079646,
-					"duration_unit": "min",
-					"maximum_power": 5,
-					"device_id": "8cd1e3328e88ccd5ef0f03e2eac04a59",
-					"state": "playing",
-					"service": "media_play",
-					"domain": "media_player",
-					"description": "Media play Test",
-					"device_name": "Test",
-					"data": {}
-				}
-			],
-			"average_power_drawn": 5,
-			"energy_consumption": 2.9432153392330385,
-			"monthly_cost": -1,
-			"maximum_cost_per_run": 0.00035318584070796456,
-			"minimum_cost_per_run": 0.0002648893805309734,
-			"suggestions": []
-		},
-		{
-			"id": "1738493084329",
-			"entity_id": "automation.disattiva_pc_la_notte",
-			"state": "on",
-			"description": "",
-			"trigger": [
-				{
-					"trigger": "time",
-					"at": "02:00:00",
-					"description": "Time is 02:00"
-				}
-			],
-			"condition": [
-				{
-					"type": "is_power",
-					"condition": "device",
-					"device_id": "81faa423066ee532f37f15f1897a699d",
-					"entity_id": "5f50acf3de22e25c3e2ec6a6e42cbfac",
-					"domain": "sensor",
-					"below": 2,
-					"device_name": "PC Fisso",
-					"description": "\"PC Fisso\" power is below 2"
-				}
-			],
-			"name": "Turn off pc at night",
-			"time": "02:00",
-			"days": [],
-			"action": [
-				{
-					"average_power": 0.3030249756282522,
-					"average_power_unit": "W",
-					"average_duration": 711.8269230769233,
-					"duration_unit": "min",
-					"maximum_power": 2.1,
-					"device_id": "81faa423066ee532f37f15f1897a699d",
-					"state": "off",
-					"service": "turn_off",
-					"domain": "switch",
-					"description": "Turn off PC Fisso",
-					"device_name": "PC Fisso",
-					"data": null
-				}
-			],
-			"average_power_drawn": 0.3030249756282522,
-			"energy_consumption": 3.5950222669486407,
-			"monthly_cost": 0.01024406232608827,
-			"maximum_cost_per_run": -1,
-			"minimum_cost_per_run": -1,
-			"suggestions": []
-		},
-		{
-			"id": "1740485704149",
-			"entity_id": "automation.spegni_luce_attiva",
-			"state": "on",
-			"description": "",
-			"trigger": [
-				{
-					"type": "turned_on",
-					"device_id": "f5f0c29d9170693dcf446ca8bb049a82",
-					"entity_id": "c36f6903d22bfcce63f28ae993d5772e",
-					"domain": "light",
-					"trigger": "device",
-					"for": {
-						"hours": 0,
-						"minutes": 20,
-						"seconds": 0
-					},
-					"device_name": "shellycolorbulb-485519EE0A6A",
-					"description": "When \"shellycolorbulb-485519EE0A6A\" is turned on for 20 minutes"
-				}
-			],
-			"condition": [],
-			"name": "Spegni luce attiva",
-			"time": "",
-			"days": [],
-			"action": [
-				{
-					"average_power": 0,
-					"average_power_unit": "W",
-					"average_duration": 1353.764705882353,
-					"duration_unit": "min",
-					"maximum_power": 0,
-					"device_id": "f5f0c29d9170693dcf446ca8bb049a82",
-					"state": "off",
-					"service": "turn_off",
-					"domain": "light",
-					"description": "Turn off shellycolorbulb-485519EE0A6A",
-					"device_name": "shellycolorbulb-485519EE0A6A",
-					"data": {}
-				}
-			],
-			"average_power_drawn": 0,
-			"energy_consumption": 0,
-			"monthly_cost": -1,
-			"maximum_cost_per_run": 0,
-			"minimum_cost_per_run": 0,
-			"suggestions": []
-		}
-	]
+        {
+            "id": "1725286989727",
+            "alias": "automazione media player",
+            "description": "",
+            "trigger": [
+                {
+                    "platform": "time_pattern",
+                    "hours": "8"
+                }
+            ],
+            "condition": [],
+            "action": [
+                {
+                    "service": "media_player.media_play",
+                    "metadata": {},
+                    "data": {},
+                    "target": {
+                        "device_id": "8cd1e3328e88ccd5ef0f03e2eac04a59"
+                    }
+                }
+            ],
+            "mode": "single",
+            "entity_id": "automation.automazione_media_player",
+            "state": "off"
+        },
+        {
+            "id": "1727252339602",
+            "alias": "Automazione ricorrenza temporale",
+            "description": "",
+            "trigger": [
+                {
+                    "platform": "time_pattern",
+                    "hours": "1",
+                    "minutes": "1",
+                    "seconds": "1"
+                }
+            ],
+            "condition": [],
+            "action": [
+                {
+                    "service": "media_player.media_play",
+                    "metadata": {},
+                    "data": {},
+                    "target": {
+                        "device_id": "8cd1e3328e88ccd5ef0f03e2eac04a59"
+                    }
+                }
+            ],
+            "mode": "single",
+            "entity_id": "automation.automazione_ricorrenza_temporale",
+            "state": "off"
+        },
+        {
+            "id": "1738493084329",
+            "alias": "Turn off pc at night",
+            "description": "",
+            "triggers": [
+                {
+                    "trigger": "time",
+                    "at": "02:00:00"
+                }
+            ],
+            "conditions": [
+                {
+                    "type": "is_power",
+                    "condition": "device",
+                    "device_id": "81faa423066ee532f37f15f1897a699d",
+                    "entity_id": "5f50acf3de22e25c3e2ec6a6e42cbfac",
+                    "domain": "sensor",
+                    "below": 2
+                }
+            ],
+            "actions": [
+                {
+                    "type": "turn_off",
+                    "device_id": "81faa423066ee532f37f15f1897a699d",
+                    "entity_id": "26b6a73bbd32a4dce3c2a05fdd50f40b",
+                    "domain": "switch"
+                }
+            ],
+            "mode": "single",
+            "entity_id": "automation.disattiva_pc_la_notte",
+            "state": "on"
+        },
+        {
+            "id": "1740485704149",
+            "alias": "Spegni luce attiva",
+            "description": "",
+            "triggers": [
+                {
+                    "type": "turned_on",
+                    "device_id": "f5f0c29d9170693dcf446ca8bb049a82",
+                    "entity_id": "c36f6903d22bfcce63f28ae993d5772e",
+                    "domain": "light",
+                    "trigger": "device",
+                    "for": {
+                        "hours": 0,
+                        "minutes": 20,
+                        "seconds": 0
+                    }
+                }
+            ],
+            "conditions": [],
+            "actions": [
+                {
+                    "action": "light.turn_off",
+                    "metadata": {},
+                    "data": {},
+                    "target": {
+                        "device_id": "f5f0c29d9170693dcf446ca8bb049a82"
+                    }
+                }
+            ],
+            "mode": "single",
+            "entity_id": "automation.spegni_luce_attiva",
+            "state": "on"
+        }
+    ]
 }
