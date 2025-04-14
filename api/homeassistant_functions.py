@@ -5,72 +5,87 @@ from urllib.parse import urlencode
 import json,datetime,time,configparser,os
 from dateutil import tz,parser
 
+from database_functions import get_configuration_value_by_key,add_configuration_values
+
+from demo_functions import get_all_demo_devices,get_all_demo_entities,get_demo_automations,get_demo_entity,get_single_demo_device
+
 base_url="http://homeassistant.local:8123/api"
 headers = {}
+demo=False
 CONFIGURATION_PATH="./data/configuration.txt"
 
 def buildError(response):
     return {"status_code":response.status_code,"data":response.text}
 
+def initializeDemo():
+    global demo
+    dm=get_configuration_value_by_key("enable_demo")
+    demo=dm["value"] or demo
+
+
 def initializeToken():
     global headers
     global base_url
-    parser=configparser.ConfigParser()
-    parser.read(CONFIGURATION_PATH)
-    base_url=parser["HomeAssistant"]["server_url"] if 'server_url' in parser["HomeAssistant"] else base_url
+    url = get_configuration_value_by_key("server_url")
+    base_url=url["value"]  or base_url
+    tkn=get_configuration_value_by_key("token")
+    token=tkn["value"] or ""
 
-    token = parser["HomeAssistant"]['token'] if 'token' in parser["HomeAssistant"] else ""
     headers = {
     "Authorization": "Bearer "+token,
     "content-type": "application/json",
     }
 
-def setHomeAssistantConfiguration(token,server_address=None): #TODO:think it is better to move this elsewhere
-    # Create a ConfigParser object
-    config = configparser.ConfigParser()
 
-    # If the file already exists, read the existing config
-    if os.path.exists(CONFIGURATION_PATH):
-        config.read(CONFIGURATION_PATH)
-    
-    # Add or update the 'HomeAssistant' section with the new values
-    if 'HomeAssistant' not in config:
-        config['HomeAssistant'] = {}
-    
-    if server_address:
-        config['HomeAssistant']['server_url'] = server_address
+def setHomeAssistantConfiguration(token,server_url=None): #TODO:think it is better to move this elsewhere
+    """
+    Sets the Home Assistant configuration values (token and optionally server_url) in the database.
+
+    :param token: The Home Assistant long-lived access token.
+    :param server_url: Optional server address to override the default.
+    :return: True if the values were updated, False otherwise.
+    """
+    values=[]
     if token:
-        config['HomeAssistant']['token'] = token
-
-    # Write the updated configuration to the file
-    with open(CONFIGURATION_PATH, 'w') as configfile:
-        config.write(configfile)
-
-    # Check if the values are correctly updated
-    config.read(CONFIGURATION_PATH)
-    if (token and config['HomeAssistant']['token'] == token)or (server_address and config['HomeAssistant']['server_url'] == server_address):
-        initializeToken()
-        return True
-    else:
-        return False
+        values.append(("token",token,""))
+    if server_url:
+        values.append(("server_url",server_url,""))
+    updated = add_configuration_values(values)
     
-def getHomeAssistantConfiguration():
-    # Create a ConfigParser object
-    config = configparser.ConfigParser()
 
-    # If the file already exists, read the existing config
-    if os.path.exists(CONFIGURATION_PATH):
-        config.read(CONFIGURATION_PATH)
-        if 'HomeAssistant' in config:
-            return {
-            "server_url":config['HomeAssistant']['server_url'],
-               "token":config['HomeAssistant']['token']
-        }
-        else:
-            raise Exception("Configuration file is missing field HomeAssistant...")
+    if updated:
+        new_token = get_configuration_value_by_key("token")
+        new_token=new_token["value"] or ""
+        new_url = get_configuration_value_by_key("server_url")
+        new_url=new_url["value"] or ""
 
-    else:
-        raise Exception("Configuration file is missing...")
+        if token and new_token!=token:
+            return False
+        
+        if server_url and new_url!=server_url:
+            return False
+        
+        initializeToken()
+
+    return updated
+    
+def getHomeAssistantConfiguration() -> dict:
+    """
+    Retrieves the Home Assistant configuration from the database.
+
+    :return: A dictionary containing 'server_url' and 'token'.
+    :raises Exception: If required configuration keys are missing.
+    """
+    server_url_entry = get_configuration_value_by_key("server_url")
+    token_entry = get_configuration_value_by_key("token")
+
+    if not server_url_entry or not token_entry:
+        raise Exception("Missing Home Assistant configuration in the database.")
+
+    return {
+        "server_url": server_url_entry["value"],
+        "token": token_entry["value"]
+    }
     
 
 def extractEntityData(entity,skip_services=False):
@@ -111,6 +126,8 @@ def getEntities(skip_services=False):
     '''
     Ritorna la lista di tutte le entità di HA
     '''
+    if demo:
+        return {"status_code":200,"data":get_all_demo_entities()}
     start_time = time.time()
     response = get(base_url+"/states", headers=headers)
     if response.status_code!=200:
@@ -125,6 +142,8 @@ def getEntities(skip_services=False):
 
 
 def getSingleDeviceFast(device_id:str):
+    if demo:
+        return {"status_code":200,"data":get_single_demo_device(device_id)}
     start=datetime.datetime.now()
     templ="{%- set device = '"+device_id+"' %}"
     templ+="{%- set entities = device_entities(device) | list %}"
@@ -155,6 +174,8 @@ def getSingleDeviceFast(device_id:str):
     return {"status_code":200,"data":res}
 
 def getDevicesNameAndId():
+    if demo:
+        return {"status_code":200,"data":get_all_demo_devices(get_only_names=True)}
     start=datetime.datetime.now()
     templ=(
         "{% set devices = states | map(attribute='entity_id') | map('device_id') | unique | reject('eq',None) | list %}"
@@ -176,6 +197,8 @@ def getDevicesNameAndId():
 
 
 def getDevicesFast():
+    if demo:
+        return {"status_code":200,"data":get_all_demo_devices()}
     start=datetime.datetime.now()
     templ=(
     "{% set devices = states | map(attribute='entity_id') | map('device_id') | unique | reject('eq',None) | list %}"
@@ -197,6 +220,7 @@ def getDevicesFast():
     "{%- if state_attr(entity,'device_class')== 'power'%}"
     "{%- set var.power_entity_id= entity %}"
     "{%- endif %}"
+    #"{%- set var.entities=var.entities+[{'entity_id':entity,'state':states(entity),'entity_class':state_attr(entity,'device_class'),'unit_of_measurement':state_attr(entity,'unit_of_measurement'),'attributes': states[entity].attributes}]%}"
     "{%- set var.entities=var.entities+[{'entity_id':entity,'state':states(entity),'entity_class':state_attr(entity,'device_class'),'unit_of_measurement':state_attr(entity,'unit_of_measurement')}]%}"
     "{%- endfor %}"
     "{%- set dev = {'name':device_attr(device,'name'),'device_id':device,'name_by_user':device_attr(device,'name_by_user'),'model':device_attr(device,'model'),'manufacturer':device_attr(device,'manufacturer'),'state':var.state,'device_class':var.device_class,'energy_entity_id':var.energy_entity_id,'power_entity_id':var.power_entity_id,'state_entity_id':var.state_entity_id,'list_of_entities':var.entities}%}"
@@ -209,49 +233,10 @@ def getDevicesFast():
     #print("getDevicesFast: elapsed time "+str((datetime.datetime.now()-start).total_seconds())) #TODO:add debug logs
     return {"status_code":200,"data":res}
 
-def getDevices(skip_services=False):
-        '''
-        Ritorna la lista di tutte le entità di HA raggruppate per dispositivo
-        '''
-        dev_list = {}
-        start_time = time.time()
-        response = get(base_url+"/states", headers=headers)
-        if response.status_code!=200:
-            return buildError(response)
-        
-        entity_list=response.json()
-        for entity in entity_list:
-            device = getDeviceId(entity["entity_id"])
-            entity=extractEntityData(entity,skip_services)
-
-            t = dev_list.setdefault(entity['device_id'], {"list_of_entities":[],"device_class":"sensor","state":"","energy_entity_id":""})
-            t["list_of_entities"].append(entity)
-            
-            #Setting of device info
-            device_info=getDeviceInfo(device)
-            t.update(device_info)
-            t.update({"device_id":device})
-
-            if entity["entity_class"]=="energy":
-                t["energy_entity_id"]=entity["entity_id"]
-
-            if not (entity["entity_id"].startswith("sensor") or entity["entity_id"].startswith("binary_sensor")):
-                t.update({
-                    "device_class":entity["entity_class"],
-                    "state":entity["state"],
-                    "energy_entity_id":entity["entity_id"] if t["energy_entity_id"]=="" else t["energy_entity_id"]
-                     })
-                
-            
-            
-
-        del dev_list["None"] #removing entities that are not associated with a device
-
-        #print("Time to get all entities:"+str((time.time()-start_time)*1000)+" ms") #TODO:add debug logs
-        return {"status_code":200,"data":list(dev_list.values())}
-
 def getEntity(entity_id:str):
     '''Ritorna l'entità con l'entity_id passato'''
+    if demo:
+        return {"status_code":200,"data":get_demo_entity(entity_id)}
     response = get(base_url+"/states"+"/"+entity_id, headers=headers)
     if response.status_code!=200:
         return buildError(response)
@@ -391,6 +376,9 @@ def getServicesByEntity(entity_id:str):
 
 def getAutomations():
     '''Ritorna la lista dei dettagli delle automazioni salvate in HA.'''
+    if demo:
+        return get_demo_automations()
+    
     ids=[]
     automations=[]
 
@@ -519,14 +507,8 @@ def main():
     devices=defaultdict(lambda:[])
     res=getDevicesFast()
     if res["status_code"]==200:
-        for dev in res['data']:
-            if dev["device_class"] not in ["update","sensor","number","weather","device_tracker"]:
-                dev["name"]=dev["name_by_user"] if dev["name_by_user"] else dev["name"]
-                dev.pop("name_by_user",None)
-                devices[dev["device_class"]].append({"name":dev["name"],"device_id":dev["device_id"],"class":dev["device_class"]})
-
-        with open("cnr_usable_device.json", "w") as json_file:
-            json.dump({"devices":dict(devices)}, json_file, indent=4) 
+        with open("devices.json", "w") as json_file:
+            json.dump({"list":res["data"]}, json_file, indent=4) 
 
 
 if __name__ == "__main__":

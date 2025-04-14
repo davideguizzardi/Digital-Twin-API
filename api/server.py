@@ -15,8 +15,8 @@ from routers.historyRouter import getHistoryRouter
 from routers.deviceRouter import getDeviceRouter
 from routers.virtualRouter import getVirtualRouter
 
-from homeassistant_functions import initializeToken
-from database_functions import initialize_database
+from homeassistant_functions import initializeToken,initializeDemo
+from database_functions import initialize_database,get_configuration_value_by_key
 from schemas import CONFIGURATION_PATH
 import configparser
 import logging
@@ -76,18 +76,22 @@ def main():
     logger = logging.getLogger(__name__)
 
     initialize_database()
-    
-    parser=configparser.ConfigParser()
-    parser.read(CONFIGURATION_PATH)
-    
-    host=parser["Network"]["host"] if 'host' in parser["Network"] else "0.0.0.0"
-    port = int(parser["Network"]['port']) if 'port' in parser["Network"] else 8000
 
-    enable_prediction=parser.getboolean("ApiConfiguration","enable_prediction")
-    enable_demo=parser.getboolean("ApiConfiguration","enable_demo")
+    host=get_configuration_value_by_key("host")
+    host=host["value"] or "0.0.0.0"
+
+    port=get_configuration_value_by_key("port")
+    port=int(port["value"] or 8000)
     
+    enable_prediction=get_configuration_value_by_key("enable_prediction")
+    enable_prediction=enable_prediction["value"] =="1"
+
+        
+    enable_demo=get_configuration_value_by_key("enable_demo")
+    enable_demo=enable_demo["value"]=="1"
 
     if enable_demo:
+        initializeDemo()
         logger.info("Running server in demo mode.")
     else:
         logger.info("Initializing home assistant configuration and token...")

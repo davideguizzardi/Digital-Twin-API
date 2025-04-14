@@ -12,6 +12,23 @@ class DbPathEnum(StrEnum):
     ENTITY_HISTORY="./data/digital_twin_entity_history.db"
 
 
+default_configuration_values = {
+    "energy_slots_number":("1",""),
+    "cost_slot_0":("0.1","€/kWh"),
+    "cost_slot_1":("0.1","€/kWh"),
+    "cost_slot_2":("0.1","€/kWh"),
+    "power_threshold":("3000","W"),
+    "server_url": ("http://homeassistant.local:8123/api", ""),
+    "token": ("token", ""),
+    "w_to_gco2": ("0.431", "kgCO2/kWh"),
+    "enable_prediction": ("1", ""),
+    "enable_demo": ("1", ""),
+    "host": ("0.0.0.0", ""),
+    "port": ("8000", "")
+}
+
+
+
 QUERIES={
     "hourly_consumption":
         ("select "
@@ -127,6 +144,20 @@ def table_exists(db_path, table_name):
         cur = con.cursor()
         cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name=?;", (table_name,))
         return cur.fetchone() is not None  # True if table exists, False otherwise
+    
+def initialize_default_configuration_values(db_path: DbPathEnum, defaults: dict):
+    from contextlib import suppress
+
+    with get_db_connection(db_path) as conn:
+        cursor = conn.cursor()
+        for key, (value, unit) in defaults.items():
+            with suppress(sqlite3.IntegrityError): #Could be removed
+                cursor.execute('''
+                INSERT OR IGNORE INTO Configuration (key, value, unit)
+                VALUES (?, ?, ?)
+                ''', (key, value, unit))
+        conn.commit()
+
 
 def initialize_database():
     logger = logging.getLogger(__name__)
@@ -165,6 +196,10 @@ def initialize_database():
             logger.info(f"{db_name} database migration completed.")
         else:
             logger.info(f"All tables are present in {db_name} database, no migration needed.")
+
+        if db_path == DbPathEnum.CONFIGURATION:
+            logger.info(f"Checking if Configuration table contains all the default entries..")
+            initialize_default_configuration_values(db_path, default_configuration_values)
 
 
 def create_tables(databasePath:DbPathEnum,queriesList:list):#TODO:refactor this code with new database structure
@@ -361,8 +396,13 @@ def get_all_configuration_values():
     return fetch_multiple_elements(DbPathEnum.CONFIGURATION,"SELECT * FROM Configuration")
 
 
-def get_configuration_value_by_key(key:str):
+def get_configuration_item_by_key(key:str):
     query = "SELECT * FROM Configuration WHERE key= ?"
+    params = (key,) 
+    return fetch_one_element(DbPathEnum.CONFIGURATION,query,params)
+
+def get_configuration_value_by_key(key:str):
+    query = "SELECT value FROM Configuration WHERE key= ?"
     params = (key,) 
     return fetch_one_element(DbPathEnum.CONFIGURATION,query,params)
 

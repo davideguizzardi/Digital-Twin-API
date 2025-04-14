@@ -10,7 +10,7 @@ from homeassistant_functions import (
     getDeviceInfo,initializeToken)
 from database_functions import (
     initialize_database,
-    get_all_configuration_values,get_configuration_value_by_key,add_configuration_values,delete_configuration_value,
+    get_all_configuration_values,get_configuration_item_by_key,add_configuration_values,delete_configuration_value,
     add_map_entities, get_all_map_entities,get_map_entity,delete_map_entry,delete_floor_map_configuration,
     get_all_service_logs,add_service_logs,get_service_logs_by_user,
     get_energy_slot_by_day,get_all_energy_slots,add_energy_slots,delete_energy_slots,
@@ -615,7 +615,7 @@ def getConflicts(device_list,automations_list,return_only_conflicts=True):
 
     #Conflicts identification
     conflicts_list = defaultdict(lambda: {"type": "Excessive energy demand", "days": []})
-    threshold = get_configuration_value_by_key("power_threshold")  
+    threshold = get_configuration_item_by_key("power_threshold")  
     if threshold:
         threshold=float(threshold["value"])
     else:
@@ -897,7 +897,7 @@ def getConfigurationRouter():
     
     @configuration_router.get("/{key}",response_model=Configuration_Value)
     def Get_Configuration_Value_By_Key(key):
-        return get_configuration_value_by_key(key)
+        return get_configuration_item_by_key(key)
     
     @configuration_router.put("",response_model=Operation_Out)
     def Add_Configuration_Values(values_list:Configuration_Value_List):

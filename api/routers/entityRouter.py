@@ -12,8 +12,6 @@ def getEntityRouter(enable_demo=False):
     entity_router=APIRouter(tags=["Entity"],prefix="/entity")
     @entity_router.get("")
     def Get_All_Entities(skip_services:bool=False):
-        if enable_demo:
-            return get_all_demo_entities()
         res=getEntities(skip_services)
         if res["status_code"]!=200:
             raise HTTPException(status_code=res["status_code"],detail=res["data"])

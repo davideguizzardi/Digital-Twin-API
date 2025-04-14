@@ -13,6 +13,14 @@ def get_all_demo_devices(get_only_names: bool = False):
         else virtual_context["device_context_only_names"]
     )
 
+def get_single_demo_device(device_id):
+    virtual_context = load_virtual_context()
+    device_context=virtual_context["device_context"]
+    device=[x for x in device_context if x["device_id"]==device_id]
+    return device[0] if len(device)==1 else {}
+
+
+
 def get_all_demo_entities():
     virtual_context = load_virtual_context()
     return virtual_context["entities_context"]

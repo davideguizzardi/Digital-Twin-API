@@ -29,7 +29,7 @@
 			"name": "Google Home Mini"
 		}
 	],
-	"device_context": [
+	"device_context":  [
         {
             "device_class": "sensor",
             "device_id": "2333fdc84f9e56701c6b6bfd6f93d5c5",
@@ -38,37 +38,37 @@
                 {
                     "entity_class": "timestamp",
                     "entity_id": "sensor.sun_next_dawn",
-                    "state": "2025-04-05T04:20:30+00:00",
+                    "state": "2025-04-15T04:01:14+00:00",
                     "unit_of_measurement": null
                 },
                 {
                     "entity_class": "timestamp",
                     "entity_id": "sensor.sun_next_dusk",
-                    "state": "2025-04-04T18:22:22+00:00",
+                    "state": "2025-04-14T18:36:21+00:00",
                     "unit_of_measurement": null
                 },
                 {
                     "entity_class": "timestamp",
                     "entity_id": "sensor.sun_next_midnight",
-                    "state": "2025-04-04T23:21:39+00:00",
+                    "state": "2025-04-14T23:19:01+00:00",
                     "unit_of_measurement": null
                 },
                 {
                     "entity_class": "timestamp",
                     "entity_id": "sensor.sun_next_noon",
-                    "state": "2025-04-04T11:22:04+00:00",
+                    "state": "2025-04-14T11:19:21+00:00",
                     "unit_of_measurement": null
                 },
                 {
                     "entity_class": "timestamp",
                     "entity_id": "sensor.sun_next_rising",
-                    "state": "2025-04-05T04:51:29+00:00",
+                    "state": "2025-04-15T04:33:03+00:00",
                     "unit_of_measurement": null
                 },
                 {
                     "entity_class": "timestamp",
                     "entity_id": "sensor.sun_next_setting",
-                    "state": "2025-04-04T17:51:20+00:00",
+                    "state": "2025-04-14T18:04:30+00:00",
                     "unit_of_measurement": null
                 }
             ],
@@ -88,13 +88,13 @@
                 {
                     "entity_class": "power",
                     "entity_id": "sensor.tv_sala_power",
-                    "state": "0",
+                    "state": "130",
                     "unit_of_measurement": "W"
                 },
                 {
                     "entity_class": "tv",
                     "entity_id": "media_player.tv_sala",
-                    "state": "off",
+                    "state": "on",
                     "unit_of_measurement": null
                 }
             ],
@@ -103,7 +103,7 @@
             "name": "Tv Sala",
             "name_by_user": null,
             "power_entity_id": "sensor.tv_sala_power",
-            "state": "off",
+            "state": "on",
             "state_entity_id": "media_player.tv_sala"
         },
         {
@@ -152,19 +152,19 @@
                 {
                     "entity_class": "temperature",
                     "entity_id": "sensor.shellyht_3b9c81_temperature",
-                    "state": "17.88",
+                    "state": "17.62",
                     "unit_of_measurement": "\u00b0C"
                 },
                 {
                     "entity_class": "humidity",
                     "entity_id": "sensor.shellyht_3b9c81_humidity",
-                    "state": "56.0",
+                    "state": "60.5",
                     "unit_of_measurement": "%"
                 },
                 {
                     "entity_class": "battery",
                     "entity_id": "sensor.shellyht_3b9c81_battery",
-                    "state": "85",
+                    "state": "81",
                     "unit_of_measurement": "%"
                 }
             ],
@@ -208,7 +208,7 @@
                 {
                     "entity_class": "energy",
                     "entity_id": "sensor.shellyplusplugs_c82e180c35e8_switch_0_energy",
-                    "state": "44.361109",
+                    "state": "48.986793",
                     "unit_of_measurement": "kWh"
                 },
                 {
@@ -258,13 +258,13 @@
                 {
                     "entity_class": "power",
                     "entity_id": "sensor.shellyplusplugs_e465b8454284_switch_0_power",
-                    "state": "79.3",
+                    "state": "137.9",
                     "unit_of_measurement": "W"
                 },
                 {
                     "entity_class": "energy",
                     "entity_id": "sensor.shellyplusplugs_e465b8454284_switch_0_energy",
-                    "state": "74085.789",
+                    "state": "82480.922",
                     "unit_of_measurement": "Wh"
                 },
                 {
@@ -302,13 +302,13 @@
                 {
                     "entity_class": null,
                     "entity_id": "light.shellycolorbulb_485519ee0a6a",
-                    "state": "off",
+                    "state": "on",
                     "unit_of_measurement": null
                 },
                 {
                     "entity_class": "power",
                     "entity_id": "sensor.shellycolorbulb_485519ee0a6a_power",
-                    "state": "0.0",
+                    "state": "10.0",
                     "unit_of_measurement": "W"
                 }
             ],
@@ -317,7 +317,7 @@
             "name": "shellycolorbulb-485519EE0A6A",
             "name_by_user": null,
             "power_entity_id": "sensor.shellycolorbulb_485519ee0a6a_power",
-            "state": "off",
+            "state": "on",
             "state_entity_id": "light.shellycolorbulb_485519ee0a6a"
         },
         {
@@ -352,7 +352,7 @@
                 {
                     "entity_class": "energy",
                     "entity_id": "sensor.shellyplusplugit_80646fc994c8_switch_0_energy",
-                    "state": "48586.778",
+                    "state": "48819.91",
                     "unit_of_measurement": "Wh"
                 },
                 {
@@ -384,7 +384,7 @@
                 {
                     "entity_class": null,
                     "entity_id": "weather.forecast_home",
-                    "state": "sunny",
+                    "state": "cloudy",
                     "unit_of_measurement": null
                 }
             ],
@@ -393,7 +393,7 @@
             "name": "Forecast",
             "name_by_user": null,
             "power_entity_id": "",
-            "state": "sunny",
+            "state": "cloudy",
             "state_entity_id": "weather.forecast_home"
         },
         {
@@ -450,7 +450,7 @@
                 {
                     "entity_class": null,
                     "entity_id": "media_player.lg_webos_tv_oled55g26la",
-                    "state": "off",
+                    "state": "paused",
                     "unit_of_measurement": null
                 }
             ],
@@ -459,2773 +459,3118 @@
             "name": "[LG] webOS TV OLED55G26LA",
             "name_by_user": null,
             "power_entity_id": "",
-            "state": "off",
+            "state": "paused",
             "state_entity_id": "media_player.lg_webos_tv_oled55g26la"
+        },
+        {
+            "device_class": "media_player",
+            "device_id": "58f91da357fbba01dc1458f074c9b955",
+            "energy_entity_id": "media_player.lg_webos_tv_oled55g26la_2",
+            "list_of_entities": [
+                {
+                    "entity_class": null,
+                    "entity_id": "media_player.lg_webos_tv_oled55g26la_2",
+                    "state": "paused",
+                    "unit_of_measurement": null
+                }
+            ],
+            "manufacturer": "LGE",
+            "model": "OLED55G26LA",
+            "name": "[LG] webOS TV OLED55G26LA",
+            "name_by_user": null,
+            "power_entity_id": "",
+            "state": "paused",
+            "state_entity_id": "media_player.lg_webos_tv_oled55g26la_2"
         }
     ],
 	"entities_context": [
 		{
-			"entity_id": "person.davide_guizzardi",
-			"state": "unknown",
-			"attributes": {
-				"editable": true,
-				"id": "davide_guizzardi",
-				"device_trackers": [
-					"device_tracker.oneplus_di_davide"
-				],
-				"user_id": "9dbc6a585a6c4a7b93c65c11d060fb74"
-			},
-			"device_id": "None",
-			"services": {
-				"reload": {
-					"name": "Reload",
-					"description": "Reloads persons from the YAML-configuration.",
-					"fields": {}
-				}
-			},
-			"friendly_name": "Davide Guizzardi",
-			"entity_class": "person"
+		  "entity_id": "person.davide_guizzardi",
+		  "state": "unknown",
+		  "attributes": {
+			"editable": true,
+			"id": "davide_guizzardi",
+			"device_trackers": [
+			  "device_tracker.oneplus_di_davide"
+			],
+			"user_id": "9dbc6a585a6c4a7b93c65c11d060fb74"
+		  },
+		  "device_id": "None",
+		  "services": {
+			"reload": {
+			  "name": "Reload",
+			  "description": "Reloads persons from the YAML-configuration.",
+			  "fields": {}
+			}
+		  },
+		  "friendly_name": "Davide Guizzardi",
+		  "entity_class": "person"
 		},
 		{
-			"entity_id": "zone.home",
-			"state": "0",
-			"attributes": {
-				"latitude": 45.930139885994556,
-				"longitude": 10.240851044654848,
-				"radius": 100,
-				"passive": false,
-				"persons": [],
-				"editable": true,
-				"icon": "mdi:home"
-			},
-			"device_id": "None",
-			"services": {
-				"reload": {
-					"name": "Reload",
-					"description": "Reloads zones from the YAML-configuration.",
-					"fields": {}
-				}
-			},
-			"friendly_name": "Casa",
-			"entity_class": "zone"
+		  "entity_id": "zone.home",
+		  "state": "0",
+		  "attributes": {
+			"latitude": 45.930139885994556,
+			"longitude": 10.240851044654848,
+			"radius": 100,
+			"passive": false,
+			"persons": [],
+			"editable": true,
+			"icon": "mdi:home"
+		  },
+		  "device_id": "None",
+		  "services": {
+			"reload": {
+			  "name": "Reload",
+			  "description": "Reloads zones from the YAML-configuration.",
+			  "fields": {}
+			}
+		  },
+		  "friendly_name": "Casa",
+		  "entity_class": "zone"
 		},
 		{
-			"entity_id": "conversation.home_assistant",
-			"state": "unknown",
-			"attributes": {
-				"supported_features": 1
+		  "entity_id": "conversation.home_assistant",
+		  "state": "unknown",
+		  "attributes": {
+			"supported_features": 1
+		  },
+		  "device_id": "None",
+		  "services": {
+			"process": {
+			  "name": "Process",
+			  "description": "Launches a conversation from a transcribed text.",
+			  "fields": {
+				"text": {
+				  "example": "Turn all lights on",
+				  "required": true,
+				  "selector": {
+					"text": null
+				  },
+				  "name": "Text",
+				  "description": "Transcribed text input."
+				},
+				"language": {
+				  "example": "NL",
+				  "selector": {
+					"text": null
+				  },
+				  "name": "Language",
+				  "description": "Language of text. Defaults to server language."
+				},
+				"agent_id": {
+				  "example": "homeassistant",
+				  "selector": {
+					"conversation_agent": null
+				  },
+				  "name": "Agent",
+				  "description": "Conversation agent to process your request. The conversation agent is the brains of your assistant. It processes the incoming text commands."
+				},
+				"conversation_id": {
+				  "example": "my_conversation_1",
+				  "selector": {
+					"text": null
+				  },
+				  "name": "Conversation ID",
+				  "description": "ID of the conversation, to be able to continue a previous conversation"
+				}
+			  },
+			  "response": {
+				"optional": true
+			  }
 			},
-			"device_id": "None",
-			"services": {
-				"process": {
-					"name": "Process",
-					"description": "Launches a conversation from a transcribed text.",
-					"fields": {
-						"text": {
-							"example": "Turn all lights on",
-							"required": true,
-							"selector": {
-								"text": null
-							},
-							"name": "Text",
-							"description": "Transcribed text input."
-						},
-						"language": {
-							"example": "NL",
-							"selector": {
-								"text": null
-							},
-							"name": "Language",
-							"description": "Language of text. Defaults to server language."
-						},
-						"agent_id": {
-							"example": "homeassistant",
-							"selector": {
-								"conversation_agent": null
-							},
-							"name": "Agent",
-							"description": "Conversation agent to process your request. The conversation agent is the brains of your assistant. It processes the incoming text commands."
-						},
-						"conversation_id": {
-							"example": "my_conversation_1",
-							"selector": {
-								"text": null
-							},
-							"name": "Conversation ID",
-							"description": "ID of the conversation, to be able to continue a previous conversation"
+			"reload": {
+			  "name": "Reload",
+			  "description": "Reloads the intent configuration.",
+			  "fields": {
+				"language": {
+				  "example": "NL",
+				  "selector": {
+					"text": null
+				  },
+				  "name": "Language",
+				  "description": "Language to clear cached intents for. Defaults to server language."
+				},
+				"agent_id": {
+				  "example": "homeassistant",
+				  "selector": {
+					"conversation_agent": null
+				  },
+				  "name": "Agent",
+				  "description": "Conversation agent to reload."
+				}
+			  }
+			}
+		  },
+		  "friendly_name": "Home Assistant",
+		  "entity_class": "conversation"
+		},
+		{
+		  "entity_id": "sun.sun",
+		  "state": "above_horizon",
+		  "attributes": {
+			"next_dawn": "2025-04-15T04:01:14.857492+00:00",
+			"next_dusk": "2025-04-14T18:36:21.491336+00:00",
+			"next_midnight": "2025-04-14T23:19:01+00:00",
+			"next_noon": "2025-04-14T11:19:21+00:00",
+			"next_rising": "2025-04-15T04:33:03.049839+00:00",
+			"next_setting": "2025-04-14T18:04:30.726016+00:00",
+			"elevation": 50,
+			"azimuth": 149.17,
+			"rising": true
+		  },
+		  "device_id": "None",
+		  "services": {},
+		  "friendly_name": "Sun",
+		  "entity_class": "sun"
+		},
+		{
+		  "entity_id": "sensor.sun_next_dawn",
+		  "state": "2025-04-15T04:01:14+00:00",
+		  "attributes": {},
+		  "device_id": "2333fdc84f9e56701c6b6bfd6f93d5c5",
+		  "services": {},
+		  "friendly_name": "Sun Prossima alba",
+		  "entity_class": "timestamp"
+		},
+		{
+		  "entity_id": "sensor.sun_next_dusk",
+		  "state": "2025-04-14T18:36:21+00:00",
+		  "attributes": {},
+		  "device_id": "2333fdc84f9e56701c6b6bfd6f93d5c5",
+		  "services": {},
+		  "friendly_name": "Sun Prossimo crepuscolo",
+		  "entity_class": "timestamp"
+		},
+		{
+		  "entity_id": "sensor.sun_next_midnight",
+		  "state": "2025-04-14T23:19:01+00:00",
+		  "attributes": {},
+		  "device_id": "2333fdc84f9e56701c6b6bfd6f93d5c5",
+		  "services": {},
+		  "friendly_name": "Sun Prossima mezzanotte",
+		  "entity_class": "timestamp"
+		},
+		{
+		  "entity_id": "sensor.sun_next_noon",
+		  "state": "2025-04-14T11:19:21+00:00",
+		  "attributes": {},
+		  "device_id": "2333fdc84f9e56701c6b6bfd6f93d5c5",
+		  "services": {},
+		  "friendly_name": "Sun Prossimo mezzogiorno",
+		  "entity_class": "timestamp"
+		},
+		{
+		  "entity_id": "sensor.sun_next_rising",
+		  "state": "2025-04-15T04:33:03+00:00",
+		  "attributes": {},
+		  "device_id": "2333fdc84f9e56701c6b6bfd6f93d5c5",
+		  "services": {},
+		  "friendly_name": "Sun Prossima levata",
+		  "entity_class": "timestamp"
+		},
+		{
+		  "entity_id": "sensor.sun_next_setting",
+		  "state": "2025-04-14T18:04:30+00:00",
+		  "attributes": {},
+		  "device_id": "2333fdc84f9e56701c6b6bfd6f93d5c5",
+		  "services": {},
+		  "friendly_name": "Sun Prossimo tramonto",
+		  "entity_class": "timestamp"
+		},
+		{
+		  "entity_id": "sensor.tv_sala_power",
+		  "state": "130",
+		  "attributes": {
+			"state_class": "measurement"
+		  },
+		  "device_id": "03693bc2884b932931228261a1972360",
+		  "services": {},
+		  "friendly_name": "tv_sala_power",
+		  "unit_of_measurement": "W",
+		  "entity_class": "power"
+		},
+		{
+		  "entity_id": "device_tracker.oneplus_di_davide",
+		  "state": "unknown",
+		  "attributes": {
+			"source_type": "gps"
+		  },
+		  "device_id": "b9bd882c62e2b8f18c3563fa621fc00b",
+		  "services": {
+			"see": {
+			  "name": "See",
+			  "description": "Manually update the records of a seen legacy device tracker in the known_devices.yaml file.",
+			  "fields": {
+				"mac": {
+				  "example": "FF:FF:FF:FF:FF:FF",
+				  "selector": {
+					"text": null
+				  },
+				  "name": "MAC address",
+				  "description": "MAC address of the device."
+				},
+				"dev_id": {
+				  "example": "phonedave",
+				  "selector": {
+					"text": null
+				  },
+				  "name": "Device ID",
+				  "description": "ID of the device (find the ID in `known_devices.yaml`)."
+				},
+				"host_name": {
+				  "example": "Dave",
+				  "selector": {
+					"text": null
+				  },
+				  "name": "Hostname",
+				  "description": "Hostname of the device."
+				},
+				"location_name": {
+				  "example": "home",
+				  "selector": {
+					"text": null
+				  },
+				  "name": "Location",
+				  "description": "Name of the location where the device is located. The options are: `home`, `not_home`, or the name of the zone."
+				},
+				"gps": {
+				  "example": "[51.509802, -0.086692]",
+				  "selector": {
+					"object": null
+				  },
+				  "name": "GPS coordinates",
+				  "description": "GPS coordinates where the device is located, specified by latitude and longitude (for example: [51.513845, -0.100539])."
+				},
+				"gps_accuracy": {
+				  "selector": {
+					"number": {
+					  "min": 0,
+					  "mode": "box",
+					  "unit_of_measurement": "m"
+					}
+				  },
+				  "name": "GPS accuracy",
+				  "description": "Accuracy of the GPS coordinates."
+				},
+				"battery": {
+				  "selector": {
+					"number": {
+					  "min": 0,
+					  "max": 100,
+					  "unit_of_measurement": "%"
+					}
+				  },
+				  "name": "Battery level",
+				  "description": "Battery level of the device."
+				}
+			  }
+			}
+		  },
+		  "friendly_name": "OnePlus di Davide ",
+		  "entity_class": "device_tracker"
+		},
+		{
+		  "entity_id": "sensor.oneplus_di_davide_battery_level",
+		  "state": "80",
+		  "attributes": {
+			"state_class": "measurement",
+			"icon": "mdi:battery-80"
+		  },
+		  "device_id": "b9bd882c62e2b8f18c3563fa621fc00b",
+		  "services": {},
+		  "friendly_name": "OnePlus di Davide  Battery level",
+		  "unit_of_measurement": "%",
+		  "entity_class": "battery"
+		},
+		{
+		  "entity_id": "sensor.oneplus_di_davide_battery_state",
+		  "state": "not_charging",
+		  "attributes": {
+			"options": [
+			  "charging",
+			  "discharging",
+			  "full",
+			  "not_charging"
+			],
+			"icon": "mdi:battery"
+		  },
+		  "device_id": "b9bd882c62e2b8f18c3563fa621fc00b",
+		  "services": {},
+		  "friendly_name": "OnePlus di Davide  Battery state",
+		  "entity_class": "enum"
+		},
+		{
+		  "entity_id": "sensor.oneplus_di_davide_charger_type",
+		  "state": "none",
+		  "attributes": {
+			"options": [
+			  "ac",
+			  "usb",
+			  "wireless",
+			  "dock",
+			  "none"
+			],
+			"icon": "mdi:battery"
+		  },
+		  "device_id": "b9bd882c62e2b8f18c3563fa621fc00b",
+		  "services": {},
+		  "friendly_name": "OnePlus di Davide  Charger type",
+		  "entity_class": "enum"
+		},
+		{
+		  "entity_id": "sensor.shellyht_3b9c81_temperature",
+		  "state": "17.62",
+		  "attributes": {
+			"state_class": "measurement"
+		  },
+		  "device_id": "0b042e5ec2945e276355fa2cc749947f",
+		  "services": {},
+		  "friendly_name": "Sensore H&T cucina temperature",
+		  "unit_of_measurement": "°C",
+		  "entity_class": "temperature"
+		},
+		{
+		  "entity_id": "sensor.shellyht_3b9c81_humidity",
+		  "state": "60.5",
+		  "attributes": {
+			"state_class": "measurement"
+		  },
+		  "device_id": "0b042e5ec2945e276355fa2cc749947f",
+		  "services": {},
+		  "friendly_name": "Sensore H&T cucina humidity",
+		  "unit_of_measurement": "%",
+		  "entity_class": "humidity"
+		},
+		{
+		  "entity_id": "sensor.shellyht_3b9c81_battery",
+		  "state": "81",
+		  "attributes": {
+			"state_class": "measurement"
+		  },
+		  "device_id": "0b042e5ec2945e276355fa2cc749947f",
+		  "services": {},
+		  "friendly_name": "Sensore H&T cucina battery",
+		  "unit_of_measurement": "%",
+		  "entity_class": "battery"
+		},
+		{
+		  "entity_id": "binary_sensor.shellyplusplugs_c82e180c35e8_switch_0_overheating",
+		  "state": "off",
+		  "attributes": {},
+		  "device_id": "73f90a95e5dba7d52e5ad10517b1dec6",
+		  "services": {},
+		  "friendly_name": "Lavatrice switch_0 overheating",
+		  "entity_class": "problem"
+		},
+		{
+		  "entity_id": "binary_sensor.shellyplusplugs_c82e180c35e8_switch_0_overpowering",
+		  "state": "off",
+		  "attributes": {},
+		  "device_id": "73f90a95e5dba7d52e5ad10517b1dec6",
+		  "services": {},
+		  "friendly_name": "Lavatrice switch_0 overpowering",
+		  "entity_class": "problem"
+		},
+		{
+		  "entity_id": "binary_sensor.shellyplusplugs_c82e180c35e8_switch_0_overvoltage",
+		  "state": "off",
+		  "attributes": {},
+		  "device_id": "73f90a95e5dba7d52e5ad10517b1dec6",
+		  "services": {},
+		  "friendly_name": "Lavatrice switch_0 overvoltage",
+		  "entity_class": "problem"
+		},
+		{
+		  "entity_id": "binary_sensor.shellyplusplugs_c82e180c35e8_switch_0_overcurrent",
+		  "state": "off",
+		  "attributes": {},
+		  "device_id": "73f90a95e5dba7d52e5ad10517b1dec6",
+		  "services": {},
+		  "friendly_name": "shellyplusplugs-c82e180c35e8 Switch 0 overcurrent",
+		  "entity_class": "problem"
+		},
+		{
+		  "entity_id": "sensor.shellyplusplugs_c82e180c35e8_switch_0_power",
+		  "state": "0.0",
+		  "attributes": {
+			"state_class": "measurement"
+		  },
+		  "device_id": "73f90a95e5dba7d52e5ad10517b1dec6",
+		  "services": {},
+		  "friendly_name": "Lavatrice switch_0 power",
+		  "unit_of_measurement": "W",
+		  "entity_class": "power"
+		},
+		{
+		  "entity_id": "sensor.shellyplusplugs_c82e180c35e8_switch_0_energy",
+		  "state": "48.986793",
+		  "attributes": {
+			"state_class": "total_increasing"
+		  },
+		  "device_id": "73f90a95e5dba7d52e5ad10517b1dec6",
+		  "services": {},
+		  "friendly_name": "Lavatrice switch_0 energy",
+		  "unit_of_measurement": "kWh",
+		  "entity_class": "energy"
+		},
+		{
+		  "entity_id": "switch.shellyplusplugs_c82e180c35e8_switch_0",
+		  "state": "on",
+		  "attributes": {
+			"icon": "mdi:washing-machine"
+		  },
+		  "device_id": "73f90a95e5dba7d52e5ad10517b1dec6",
+		  "services": {
+			"turn_off": {
+			  "name": "Turn off",
+			  "description": "Turns a switch off.",
+			  "fields": {}
+			},
+			"turn_on": {
+			  "name": "Turn on",
+			  "description": "Turns a switch on.",
+			  "fields": {}
+			},
+			"toggle": {
+			  "name": "Toggle",
+			  "description": "Toggles a switch on/off.",
+			  "fields": {}
+			}
+		  },
+		  "friendly_name": "Lavatrice switch_0",
+		  "entity_class": "switch"
+		},
+		{
+		  "entity_id": "binary_sensor.shellyplusplugs_e465b8454284_switch_0_overheating",
+		  "state": "off",
+		  "attributes": {},
+		  "device_id": "81faa423066ee532f37f15f1897a699d",
+		  "services": {},
+		  "friendly_name": "PC Fisso switch_0 overheating",
+		  "entity_class": "problem"
+		},
+		{
+		  "entity_id": "binary_sensor.shellyplusplugs_e465b8454284_switch_0_overpowering",
+		  "state": "off",
+		  "attributes": {},
+		  "device_id": "81faa423066ee532f37f15f1897a699d",
+		  "services": {},
+		  "friendly_name": "PC Fisso switch_0 overpowering",
+		  "entity_class": "problem"
+		},
+		{
+		  "entity_id": "binary_sensor.shellyplusplugs_e465b8454284_switch_0_overvoltage",
+		  "state": "off",
+		  "attributes": {},
+		  "device_id": "81faa423066ee532f37f15f1897a699d",
+		  "services": {},
+		  "friendly_name": "PC Fisso switch_0 overvoltage",
+		  "entity_class": "problem"
+		},
+		{
+		  "entity_id": "binary_sensor.shellyplusplugs_e465b8454284_switch_0_overcurrent",
+		  "state": "off",
+		  "attributes": {},
+		  "device_id": "81faa423066ee532f37f15f1897a699d",
+		  "services": {},
+		  "friendly_name": "shellyplusplugs-e465b8454284 Switch 0 overcurrent",
+		  "entity_class": "problem"
+		},
+		{
+		  "entity_id": "sensor.shellyplusplugs_e465b8454284_switch_0_power",
+		  "state": "84.0",
+		  "attributes": {
+			"state_class": "measurement"
+		  },
+		  "device_id": "81faa423066ee532f37f15f1897a699d",
+		  "services": {},
+		  "friendly_name": "PC Fisso switch_0 power",
+		  "unit_of_measurement": "W",
+		  "entity_class": "power"
+		},
+		{
+		  "entity_id": "sensor.shellyplusplugs_e465b8454284_switch_0_energy",
+		  "state": "82480.922",
+		  "attributes": {
+			"state_class": "total_increasing"
+		  },
+		  "device_id": "81faa423066ee532f37f15f1897a699d",
+		  "services": {},
+		  "friendly_name": "PC Fisso switch_0 energy",
+		  "unit_of_measurement": "Wh",
+		  "entity_class": "energy"
+		},
+		{
+		  "entity_id": "switch.shellyplusplugs_e465b8454284_switch_0",
+		  "state": "on",
+		  "attributes": {
+			"icon": "mdi:desktop-classic"
+		  },
+		  "device_id": "81faa423066ee532f37f15f1897a699d",
+		  "services": {
+			"turn_off": {
+			  "name": "Turn off",
+			  "description": "Turns a switch off.",
+			  "fields": {}
+			},
+			"turn_on": {
+			  "name": "Turn on",
+			  "description": "Turns a switch on.",
+			  "fields": {}
+			},
+			"toggle": {
+			  "name": "Toggle",
+			  "description": "Toggles a switch on/off.",
+			  "fields": {}
+			}
+		  },
+		  "friendly_name": "PC Fisso switch_0",
+		  "entity_class": "switch"
+		},
+		{
+		  "entity_id": "button.shellycolorbulb_485519ee0a6a_reboot",
+		  "state": "unknown",
+		  "attributes": {},
+		  "device_id": "f5f0c29d9170693dcf446ca8bb049a82",
+		  "services": {
+			"press": {
+			  "name": "Press",
+			  "description": "Press the button entity.",
+			  "fields": {}
+			}
+		  },
+		  "friendly_name": "shellycolorbulb-485519EE0A6A Reboot",
+		  "entity_class": "restart"
+		},
+		{
+		  "entity_id": "light.shellycolorbulb_485519ee0a6a",
+		  "state": "on",
+		  "attributes": {
+			"min_color_temp_kelvin": 3000,
+			"max_color_temp_kelvin": 6500,
+			"min_mireds": 153,
+			"max_mireds": 333,
+			"effect_list": [
+			  "Off",
+			  "Meteor Shower",
+			  "Gradual Change",
+			  "Flash"
+			],
+			"effect": "Off",
+			"color_mode": "color_temp",
+			"brightness": 212,
+			"color_temp_kelvin": 3479,
+			"color_temp": 287,
+			"hs_color": [
+			  27.194,
+			  45.232
+			],
+			"rgb_color": [
+			  255,
+			  192,
+			  140
+			],
+			"xy_color": [
+			  0.455,
+			  0.374
+			],
+			"supported_features": 36
+		  },
+		  "device_id": "f5f0c29d9170693dcf446ca8bb049a82",
+		  "services": {
+			"turn_on": {
+			  "name": "Turn on",
+			  "description": "Turn on one or more lights and adjust properties of the light, even when they are turned on already.",
+			  "fields": {
+				"transition": {
+				  "filter": {
+					"supported_features": [
+					  32
+					]
+				  },
+				  "selector": {
+					"number": {
+					  "min": 0,
+					  "max": 300,
+					  "unit_of_measurement": "seconds"
+					}
+				  },
+				  "name": "Transition",
+				  "description": "Duration it takes to get to next state."
+				},
+				"rgb_color": {
+				  "filter": {
+					"attribute": {
+					  "supported_color_modes": [
+						"hs",
+						"xy",
+						"rgb",
+						"rgbw",
+						"rgbww"
+					  ]
+					}
+				  },
+				  "example": "[255, 100, 100]",
+				  "selector": {
+					"color_rgb": null
+				  },
+				  "name": "Color",
+				  "description": "The color in RGB format. A list of three integers between 0 and 255 representing the values of red, green, and blue."
+				},
+				"kelvin": {
+				  "filter": {
+					"attribute": {
+					  "supported_color_modes": [
+						"color_temp",
+						"hs",
+						"xy",
+						"rgb",
+						"rgbw",
+						"rgbww"
+					  ]
+					}
+				  },
+				  "selector": {
+					"color_temp": {
+					  "unit": "kelvin",
+					  "min": 2000,
+					  "max": 6500
+					}
+				  },
+				  "name": "Color temperature",
+				  "description": "Color temperature in Kelvin."
+				},
+				"brightness_pct": {
+				  "filter": {
+					"attribute": {
+					  "supported_color_modes": [
+						"brightness",
+						"color_temp",
+						"hs",
+						"xy",
+						"rgb",
+						"rgbw",
+						"rgbww"
+					  ]
+					}
+				  },
+				  "selector": {
+					"number": {
+					  "min": 0,
+					  "max": 100,
+					  "unit_of_measurement": "%"
+					}
+				  },
+				  "name": "Brightness",
+				  "description": "Number indicating the percentage of full brightness, where 0 turns the light off, 1 is the minimum brightness, and 100 is the maximum brightness."
+				},
+				"brightness_step_pct": {
+				  "filter": {
+					"attribute": {
+					  "supported_color_modes": [
+						"brightness",
+						"color_temp",
+						"hs",
+						"xy",
+						"rgb",
+						"rgbw",
+						"rgbww"
+					  ]
+					}
+				  },
+				  "selector": {
+					"number": {
+					  "min": -100,
+					  "max": 100,
+					  "unit_of_measurement": "%"
+					}
+				  },
+				  "name": "Brightness step",
+				  "description": "Change brightness by a percentage."
+				},
+				"effect": {
+				  "filter": {
+					"supported_features": [
+					  4
+					]
+				  },
+				  "selector": {
+					"text": null
+				  },
+				  "name": "Effect",
+				  "description": "Light effect."
+				},
+				"advanced_fields": {
+				  "collapsed": true,
+				  "fields": {
+					"rgbw_color": {
+					  "filter": {
+						"attribute": {
+						  "supported_color_modes": [
+							"hs",
+							"xy",
+							"rgb",
+							"rgbw",
+							"rgbww"
+						  ]
 						}
+					  },
+					  "example": "[255, 100, 100, 50]",
+					  "selector": {
+						"object": null
+					  }
 					},
-					"response": {
-						"optional": true
-					}
-				},
-				"reload": {
-					"name": "Reload",
-					"description": "Reloads the intent configuration.",
-					"fields": {
-						"language": {
-							"example": "NL",
-							"selector": {
-								"text": null
-							},
-							"name": "Language",
-							"description": "Language to clear cached intents for. Defaults to server language."
-						},
-						"agent_id": {
-							"example": "homeassistant",
-							"selector": {
-								"conversation_agent": null
-							},
-							"name": "Agent",
-							"description": "Conversation agent to reload."
+					"rgbww_color": {
+					  "filter": {
+						"attribute": {
+						  "supported_color_modes": [
+							"hs",
+							"xy",
+							"rgb",
+							"rgbw",
+							"rgbww"
+						  ]
 						}
-					}
-				}
-			},
-			"friendly_name": "Home Assistant",
-			"entity_class": "conversation"
-		},
-		{
-			"entity_id": "sun.sun",
-			"state": "above_horizon",
-			"attributes": {
-				"next_dawn": "2025-04-03T04:24:25.146232+00:00",
-				"next_dusk": "2025-04-02T18:19:36.648964+00:00",
-				"next_midnight": "2025-04-02T23:22:14+00:00",
-				"next_noon": "2025-04-02T11:22:39+00:00",
-				"next_rising": "2025-04-03T04:55:16.542275+00:00",
-				"next_setting": "2025-04-02T17:48:41.914234+00:00",
-				"elevation": 33.67,
-				"azimuth": 122.32,
-				"rising": true
-			},
-			"device_id": "None",
-			"services": {},
-			"friendly_name": "Sun",
-			"entity_class": "sun"
-		},
-		{
-			"entity_id": "sensor.sun_next_dawn",
-			"state": "2025-04-03T04:24:25+00:00",
-			"attributes": {},
-			"device_id": "2333fdc84f9e56701c6b6bfd6f93d5c5",
-			"services": {},
-			"friendly_name": "Sun Prossima alba",
-			"entity_class": "timestamp"
-		},
-		{
-			"entity_id": "sensor.sun_next_dusk",
-			"state": "2025-04-02T18:19:36+00:00",
-			"attributes": {},
-			"device_id": "2333fdc84f9e56701c6b6bfd6f93d5c5",
-			"services": {},
-			"friendly_name": "Sun Prossimo crepuscolo",
-			"entity_class": "timestamp"
-		},
-		{
-			"entity_id": "sensor.sun_next_midnight",
-			"state": "2025-04-02T23:22:14+00:00",
-			"attributes": {},
-			"device_id": "2333fdc84f9e56701c6b6bfd6f93d5c5",
-			"services": {},
-			"friendly_name": "Sun Prossima mezzanotte",
-			"entity_class": "timestamp"
-		},
-		{
-			"entity_id": "sensor.sun_next_noon",
-			"state": "2025-04-02T11:22:39+00:00",
-			"attributes": {},
-			"device_id": "2333fdc84f9e56701c6b6bfd6f93d5c5",
-			"services": {},
-			"friendly_name": "Sun Prossimo mezzogiorno",
-			"entity_class": "timestamp"
-		},
-		{
-			"entity_id": "sensor.sun_next_rising",
-			"state": "2025-04-03T04:55:16+00:00",
-			"attributes": {},
-			"device_id": "2333fdc84f9e56701c6b6bfd6f93d5c5",
-			"services": {},
-			"friendly_name": "Sun Prossima levata",
-			"entity_class": "timestamp"
-		},
-		{
-			"entity_id": "sensor.sun_next_setting",
-			"state": "2025-04-02T17:48:41+00:00",
-			"attributes": {},
-			"device_id": "2333fdc84f9e56701c6b6bfd6f93d5c5",
-			"services": {},
-			"friendly_name": "Sun Prossimo tramonto",
-			"entity_class": "timestamp"
-		},
-		{
-			"entity_id": "sensor.tv_sala_power",
-			"state": "0",
-			"attributes": {
-				"state_class": "measurement"
-			},
-			"device_id": "03693bc2884b932931228261a1972360",
-			"services": {},
-			"friendly_name": "tv_sala_power",
-			"unit_of_measurement": "W",
-			"entity_class": "power"
-		},
-		{
-			"entity_id": "device_tracker.oneplus_di_davide",
-			"state": "unknown",
-			"attributes": {
-				"source_type": "gps"
-			},
-			"device_id": "b9bd882c62e2b8f18c3563fa621fc00b",
-			"services": {
-				"see": {
-					"name": "See",
-					"description": "Manually update the records of a seen legacy device tracker in the known_devices.yaml file.",
-					"fields": {
-						"mac": {
-							"example": "FF:FF:FF:FF:FF:FF",
-							"selector": {
-								"text": null
-							},
-							"name": "MAC address",
-							"description": "MAC address of the device."
-						},
-						"dev_id": {
-							"example": "phonedave",
-							"selector": {
-								"text": null
-							},
-							"name": "Device ID",
-							"description": "ID of the device (find the ID in `known_devices.yaml`)."
-						},
-						"host_name": {
-							"example": "Dave",
-							"selector": {
-								"text": null
-							},
-							"name": "Hostname",
-							"description": "Hostname of the device."
-						},
-						"location_name": {
-							"example": "home",
-							"selector": {
-								"text": null
-							},
-							"name": "Location",
-							"description": "Name of the location where the device is located. The options are: `home`, `not_home`, or the name of the zone."
-						},
-						"gps": {
-							"example": "[51.509802, -0.086692]",
-							"selector": {
-								"object": null
-							},
-							"name": "GPS coordinates",
-							"description": "GPS coordinates where the device is located, specified by latitude and longitude (for example: [51.513845, -0.100539])."
-						},
-						"gps_accuracy": {
-							"selector": {
-								"number": {
-									"min": 0,
-									"mode": "box",
-									"unit_of_measurement": "m"
-								}
-							},
-							"name": "GPS accuracy",
-							"description": "Accuracy of the GPS coordinates."
-						},
-						"battery": {
-							"selector": {
-								"number": {
-									"min": 0,
-									"max": 100,
-									"unit_of_measurement": "%"
-								}
-							},
-							"name": "Battery level",
-							"description": "Battery level of the device."
-						}
-					}
-				}
-			},
-			"friendly_name": "OnePlus di Davide ",
-			"entity_class": "device_tracker"
-		},
-		{
-			"entity_id": "sensor.oneplus_di_davide_battery_level",
-			"state": "80",
-			"attributes": {
-				"state_class": "measurement",
-				"icon": "mdi:battery-80"
-			},
-			"device_id": "b9bd882c62e2b8f18c3563fa621fc00b",
-			"services": {},
-			"friendly_name": "OnePlus di Davide  Battery level",
-			"unit_of_measurement": "%",
-			"entity_class": "battery"
-		},
-		{
-			"entity_id": "sensor.oneplus_di_davide_battery_state",
-			"state": "not_charging",
-			"attributes": {
-				"options": [
-					"charging",
-					"discharging",
-					"full",
-					"not_charging"
-				],
-				"icon": "mdi:battery"
-			},
-			"device_id": "b9bd882c62e2b8f18c3563fa621fc00b",
-			"services": {},
-			"friendly_name": "OnePlus di Davide  Battery state",
-			"entity_class": "enum"
-		},
-		{
-			"entity_id": "sensor.oneplus_di_davide_charger_type",
-			"state": "none",
-			"attributes": {
-				"options": [
-					"ac",
-					"usb",
-					"wireless",
-					"dock",
-					"none"
-				],
-				"icon": "mdi:battery"
-			},
-			"device_id": "b9bd882c62e2b8f18c3563fa621fc00b",
-			"services": {},
-			"friendly_name": "OnePlus di Davide  Charger type",
-			"entity_class": "enum"
-		},
-		{
-			"entity_id": "sensor.shellyht_3b9c81_temperature",
-			"state": "17.38",
-			"attributes": {
-				"state_class": "measurement"
-			},
-			"device_id": "0b042e5ec2945e276355fa2cc749947f",
-			"services": {},
-			"friendly_name": "Sensore H&T cucina temperature",
-			"unit_of_measurement": "°C",
-			"entity_class": "temperature"
-		},
-		{
-			"entity_id": "sensor.shellyht_3b9c81_humidity",
-			"state": "56.0",
-			"attributes": {
-				"state_class": "measurement"
-			},
-			"device_id": "0b042e5ec2945e276355fa2cc749947f",
-			"services": {},
-			"friendly_name": "Sensore H&T cucina humidity",
-			"unit_of_measurement": "%",
-			"entity_class": "humidity"
-		},
-		{
-			"entity_id": "sensor.shellyht_3b9c81_battery",
-			"state": "85",
-			"attributes": {
-				"state_class": "measurement"
-			},
-			"device_id": "0b042e5ec2945e276355fa2cc749947f",
-			"services": {},
-			"friendly_name": "Sensore H&T cucina battery",
-			"unit_of_measurement": "%",
-			"entity_class": "battery"
-		},
-		{
-			"entity_id": "binary_sensor.shellyplusplugs_c82e180c35e8_switch_0_overheating",
-			"state": "off",
-			"attributes": {},
-			"device_id": "73f90a95e5dba7d52e5ad10517b1dec6",
-			"services": {},
-			"friendly_name": "Lavatrice switch_0 overheating",
-			"entity_class": "problem"
-		},
-		{
-			"entity_id": "binary_sensor.shellyplusplugs_c82e180c35e8_switch_0_overpowering",
-			"state": "off",
-			"attributes": {},
-			"device_id": "73f90a95e5dba7d52e5ad10517b1dec6",
-			"services": {},
-			"friendly_name": "Lavatrice switch_0 overpowering",
-			"entity_class": "problem"
-		},
-		{
-			"entity_id": "binary_sensor.shellyplusplugs_c82e180c35e8_switch_0_overvoltage",
-			"state": "off",
-			"attributes": {},
-			"device_id": "73f90a95e5dba7d52e5ad10517b1dec6",
-			"services": {},
-			"friendly_name": "Lavatrice switch_0 overvoltage",
-			"entity_class": "problem"
-		},
-		{
-			"entity_id": "binary_sensor.shellyplusplugs_c82e180c35e8_switch_0_overcurrent",
-			"state": "off",
-			"attributes": {},
-			"device_id": "73f90a95e5dba7d52e5ad10517b1dec6",
-			"services": {},
-			"friendly_name": "shellyplusplugs-c82e180c35e8 Switch 0 overcurrent",
-			"entity_class": "problem"
-		},
-		{
-			"entity_id": "sensor.shellyplusplugs_c82e180c35e8_switch_0_power",
-			"state": "0.8",
-			"attributes": {
-				"state_class": "measurement"
-			},
-			"device_id": "73f90a95e5dba7d52e5ad10517b1dec6",
-			"services": {},
-			"friendly_name": "Lavatrice switch_0 power",
-			"unit_of_measurement": "W",
-			"entity_class": "power"
-		},
-		{
-			"entity_id": "sensor.shellyplusplugs_c82e180c35e8_switch_0_energy",
-			"state": "43.074496",
-			"attributes": {
-				"state_class": "total_increasing"
-			},
-			"device_id": "73f90a95e5dba7d52e5ad10517b1dec6",
-			"services": {},
-			"friendly_name": "Lavatrice switch_0 energy",
-			"unit_of_measurement": "kWh",
-			"entity_class": "energy"
-		},
-		{
-			"entity_id": "switch.shellyplusplugs_c82e180c35e8_switch_0",
-			"state": "on",
-			"attributes": {
-				"icon": "mdi:washing-machine"
-			},
-			"device_id": "73f90a95e5dba7d52e5ad10517b1dec6",
-			"services": {
-				"turn_off": {
-					"name": "Turn off",
-					"description": "Turns a switch off.",
-					"fields": {}
-				},
-				"turn_on": {
-					"name": "Turn on",
-					"description": "Turns a switch on.",
-					"fields": {}
-				},
-				"toggle": {
-					"name": "Toggle",
-					"description": "Toggles a switch on/off.",
-					"fields": {}
-				}
-			},
-			"friendly_name": "Lavatrice switch_0",
-			"entity_class": "switch"
-		},
-		{
-			"entity_id": "binary_sensor.shellyplusplugs_e465b8454284_switch_0_overheating",
-			"state": "off",
-			"attributes": {},
-			"device_id": "81faa423066ee532f37f15f1897a699d",
-			"services": {},
-			"friendly_name": "PC Fisso switch_0 overheating",
-			"entity_class": "problem"
-		},
-		{
-			"entity_id": "binary_sensor.shellyplusplugs_e465b8454284_switch_0_overpowering",
-			"state": "off",
-			"attributes": {},
-			"device_id": "81faa423066ee532f37f15f1897a699d",
-			"services": {},
-			"friendly_name": "PC Fisso switch_0 overpowering",
-			"entity_class": "problem"
-		},
-		{
-			"entity_id": "binary_sensor.shellyplusplugs_e465b8454284_switch_0_overvoltage",
-			"state": "off",
-			"attributes": {},
-			"device_id": "81faa423066ee532f37f15f1897a699d",
-			"services": {},
-			"friendly_name": "PC Fisso switch_0 overvoltage",
-			"entity_class": "problem"
-		},
-		{
-			"entity_id": "binary_sensor.shellyplusplugs_e465b8454284_switch_0_overcurrent",
-			"state": "off",
-			"attributes": {},
-			"device_id": "81faa423066ee532f37f15f1897a699d",
-			"services": {},
-			"friendly_name": "shellyplusplugs-e465b8454284 Switch 0 overcurrent",
-			"entity_class": "problem"
-		},
-		{
-			"entity_id": "sensor.shellyplusplugs_e465b8454284_switch_0_power",
-			"state": "71.5",
-			"attributes": {
-				"state_class": "measurement"
-			},
-			"device_id": "81faa423066ee532f37f15f1897a699d",
-			"services": {},
-			"friendly_name": "PC Fisso switch_0 power",
-			"unit_of_measurement": "W",
-			"entity_class": "power"
-		},
-		{
-			"entity_id": "sensor.shellyplusplugs_e465b8454284_switch_0_energy",
-			"state": "72628.641",
-			"attributes": {
-				"state_class": "total_increasing"
-			},
-			"device_id": "81faa423066ee532f37f15f1897a699d",
-			"services": {},
-			"friendly_name": "PC Fisso switch_0 energy",
-			"unit_of_measurement": "Wh",
-			"entity_class": "energy"
-		},
-		{
-			"entity_id": "switch.shellyplusplugs_e465b8454284_switch_0",
-			"state": "on",
-			"attributes": {
-				"icon": "mdi:desktop-classic"
-			},
-			"device_id": "81faa423066ee532f37f15f1897a699d",
-			"services": {
-				"turn_off": {
-					"name": "Turn off",
-					"description": "Turns a switch off.",
-					"fields": {}
-				},
-				"turn_on": {
-					"name": "Turn on",
-					"description": "Turns a switch on.",
-					"fields": {}
-				},
-				"toggle": {
-					"name": "Toggle",
-					"description": "Toggles a switch on/off.",
-					"fields": {}
-				}
-			},
-			"friendly_name": "PC Fisso switch_0",
-			"entity_class": "switch"
-		},
-		{
-			"entity_id": "button.shellycolorbulb_485519ee0a6a_reboot",
-			"state": "unknown",
-			"attributes": {},
-			"device_id": "f5f0c29d9170693dcf446ca8bb049a82",
-			"services": {
-				"press": {
-					"name": "Press",
-					"description": "Press the button entity.",
-					"fields": {}
-				}
-			},
-			"friendly_name": "shellycolorbulb-485519EE0A6A Reboot",
-			"entity_class": "restart"
-		},
-		{
-			"entity_id": "light.shellycolorbulb_485519ee0a6a",
-			"state": "off",
-			"attributes": {
-				"min_color_temp_kelvin": 3000,
-				"max_color_temp_kelvin": 6500,
-				"min_mireds": 153,
-				"max_mireds": 333,
-				"effect_list": [
-					"Off",
-					"Meteor Shower",
-					"Gradual Change",
-					"Flash"
-				],
-				"effect": null,
-				"color_mode": null,
-				"brightness": null,
-				"color_temp_kelvin": null,
-				"color_temp": null,
-				"hs_color": null,
-				"rgb_color": null,
-				"xy_color": null,
-				"supported_features": 36
-			},
-			"device_id": "f5f0c29d9170693dcf446ca8bb049a82",
-			"services": {
-				"turn_on": {
-					"name": "Turn on",
-					"description": "Turn on one or more lights and adjust properties of the light, even when they are turned on already.",
-					"fields": {
-						"transition": {
-							"filter": {
-								"supported_features": [
-									32
-								]
-							},
-							"selector": {
-								"number": {
-									"min": 0,
-									"max": 300,
-									"unit_of_measurement": "seconds"
-								}
-							},
-							"name": "Transition",
-							"description": "Duration it takes to get to next state."
-						},
-						"rgb_color": {
-							"filter": {
-								"attribute": {
-									"supported_color_modes": [
-										"hs",
-										"xy",
-										"rgb",
-										"rgbw",
-										"rgbww"
-									]
-								}
-							},
-							"example": "[255, 100, 100]",
-							"selector": {
-								"color_rgb": null
-							},
-							"name": "Color",
-							"description": "The color in RGB format. A list of three integers between 0 and 255 representing the values of red, green, and blue."
-						},
-						"kelvin": {
-							"filter": {
-								"attribute": {
-									"supported_color_modes": [
-										"color_temp",
-										"hs",
-										"xy",
-										"rgb",
-										"rgbw",
-										"rgbww"
-									]
-								}
-							},
-							"selector": {
-								"color_temp": {
-									"unit": "kelvin",
-									"min": 2000,
-									"max": 6500
-								}
-							},
-							"name": "Color temperature",
-							"description": "Color temperature in Kelvin."
-						},
-						"brightness_pct": {
-							"filter": {
-								"attribute": {
-									"supported_color_modes": [
-										"brightness",
-										"color_temp",
-										"hs",
-										"xy",
-										"rgb",
-										"rgbw",
-										"rgbww"
-									]
-								}
-							},
-							"selector": {
-								"number": {
-									"min": 0,
-									"max": 100,
-									"unit_of_measurement": "%"
-								}
-							},
-							"name": "Brightness",
-							"description": "Number indicating the percentage of full brightness, where 0 turns the light off, 1 is the minimum brightness, and 100 is the maximum brightness."
-						},
-						"brightness_step_pct": {
-							"filter": {
-								"attribute": {
-									"supported_color_modes": [
-										"brightness",
-										"color_temp",
-										"hs",
-										"xy",
-										"rgb",
-										"rgbw",
-										"rgbww"
-									]
-								}
-							},
-							"selector": {
-								"number": {
-									"min": -100,
-									"max": 100,
-									"unit_of_measurement": "%"
-								}
-							},
-							"name": "Brightness step",
-							"description": "Change brightness by a percentage."
-						},
-						"effect": {
-							"filter": {
-								"supported_features": [
-									4
-								]
-							},
-							"selector": {
-								"text": null
-							},
-							"name": "Effect",
-							"description": "Light effect."
-						},
-						"advanced_fields": {
-							"collapsed": true,
-							"fields": {
-								"rgbw_color": {
-									"filter": {
-										"attribute": {
-											"supported_color_modes": [
-												"hs",
-												"xy",
-												"rgb",
-												"rgbw",
-												"rgbww"
-											]
-										}
-									},
-									"example": "[255, 100, 100, 50]",
-									"selector": {
-										"object": null
-									}
-								},
-								"rgbww_color": {
-									"filter": {
-										"attribute": {
-											"supported_color_modes": [
-												"hs",
-												"xy",
-												"rgb",
-												"rgbw",
-												"rgbww"
-											]
-										}
-									},
-									"example": "[255, 100, 100, 50, 70]",
-									"selector": {
-										"object": null
-									}
-								},
-								"color_name": {
-									"filter": {
-										"attribute": {
-											"supported_color_modes": [
-												"hs",
-												"xy",
-												"rgb",
-												"rgbw",
-												"rgbww"
-											]
-										}
-									},
-									"selector": {
-										"select": {
-											"translation_key": "color_name",
-											"options": [
-												"homeassistant",
-												"aliceblue",
-												"antiquewhite",
-												"aqua",
-												"aquamarine",
-												"azure",
-												"beige",
-												"bisque",
-												"blanchedalmond",
-												"blue",
-												"blueviolet",
-												"brown",
-												"burlywood",
-												"cadetblue",
-												"chartreuse",
-												"chocolate",
-												"coral",
-												"cornflowerblue",
-												"cornsilk",
-												"crimson",
-												"cyan",
-												"darkblue",
-												"darkcyan",
-												"darkgoldenrod",
-												"darkgray",
-												"darkgreen",
-												"darkgrey",
-												"darkkhaki",
-												"darkmagenta",
-												"darkolivegreen",
-												"darkorange",
-												"darkorchid",
-												"darkred",
-												"darksalmon",
-												"darkseagreen",
-												"darkslateblue",
-												"darkslategray",
-												"darkslategrey",
-												"darkturquoise",
-												"darkviolet",
-												"deeppink",
-												"deepskyblue",
-												"dimgray",
-												"dimgrey",
-												"dodgerblue",
-												"firebrick",
-												"floralwhite",
-												"forestgreen",
-												"fuchsia",
-												"gainsboro",
-												"ghostwhite",
-												"gold",
-												"goldenrod",
-												"gray",
-												"green",
-												"greenyellow",
-												"grey",
-												"honeydew",
-												"hotpink",
-												"indianred",
-												"indigo",
-												"ivory",
-												"khaki",
-												"lavender",
-												"lavenderblush",
-												"lawngreen",
-												"lemonchiffon",
-												"lightblue",
-												"lightcoral",
-												"lightcyan",
-												"lightgoldenrodyellow",
-												"lightgray",
-												"lightgreen",
-												"lightgrey",
-												"lightpink",
-												"lightsalmon",
-												"lightseagreen",
-												"lightskyblue",
-												"lightslategray",
-												"lightslategrey",
-												"lightsteelblue",
-												"lightyellow",
-												"lime",
-												"limegreen",
-												"linen",
-												"magenta",
-												"maroon",
-												"mediumaquamarine",
-												"mediumblue",
-												"mediumorchid",
-												"mediumpurple",
-												"mediumseagreen",
-												"mediumslateblue",
-												"mediumspringgreen",
-												"mediumturquoise",
-												"mediumvioletred",
-												"midnightblue",
-												"mintcream",
-												"mistyrose",
-												"moccasin",
-												"navajowhite",
-												"navy",
-												"navyblue",
-												"oldlace",
-												"olive",
-												"olivedrab",
-												"orange",
-												"orangered",
-												"orchid",
-												"palegoldenrod",
-												"palegreen",
-												"paleturquoise",
-												"palevioletred",
-												"papayawhip",
-												"peachpuff",
-												"peru",
-												"pink",
-												"plum",
-												"powderblue",
-												"purple",
-												"red",
-												"rosybrown",
-												"royalblue",
-												"saddlebrown",
-												"salmon",
-												"sandybrown",
-												"seagreen",
-												"seashell",
-												"sienna",
-												"silver",
-												"skyblue",
-												"slateblue",
-												"slategray",
-												"slategrey",
-												"snow",
-												"springgreen",
-												"steelblue",
-												"tan",
-												"teal",
-												"thistle",
-												"tomato",
-												"turquoise",
-												"violet",
-												"wheat",
-												"white",
-												"whitesmoke",
-												"yellow",
-												"yellowgreen"
-											]
-										}
-									}
-								},
-								"hs_color": {
-									"filter": {
-										"attribute": {
-											"supported_color_modes": [
-												"hs",
-												"xy",
-												"rgb",
-												"rgbw",
-												"rgbww"
-											]
-										}
-									},
-									"example": "[300, 70]",
-									"selector": {
-										"object": null
-									}
-								},
-								"xy_color": {
-									"filter": {
-										"attribute": {
-											"supported_color_modes": [
-												"hs",
-												"xy",
-												"rgb",
-												"rgbw",
-												"rgbww"
-											]
-										}
-									},
-									"example": "[0.52, 0.43]",
-									"selector": {
-										"object": null
-									}
-								},
-								"color_temp": {
-									"filter": {
-										"attribute": {
-											"supported_color_modes": [
-												"color_temp",
-												"hs",
-												"xy",
-												"rgb",
-												"rgbw",
-												"rgbww"
-											]
-										}
-									},
-									"selector": {
-										"color_temp": {
-											"unit": "mired",
-											"min": 153,
-											"max": 500
-										}
-									}
-								},
-								"brightness": {
-									"filter": {
-										"attribute": {
-											"supported_color_modes": [
-												"brightness",
-												"color_temp",
-												"hs",
-												"xy",
-												"rgb",
-												"rgbw",
-												"rgbww"
-											]
-										}
-									},
-									"selector": {
-										"number": {
-											"min": 0,
-											"max": 255
-										}
-									}
-								},
-								"brightness_step": {
-									"filter": {
-										"attribute": {
-											"supported_color_modes": [
-												"brightness",
-												"color_temp",
-												"hs",
-												"xy",
-												"rgb",
-												"rgbw",
-												"rgbww"
-											]
-										}
-									},
-									"selector": {
-										"number": {
-											"min": -225,
-											"max": 255
-										}
-									}
-								},
-								"white": {
-									"filter": {
-										"attribute": {
-											"supported_color_modes": [
-												"white"
-											]
-										}
-									},
-									"selector": {
-										"constant": {
-											"value": true,
-											"label": "Enabled"
-										}
-									}
-								},
-								"profile": {
-									"example": "relax",
-									"selector": {
-										"text": null
-									}
-								},
-								"flash": {
-									"filter": {
-										"supported_features": [
-											8
-										]
-									},
-									"selector": {
-										"select": {
-											"options": [
-												{
-													"label": "Long",
-													"value": "long"
-												},
-												{
-													"label": "Short",
-													"value": "short"
-												}
-											]
-										}
-									}
-								}
-							}
-						}
-					}
-				},
-				"turn_off": {
-					"name": "Turn off",
-					"description": "Turn off one or more lights.",
-					"fields": {
-						"transition": {
-							"filter": {
-								"supported_features": [
-									32
-								]
-							},
-							"selector": {
-								"number": {
-									"min": 0,
-									"max": 300,
-									"unit_of_measurement": "seconds"
-								}
-							},
-							"name": "Transition",
-							"description": "Duration it takes to get to next state."
-						},
-						"advanced_fields": {
-							"collapsed": true,
-							"fields": {
-								"flash": {
-									"filter": {
-										"supported_features": [
-											8
-										]
-									},
-									"selector": {
-										"select": {
-											"options": [
-												{
-													"label": "Long",
-													"value": "long"
-												},
-												{
-													"label": "Short",
-													"value": "short"
-												}
-											]
-										}
-									}
-								}
-							}
-						}
-					}
-				},
-				"toggle": {
-					"name": "Toggle",
-					"description": "Toggles one or more lights, from on to off, or, off to on, based on their current state.",
-					"fields": {
-						"transition": {
-							"filter": {
-								"supported_features": [
-									32
-								]
-							},
-							"selector": {
-								"number": {
-									"min": 0,
-									"max": 300,
-									"unit_of_measurement": "seconds"
-								}
-							},
-							"name": "Transition",
-							"description": "Duration it takes to get to next state."
-						},
-						"rgb_color": {
-							"filter": {
-								"attribute": {
-									"supported_color_modes": [
-										"hs",
-										"xy",
-										"rgb",
-										"rgbw",
-										"rgbww"
-									]
-								}
-							},
-							"example": "[255, 100, 100]",
-							"selector": {
-								"color_rgb": null
-							},
-							"name": "Color",
-							"description": "The color in RGB format. A list of three integers between 0 and 255 representing the values of red, green, and blue."
-						},
-						"kelvin": {
-							"filter": {
-								"attribute": {
-									"supported_color_modes": [
-										"color_temp",
-										"hs",
-										"xy",
-										"rgb",
-										"rgbw",
-										"rgbww"
-									]
-								}
-							},
-							"selector": {
-								"color_temp": {
-									"unit": "kelvin",
-									"min": 2000,
-									"max": 6500
-								}
-							},
-							"name": "Color temperature",
-							"description": "Color temperature in Kelvin."
-						},
-						"brightness_pct": {
-							"filter": {
-								"attribute": {
-									"supported_color_modes": [
-										"brightness",
-										"color_temp",
-										"hs",
-										"xy",
-										"rgb",
-										"rgbw",
-										"rgbww"
-									]
-								}
-							},
-							"selector": {
-								"number": {
-									"min": 0,
-									"max": 100,
-									"unit_of_measurement": "%"
-								}
-							},
-							"name": "Brightness",
-							"description": "Number indicating the percentage of full brightness, where 0 turns the light off, 1 is the minimum brightness, and 100 is the maximum brightness."
-						},
-						"effect": {
-							"filter": {
-								"supported_features": [
-									4
-								]
-							},
-							"selector": {
-								"text": null
-							},
-							"name": "Effect",
-							"description": "Light effect."
-						},
-						"advanced_fields": {
-							"collapsed": true,
-							"fields": {
-								"rgbw_color": {
-									"filter": {
-										"attribute": {
-											"supported_color_modes": [
-												"hs",
-												"xy",
-												"rgb",
-												"rgbw",
-												"rgbww"
-											]
-										}
-									},
-									"example": "[255, 100, 100, 50]",
-									"selector": {
-										"object": null
-									}
-								},
-								"rgbww_color": {
-									"filter": {
-										"attribute": {
-											"supported_color_modes": [
-												"hs",
-												"xy",
-												"rgb",
-												"rgbw",
-												"rgbww"
-											]
-										}
-									},
-									"example": "[255, 100, 100, 50, 70]",
-									"selector": {
-										"object": null
-									}
-								},
-								"color_name": {
-									"filter": {
-										"attribute": {
-											"supported_color_modes": [
-												"hs",
-												"xy",
-												"rgb",
-												"rgbw",
-												"rgbww"
-											]
-										}
-									},
-									"selector": {
-										"select": {
-											"translation_key": "color_name",
-											"options": [
-												"homeassistant",
-												"aliceblue",
-												"antiquewhite",
-												"aqua",
-												"aquamarine",
-												"azure",
-												"beige",
-												"bisque",
-												"blanchedalmond",
-												"blue",
-												"blueviolet",
-												"brown",
-												"burlywood",
-												"cadetblue",
-												"chartreuse",
-												"chocolate",
-												"coral",
-												"cornflowerblue",
-												"cornsilk",
-												"crimson",
-												"cyan",
-												"darkblue",
-												"darkcyan",
-												"darkgoldenrod",
-												"darkgray",
-												"darkgreen",
-												"darkgrey",
-												"darkkhaki",
-												"darkmagenta",
-												"darkolivegreen",
-												"darkorange",
-												"darkorchid",
-												"darkred",
-												"darksalmon",
-												"darkseagreen",
-												"darkslateblue",
-												"darkslategray",
-												"darkslategrey",
-												"darkturquoise",
-												"darkviolet",
-												"deeppink",
-												"deepskyblue",
-												"dimgray",
-												"dimgrey",
-												"dodgerblue",
-												"firebrick",
-												"floralwhite",
-												"forestgreen",
-												"fuchsia",
-												"gainsboro",
-												"ghostwhite",
-												"gold",
-												"goldenrod",
-												"gray",
-												"green",
-												"greenyellow",
-												"grey",
-												"honeydew",
-												"hotpink",
-												"indianred",
-												"indigo",
-												"ivory",
-												"khaki",
-												"lavender",
-												"lavenderblush",
-												"lawngreen",
-												"lemonchiffon",
-												"lightblue",
-												"lightcoral",
-												"lightcyan",
-												"lightgoldenrodyellow",
-												"lightgray",
-												"lightgreen",
-												"lightgrey",
-												"lightpink",
-												"lightsalmon",
-												"lightseagreen",
-												"lightskyblue",
-												"lightslategray",
-												"lightslategrey",
-												"lightsteelblue",
-												"lightyellow",
-												"lime",
-												"limegreen",
-												"linen",
-												"magenta",
-												"maroon",
-												"mediumaquamarine",
-												"mediumblue",
-												"mediumorchid",
-												"mediumpurple",
-												"mediumseagreen",
-												"mediumslateblue",
-												"mediumspringgreen",
-												"mediumturquoise",
-												"mediumvioletred",
-												"midnightblue",
-												"mintcream",
-												"mistyrose",
-												"moccasin",
-												"navajowhite",
-												"navy",
-												"navyblue",
-												"oldlace",
-												"olive",
-												"olivedrab",
-												"orange",
-												"orangered",
-												"orchid",
-												"palegoldenrod",
-												"palegreen",
-												"paleturquoise",
-												"palevioletred",
-												"papayawhip",
-												"peachpuff",
-												"peru",
-												"pink",
-												"plum",
-												"powderblue",
-												"purple",
-												"red",
-												"rosybrown",
-												"royalblue",
-												"saddlebrown",
-												"salmon",
-												"sandybrown",
-												"seagreen",
-												"seashell",
-												"sienna",
-												"silver",
-												"skyblue",
-												"slateblue",
-												"slategray",
-												"slategrey",
-												"snow",
-												"springgreen",
-												"steelblue",
-												"tan",
-												"teal",
-												"thistle",
-												"tomato",
-												"turquoise",
-												"violet",
-												"wheat",
-												"white",
-												"whitesmoke",
-												"yellow",
-												"yellowgreen"
-											]
-										}
-									}
-								},
-								"hs_color": {
-									"filter": {
-										"attribute": {
-											"supported_color_modes": [
-												"hs",
-												"xy",
-												"rgb",
-												"rgbw",
-												"rgbww"
-											]
-										}
-									},
-									"example": "[300, 70]",
-									"selector": {
-										"object": null
-									}
-								},
-								"xy_color": {
-									"filter": {
-										"attribute": {
-											"supported_color_modes": [
-												"hs",
-												"xy",
-												"rgb",
-												"rgbw",
-												"rgbww"
-											]
-										}
-									},
-									"example": "[0.52, 0.43]",
-									"selector": {
-										"object": null
-									}
-								},
-								"color_temp": {
-									"filter": {
-										"attribute": {
-											"supported_color_modes": [
-												"color_temp",
-												"hs",
-												"xy",
-												"rgb",
-												"rgbw",
-												"rgbww"
-											]
-										}
-									},
-									"selector": {
-										"color_temp": {
-											"unit": "mired",
-											"min": 153,
-											"max": 500
-										}
-									}
-								},
-								"brightness": {
-									"filter": {
-										"attribute": {
-											"supported_color_modes": [
-												"brightness",
-												"color_temp",
-												"hs",
-												"xy",
-												"rgb",
-												"rgbw",
-												"rgbww"
-											]
-										}
-									},
-									"selector": {
-										"number": {
-											"min": 0,
-											"max": 255
-										}
-									}
-								},
-								"white": {
-									"filter": {
-										"attribute": {
-											"supported_color_modes": [
-												"white"
-											]
-										}
-									},
-									"selector": {
-										"constant": {
-											"value": true,
-											"label": "Enabled"
-										}
-									}
-								},
-								"profile": {
-									"example": "relax",
-									"selector": {
-										"text": null
-									}
-								},
-								"flash": {
-									"filter": {
-										"supported_features": [
-											8
-										]
-									},
-									"selector": {
-										"select": {
-											"options": [
-												{
-													"label": "Long",
-													"value": "long"
-												},
-												{
-													"label": "Short",
-													"value": "short"
-												}
-											]
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			},
-			"friendly_name": "shellycolorbulb-485519EE0A6A",
-			"entity_class": "light"
-		},
-		{
-			"entity_id": "sensor.shellycolorbulb_485519ee0a6a_power",
-			"state": "0.0",
-			"attributes": {
-				"state_class": "measurement"
-			},
-			"device_id": "f5f0c29d9170693dcf446ca8bb049a82",
-			"services": {},
-			"friendly_name": "shellycolorbulb-485519EE0A6A power",
-			"unit_of_measurement": "W",
-			"entity_class": "power"
-		},
-		{
-			"entity_id": "binary_sensor.shellyplusplugit_80646fc994c8_switch_0_overheating",
-			"state": "off",
-			"attributes": {},
-			"device_id": "60eb315bfa05ddf285ce4bf519497d3e",
-			"services": {},
-			"friendly_name": "Tv Cucina switch_0 overheating",
-			"entity_class": "problem"
-		},
-		{
-			"entity_id": "binary_sensor.shellyplusplugit_80646fc994c8_switch_0_overpowering",
-			"state": "off",
-			"attributes": {},
-			"device_id": "60eb315bfa05ddf285ce4bf519497d3e",
-			"services": {},
-			"friendly_name": "Tv Cucina switch_0 overpowering",
-			"entity_class": "problem"
-		},
-		{
-			"entity_id": "binary_sensor.shellyplusplugit_80646fc994c8_switch_0_overvoltage",
-			"state": "off",
-			"attributes": {},
-			"device_id": "60eb315bfa05ddf285ce4bf519497d3e",
-			"services": {},
-			"friendly_name": "Tv Cucina switch_0 overvoltage",
-			"entity_class": "problem"
-		},
-		{
-			"entity_id": "binary_sensor.shellyplusplugit_80646fc994c8_switch_0_overcurrent",
-			"state": "off",
-			"attributes": {},
-			"device_id": "60eb315bfa05ddf285ce4bf519497d3e",
-			"services": {},
-			"friendly_name": "shellyplusplugit-80646fc994c8 Switch 0 overcurrent",
-			"entity_class": "problem"
-		},
-		{
-			"entity_id": "sensor.shellyplusplugit_80646fc994c8_switch_0_power",
-			"state": "0.0",
-			"attributes": {
-				"state_class": "measurement"
-			},
-			"device_id": "60eb315bfa05ddf285ce4bf519497d3e",
-			"services": {},
-			"friendly_name": "Tv Cucina switch_0 power",
-			"unit_of_measurement": "W",
-			"entity_class": "power"
-		},
-		{
-			"entity_id": "sensor.shellyplusplugit_80646fc994c8_switch_0_energy",
-			"state": "48554.719",
-			"attributes": {
-				"state_class": "total_increasing"
-			},
-			"device_id": "60eb315bfa05ddf285ce4bf519497d3e",
-			"services": {},
-			"friendly_name": "Tv Cucina switch_0 energy",
-			"unit_of_measurement": "Wh",
-			"entity_class": "energy"
-		},
-		{
-			"entity_id": "switch.shellyplusplugit_80646fc994c8_switch_0",
-			"state": "on",
-			"attributes": {
-				"icon": "mdi:television"
-			},
-			"device_id": "60eb315bfa05ddf285ce4bf519497d3e",
-			"services": {
-				"turn_off": {
-					"name": "Turn off",
-					"description": "Turns a switch off.",
-					"fields": {}
-				},
-				"turn_on": {
-					"name": "Turn on",
-					"description": "Turns a switch on.",
-					"fields": {}
-				},
-				"toggle": {
-					"name": "Toggle",
-					"description": "Toggles a switch on/off.",
-					"fields": {}
-				}
-			},
-			"friendly_name": "Tv Cucina switch_0",
-			"entity_class": "switch"
-		},
-		{
-			"entity_id": "media_player.tv_sala",
-			"state": "off",
-			"attributes": {
-				"source_list": [
-					"Amazon Alexa",
-					"Apple TV",
-					"Apps",
-					"Browser Web",
-					"Disney+",
-					"Exercite",
-					"Fotocamera",
-					"HDMI 1",
-					"HDMI 2",
-					"HDMI 3",
-					"HDMI 4",
-					"Home Hub",
-					"LG Channels",
-					"LG Gaming Portal",
-					"LG Movies & TV",
-					"Lettore Multimediale",
-					"Live TV",
-					"Mediaset Infinity",
-					"NOW",
-					"Netflix",
-					"Prime Video",
-					"Pronto all'Uso",
-					"RaiPlay",
-					"Rakuten TV",
-					"Sport",
-					"Tetris",
-					"Viki: Asian Dramas, Movies and More",
-					"YouTube"
-				],
-				"assumed_state": true,
-				"supported_features": 24381
-			},
-			"device_id": "03693bc2884b932931228261a1972360",
-			"services": {
-				"turn_off": {
-					"name": "Turn off",
-					"description": "Turns off the power of the media player.",
-					"fields": {}
-				},
-				"volume_up": {
-					"name": "Turn up volume",
-					"description": "Turns up the volume.",
-					"fields": {}
-				},
-				"volume_down": {
-					"name": "Turn down volume",
-					"description": "Turns down the volume.",
-					"fields": {}
-				},
-				"media_play": {
-					"name": "Play",
-					"description": "Starts playing.",
-					"fields": {}
-				},
-				"media_pause": {
-					"name": "Pause",
-					"description": "Pauses.",
-					"fields": {}
-				},
-				"media_stop": {
-					"name": "Stop",
-					"description": "Stops playing.",
-					"fields": {}
-				},
-				"media_next_track": {
-					"name": "Next",
-					"description": "Selects the next track.",
-					"fields": {}
-				},
-				"media_previous_track": {
-					"name": "Previous",
-					"description": "Selects the previous track.",
-					"fields": {}
-				},
-				"volume_set": {
-					"name": "Set volume",
-					"description": "Sets the volume level.",
-					"fields": {
-						"volume_level": {
-							"required": true,
-							"selector": {
-								"number": {
-									"min": 0,
-									"max": 1,
-									"step": 0.01
-								}
-							},
-							"name": "Level",
-							"description": "The volume. 0 is inaudible, 1 is the maximum volume."
-						}
-					}
-				},
-				"volume_mute": {
-					"name": "Mute/unmute volume",
-					"description": "Mutes or unmutes the media player.",
-					"fields": {
-						"is_volume_muted": {
-							"required": true,
-							"selector": {
-								"boolean": null
-							},
-							"name": "Muted",
-							"description": "Defines whether or not it is muted."
-						}
-					}
-				},
-				"select_source": {
-					"name": "Select source",
-					"description": "Sends the media player the command to change input source.",
-					"fields": {
-						"source": {
-							"required": true,
-							"example": "video1",
-							"selector": {
-								"text": null
-							},
-							"name": "Source",
-							"description": "Name of the source to switch to. Platform dependent."
-						}
-					}
-				},
-				"play_media": {
-					"name": "Play media",
-					"description": "Starts playing specified media.",
-					"fields": {
-						"media_content_id": {
-							"required": true,
-							"example": "https://home-assistant.io/images/cast/splash.png",
-							"selector": {
-								"text": null
-							},
-							"name": "Content ID",
-							"description": "The ID of the content to play. Platform dependent."
-						},
-						"media_content_type": {
-							"required": true,
-							"example": "music",
-							"selector": {
-								"text": null
-							},
-							"name": "Content type",
-							"description": "The type of the content to play. Such as image, music, tv show, video, episode, channel, or playlist."
-						},
-						"enqueue": {
-							"filter": {
-								"supported_features": [
-									2097152
-								]
-							},
-							"required": false,
-							"selector": {
-								"select": {
-									"options": [
-										"play",
-										"next",
-										"add",
-										"replace"
-									],
-									"translation_key": "enqueue"
-								}
-							},
-							"name": "Enqueue",
-							"description": "If the content should be played now or be added to the queue."
-						},
-						"announce": {
-							"filter": {
-								"supported_features": [
-									1048576
-								]
-							},
-							"required": false,
-							"example": "true",
-							"selector": {
-								"boolean": null
-							},
-							"name": "Announce",
-							"description": "If the media should be played as an announcement."
-						}
-					}
-				}
-			},
-			"friendly_name": "Tv Sala",
-			"entity_class": "tv"
-		},
-		{
-			"entity_id": "todo.lista_della_spesa",
-			"state": "0",
-			"attributes": {
-				"supported_features": 15
-			},
-			"device_id": "None",
-			"services": {
-				"add_item": {
-					"name": "Add item",
-					"description": "Adds a new to-do list item.",
-					"fields": {
-						"item": {
-							"required": true,
-							"example": "Submit income tax return",
-							"selector": {
-								"text": null
-							},
-							"name": "Item name",
-							"description": "The name that represents the to-do item."
-						},
-						"due_date": {
-							"filter": {
-								"supported_features": [
-									16
-								]
-							},
-							"example": "2023-11-17",
-							"selector": {
-								"date": null
-							},
-							"name": "Due date",
-							"description": "The date the to-do item is expected to be completed."
-						},
-						"due_datetime": {
-							"filter": {
-								"supported_features": [
-									32
-								]
-							},
-							"example": "2023-11-17 13:30:00",
-							"selector": {
-								"datetime": null
-							},
-							"name": "Due date and time",
-							"description": "The date and time the to-do item is expected to be completed."
-						},
-						"description": {
-							"filter": {
-								"supported_features": [
-									64
-								]
-							},
-							"example": "A more complete description of the to-do item than that provided by the summary.",
-							"selector": {
-								"text": null
-							},
-							"name": "Description",
-							"description": "A more complete description of the to-do item than provided by the item name."
-						}
-					}
-				},
-				"update_item": {
-					"name": "Update item",
-					"description": "Updates an existing to-do list item based on its name.",
-					"fields": {
-						"item": {
-							"required": true,
-							"example": "Submit income tax return",
-							"selector": {
-								"text": null
-							},
-							"name": "Item name",
-							"description": "The current name of the to-do item."
-						},
-						"rename": {
-							"example": "Something else",
-							"selector": {
-								"text": null
-							},
-							"name": "Rename item",
-							"description": "The new name for the to-do item"
-						},
-						"status": {
-							"example": "needs_action",
-							"selector": {
-								"select": {
-									"translation_key": "status",
-									"options": [
-										"needs_action",
-										"completed"
-									]
-								}
-							},
-							"name": "Set status",
-							"description": "A status or confirmation of the to-do item."
-						},
-						"due_date": {
-							"filter": {
-								"supported_features": [
-									16
-								]
-							},
-							"example": "2023-11-17",
-							"selector": {
-								"date": null
-							},
-							"name": "Due date",
-							"description": "The date the to-do item is expected to be completed."
-						},
-						"due_datetime": {
-							"filter": {
-								"supported_features": [
-									32
-								]
-							},
-							"example": "2023-11-17 13:30:00",
-							"selector": {
-								"datetime": null
-							},
-							"name": "Due date and time",
-							"description": "The date and time the to-do item is expected to be completed."
-						},
-						"description": {
-							"filter": {
-								"supported_features": [
-									64
-								]
-							},
-							"example": "A more complete description of the to-do item than that provided by the summary.",
-							"selector": {
-								"text": null
-							},
-							"name": "Description",
-							"description": "A more complete description of the to-do item than provided by the item name."
-						}
-					}
-				},
-				"remove_item": {
-					"name": "Remove item",
-					"description": "Removes an existing to-do list item by its name.",
-					"fields": {
-						"item": {
-							"required": true,
-							"selector": {
-								"text": null
-							},
-							"name": "Item name",
-							"description": "The name for the to-do list item."
-						}
-					}
-				},
-				"get_items": {
-					"name": "Get items",
-					"description": "Gets items on a to-do list.",
-					"fields": {
-						"status": {
-							"example": "needs_action",
-							"default": "needs_action",
-							"selector": {
-								"select": {
-									"translation_key": "status",
-									"options": [
-										"needs_action",
-										"completed"
-									],
-									"multiple": true
-								}
-							},
-							"name": "Status",
-							"description": "Only return to-do items with the specified statuses. Returns not completed actions by default."
-						}
+					  },
+					  "example": "[255, 100, 100, 50, 70]",
+					  "selector": {
+						"object": null
+					  }
 					},
-					"response": {
-						"optional": false
-					}
-				},
-				"remove_completed_items": {
-					"name": "Remove completed items",
-					"description": "Removes all to-do list items that have been completed.",
-					"fields": {}
-				}
-			},
-			"friendly_name": "Lista della Spesa",
-			"entity_class": "todo"
-		},
-		{
-			"entity_id": "tts.google_en_com",
-			"state": "2024-12-05T12:47:28.650476+00:00",
-			"attributes": {},
-			"device_id": "None",
-			"services": {
-				"speak": {
-					"name": "Speak",
-					"description": "Speaks something using text-to-speech on a media player.",
-					"fields": {
-						"media_player_entity_id": {
-							"required": true,
-							"selector": {
-								"entity": {
-									"domain": "media_player"
-								}
-							},
-							"name": "Media player entity",
-							"description": "Media players to play the message."
-						},
-						"message": {
-							"example": "My name is hanna",
-							"required": true,
-							"selector": {
-								"text": null
-							},
-							"name": "Message",
-							"description": "The text you want to convert into speech so that you can listen to it on your device."
-						},
-						"cache": {
-							"default": true,
-							"selector": {
-								"boolean": null
-							},
-							"name": "Cache",
-							"description": "Stores this message locally so that when the text is requested again, the output can be produced more quickly."
-						},
-						"language": {
-							"example": "ru",
-							"selector": {
-								"text": null
-							},
-							"name": "Language",
-							"description": "Language to use for speech generation."
-						},
-						"options": {
-							"advanced": true,
-							"example": "platform specific",
-							"selector": {
-								"object": null
-							},
-							"name": "Options",
-							"description": "A dictionary containing integration-specific options."
+					"color_name": {
+					  "filter": {
+						"attribute": {
+						  "supported_color_modes": [
+							"hs",
+							"xy",
+							"rgb",
+							"rgbw",
+							"rgbww"
+						  ]
 						}
-					}
-				},
-				"clear_cache": {
-					"name": "Clear TTS cache",
-					"description": "Removes all cached text-to-speech files and purges the memory.",
-					"fields": {}
-				},
-				"cloud_say": {
-					"name": "Say a TTS message with cloud",
-					"description": "Say something using text-to-speech on a media player with cloud.",
-					"fields": {
-						"entity_id": {
-							"required": true,
-							"selector": {
-								"entity": {
-									"domain": "media_player"
-								}
-							}
-						},
-						"message": {
-							"example": "My name is hanna",
-							"required": true,
-							"selector": {
-								"text": null
-							}
-						},
-						"cache": {
-							"default": false,
-							"selector": {
-								"boolean": null
-							}
-						},
-						"language": {
-							"example": "ru",
-							"selector": {
-								"text": null
-							}
-						},
-						"options": {
-							"advanced": true,
-							"example": "platform specific",
-							"selector": {
-								"object": null
-							}
+					  },
+					  "selector": {
+						"select": {
+						  "translation_key": "color_name",
+						  "options": [
+							"homeassistant",
+							"aliceblue",
+							"antiquewhite",
+							"aqua",
+							"aquamarine",
+							"azure",
+							"beige",
+							"bisque",
+							"blanchedalmond",
+							"blue",
+							"blueviolet",
+							"brown",
+							"burlywood",
+							"cadetblue",
+							"chartreuse",
+							"chocolate",
+							"coral",
+							"cornflowerblue",
+							"cornsilk",
+							"crimson",
+							"cyan",
+							"darkblue",
+							"darkcyan",
+							"darkgoldenrod",
+							"darkgray",
+							"darkgreen",
+							"darkgrey",
+							"darkkhaki",
+							"darkmagenta",
+							"darkolivegreen",
+							"darkorange",
+							"darkorchid",
+							"darkred",
+							"darksalmon",
+							"darkseagreen",
+							"darkslateblue",
+							"darkslategray",
+							"darkslategrey",
+							"darkturquoise",
+							"darkviolet",
+							"deeppink",
+							"deepskyblue",
+							"dimgray",
+							"dimgrey",
+							"dodgerblue",
+							"firebrick",
+							"floralwhite",
+							"forestgreen",
+							"fuchsia",
+							"gainsboro",
+							"ghostwhite",
+							"gold",
+							"goldenrod",
+							"gray",
+							"green",
+							"greenyellow",
+							"grey",
+							"honeydew",
+							"hotpink",
+							"indianred",
+							"indigo",
+							"ivory",
+							"khaki",
+							"lavender",
+							"lavenderblush",
+							"lawngreen",
+							"lemonchiffon",
+							"lightblue",
+							"lightcoral",
+							"lightcyan",
+							"lightgoldenrodyellow",
+							"lightgray",
+							"lightgreen",
+							"lightgrey",
+							"lightpink",
+							"lightsalmon",
+							"lightseagreen",
+							"lightskyblue",
+							"lightslategray",
+							"lightslategrey",
+							"lightsteelblue",
+							"lightyellow",
+							"lime",
+							"limegreen",
+							"linen",
+							"magenta",
+							"maroon",
+							"mediumaquamarine",
+							"mediumblue",
+							"mediumorchid",
+							"mediumpurple",
+							"mediumseagreen",
+							"mediumslateblue",
+							"mediumspringgreen",
+							"mediumturquoise",
+							"mediumvioletred",
+							"midnightblue",
+							"mintcream",
+							"mistyrose",
+							"moccasin",
+							"navajowhite",
+							"navy",
+							"navyblue",
+							"oldlace",
+							"olive",
+							"olivedrab",
+							"orange",
+							"orangered",
+							"orchid",
+							"palegoldenrod",
+							"palegreen",
+							"paleturquoise",
+							"palevioletred",
+							"papayawhip",
+							"peachpuff",
+							"peru",
+							"pink",
+							"plum",
+							"powderblue",
+							"purple",
+							"red",
+							"rosybrown",
+							"royalblue",
+							"saddlebrown",
+							"salmon",
+							"sandybrown",
+							"seagreen",
+							"seashell",
+							"sienna",
+							"silver",
+							"skyblue",
+							"slateblue",
+							"slategray",
+							"slategrey",
+							"snow",
+							"springgreen",
+							"steelblue",
+							"tan",
+							"teal",
+							"thistle",
+							"tomato",
+							"turquoise",
+							"violet",
+							"wheat",
+							"white",
+							"whitesmoke",
+							"yellow",
+							"yellowgreen"
+						  ]
 						}
-					}
-				}
-			},
-			"friendly_name": "Google Translate en com",
-			"entity_class": "tts"
-		},
-		{
-			"entity_id": "weather.forecast_home",
-			"state": "cloudy",
-			"attributes": {
-				"temperature": 11.2,
-				"dew_point": 6,
-				"temperature_unit": "°C",
-				"humidity": 70,
-				"cloud_coverage": 100,
-				"uv_index": 0.9,
-				"pressure": 1017.8,
-				"pressure_unit": "hPa",
-				"wind_bearing": 13.6,
-				"wind_speed": 7.2,
-				"wind_speed_unit": "km/h",
-				"visibility_unit": "km",
-				"precipitation_unit": "mm",
-				"attribution": "Weather forecast from met.no, delivered by the Norwegian Meteorological Institute.",
-				"supported_features": 3
-			},
-			"device_id": "8d77325c13d4ba23aa7c68ebbbda80b4",
-			"services": {
-				"get_forecasts": {
-					"name": "Get forecasts",
-					"description": "Get weather forecasts.",
-					"fields": {
-						"type": {
-							"required": true,
-							"selector": {
-								"select": {
-									"options": [
-										"daily",
-										"hourly",
-										"twice_daily"
-									],
-									"translation_key": "forecast_type"
-								}
-							},
-							"name": "Forecast type",
-							"description": "Forecast type: daily, hourly or twice daily."
-						}
+					  }
 					},
-					"response": {
-						"optional": false
+					"hs_color": {
+					  "filter": {
+						"attribute": {
+						  "supported_color_modes": [
+							"hs",
+							"xy",
+							"rgb",
+							"rgbw",
+							"rgbww"
+						  ]
+						}
+					  },
+					  "example": "[300, 70]",
+					  "selector": {
+						"object": null
+					  }
+					},
+					"xy_color": {
+					  "filter": {
+						"attribute": {
+						  "supported_color_modes": [
+							"hs",
+							"xy",
+							"rgb",
+							"rgbw",
+							"rgbww"
+						  ]
+						}
+					  },
+					  "example": "[0.52, 0.43]",
+					  "selector": {
+						"object": null
+					  }
+					},
+					"color_temp": {
+					  "filter": {
+						"attribute": {
+						  "supported_color_modes": [
+							"color_temp",
+							"hs",
+							"xy",
+							"rgb",
+							"rgbw",
+							"rgbww"
+						  ]
+						}
+					  },
+					  "selector": {
+						"color_temp": {
+						  "unit": "mired",
+						  "min": 153,
+						  "max": 500
+						}
+					  }
+					},
+					"brightness": {
+					  "filter": {
+						"attribute": {
+						  "supported_color_modes": [
+							"brightness",
+							"color_temp",
+							"hs",
+							"xy",
+							"rgb",
+							"rgbw",
+							"rgbww"
+						  ]
+						}
+					  },
+					  "selector": {
+						"number": {
+						  "min": 0,
+						  "max": 255
+						}
+					  }
+					},
+					"brightness_step": {
+					  "filter": {
+						"attribute": {
+						  "supported_color_modes": [
+							"brightness",
+							"color_temp",
+							"hs",
+							"xy",
+							"rgb",
+							"rgbw",
+							"rgbww"
+						  ]
+						}
+					  },
+					  "selector": {
+						"number": {
+						  "min": -225,
+						  "max": 255
+						}
+					  }
+					},
+					"white": {
+					  "filter": {
+						"attribute": {
+						  "supported_color_modes": [
+							"white"
+						  ]
+						}
+					  },
+					  "selector": {
+						"constant": {
+						  "value": true,
+						  "label": "Enabled"
+						}
+					  }
+					},
+					"profile": {
+					  "example": "relax",
+					  "selector": {
+						"text": null
+					  }
+					},
+					"flash": {
+					  "filter": {
+						"supported_features": [
+						  8
+						]
+					  },
+					  "selector": {
+						"select": {
+						  "options": [
+							{
+							  "label": "Long",
+							  "value": "long"
+							},
+							{
+							  "label": "Short",
+							  "value": "short"
+							}
+						  ]
+						}
+					  }
 					}
+				  }
 				}
+			  }
 			},
-			"friendly_name": "Forecast Home",
-			"entity_class": "weather"
-		},
-		{
-			"entity_id": "event.shelly_blu_button1_bbab_button",
-			"state": "2024-11-10T20:09:44.682+00:00",
-			"attributes": {
-				"event_types": [
-					"press",
-					"double_press",
-					"triple_press",
-					"long_press",
-					"long_double_press",
-					"long_triple_press"
-				],
-				"event_type": "press"
-			},
-			"device_id": "893d6954dd2779cf1e402d47cf5be7e7",
-			"services": {},
-			"friendly_name": "Shelly BLU Button1 BBAB Button",
-			"entity_class": "button"
-		},
-		{
-			"entity_id": "sensor.shelly_blu_button1_bbab_battery",
-			"state": "100",
-			"attributes": {
-				"state_class": "measurement"
-			},
-			"device_id": "893d6954dd2779cf1e402d47cf5be7e7",
-			"services": {},
-			"friendly_name": "Shelly BLU Button1 BBAB Battery",
-			"unit_of_measurement": "%",
-			"entity_class": "battery"
-		},
-		{
-			"entity_id": "automation.automazione_media_player",
-			"state": "off",
-			"attributes": {
-				"id": "1725286989727",
-				"last_triggered": null,
-				"mode": "single",
-				"current": 0
-			},
-			"device_id": "None",
-			"services": {
-				"trigger": {
-					"name": "Trigger",
-					"description": "Triggers the actions of an automation.",
-					"fields": {
-						"skip_condition": {
-							"default": true,
-							"selector": {
-								"boolean": null
-							},
-							"name": "Skip conditions",
-							"description": "Defines whether or not the conditions will be skipped."
-						}
+			"turn_off": {
+			  "name": "Turn off",
+			  "description": "Turn off one or more lights.",
+			  "fields": {
+				"transition": {
+				  "filter": {
+					"supported_features": [
+					  32
+					]
+				  },
+				  "selector": {
+					"number": {
+					  "min": 0,
+					  "max": 300,
+					  "unit_of_measurement": "seconds"
 					}
+				  },
+				  "name": "Transition",
+				  "description": "Duration it takes to get to next state."
 				},
-				"toggle": {
-					"name": "Toggle",
-					"description": "Toggles (enable / disable) an automation.",
-					"fields": {}
-				},
-				"turn_on": {
-					"name": "Turn on",
-					"description": "Enables an automation.",
-					"fields": {}
-				},
-				"turn_off": {
-					"name": "Turn off",
-					"description": "Disables an automation.",
-					"fields": {
-						"stop_actions": {
-							"default": true,
-							"selector": {
-								"boolean": null
+				"advanced_fields": {
+				  "collapsed": true,
+				  "fields": {
+					"flash": {
+					  "filter": {
+						"supported_features": [
+						  8
+						]
+					  },
+					  "selector": {
+						"select": {
+						  "options": [
+							{
+							  "label": "Long",
+							  "value": "long"
 							},
-							"name": "Stop actions",
-							"description": "Stops currently running actions."
+							{
+							  "label": "Short",
+							  "value": "short"
+							}
+						  ]
 						}
+					  }
 					}
-				},
-				"reload": {
-					"name": "Reload",
-					"description": "Reloads the automation configuration.",
-					"fields": {}
+				  }
 				}
+			  }
 			},
-			"friendly_name": "automazione media player",
-			"entity_class": "automation"
+			"toggle": {
+			  "name": "Toggle",
+			  "description": "Toggles one or more lights, from on to off, or, off to on, based on their current state.",
+			  "fields": {
+				"transition": {
+				  "filter": {
+					"supported_features": [
+					  32
+					]
+				  },
+				  "selector": {
+					"number": {
+					  "min": 0,
+					  "max": 300,
+					  "unit_of_measurement": "seconds"
+					}
+				  },
+				  "name": "Transition",
+				  "description": "Duration it takes to get to next state."
+				},
+				"rgb_color": {
+				  "filter": {
+					"attribute": {
+					  "supported_color_modes": [
+						"hs",
+						"xy",
+						"rgb",
+						"rgbw",
+						"rgbww"
+					  ]
+					}
+				  },
+				  "example": "[255, 100, 100]",
+				  "selector": {
+					"color_rgb": null
+				  },
+				  "name": "Color",
+				  "description": "The color in RGB format. A list of three integers between 0 and 255 representing the values of red, green, and blue."
+				},
+				"kelvin": {
+				  "filter": {
+					"attribute": {
+					  "supported_color_modes": [
+						"color_temp",
+						"hs",
+						"xy",
+						"rgb",
+						"rgbw",
+						"rgbww"
+					  ]
+					}
+				  },
+				  "selector": {
+					"color_temp": {
+					  "unit": "kelvin",
+					  "min": 2000,
+					  "max": 6500
+					}
+				  },
+				  "name": "Color temperature",
+				  "description": "Color temperature in Kelvin."
+				},
+				"brightness_pct": {
+				  "filter": {
+					"attribute": {
+					  "supported_color_modes": [
+						"brightness",
+						"color_temp",
+						"hs",
+						"xy",
+						"rgb",
+						"rgbw",
+						"rgbww"
+					  ]
+					}
+				  },
+				  "selector": {
+					"number": {
+					  "min": 0,
+					  "max": 100,
+					  "unit_of_measurement": "%"
+					}
+				  },
+				  "name": "Brightness",
+				  "description": "Number indicating the percentage of full brightness, where 0 turns the light off, 1 is the minimum brightness, and 100 is the maximum brightness."
+				},
+				"effect": {
+				  "filter": {
+					"supported_features": [
+					  4
+					]
+				  },
+				  "selector": {
+					"text": null
+				  },
+				  "name": "Effect",
+				  "description": "Light effect."
+				},
+				"advanced_fields": {
+				  "collapsed": true,
+				  "fields": {
+					"rgbw_color": {
+					  "filter": {
+						"attribute": {
+						  "supported_color_modes": [
+							"hs",
+							"xy",
+							"rgb",
+							"rgbw",
+							"rgbww"
+						  ]
+						}
+					  },
+					  "example": "[255, 100, 100, 50]",
+					  "selector": {
+						"object": null
+					  }
+					},
+					"rgbww_color": {
+					  "filter": {
+						"attribute": {
+						  "supported_color_modes": [
+							"hs",
+							"xy",
+							"rgb",
+							"rgbw",
+							"rgbww"
+						  ]
+						}
+					  },
+					  "example": "[255, 100, 100, 50, 70]",
+					  "selector": {
+						"object": null
+					  }
+					},
+					"color_name": {
+					  "filter": {
+						"attribute": {
+						  "supported_color_modes": [
+							"hs",
+							"xy",
+							"rgb",
+							"rgbw",
+							"rgbww"
+						  ]
+						}
+					  },
+					  "selector": {
+						"select": {
+						  "translation_key": "color_name",
+						  "options": [
+							"homeassistant",
+							"aliceblue",
+							"antiquewhite",
+							"aqua",
+							"aquamarine",
+							"azure",
+							"beige",
+							"bisque",
+							"blanchedalmond",
+							"blue",
+							"blueviolet",
+							"brown",
+							"burlywood",
+							"cadetblue",
+							"chartreuse",
+							"chocolate",
+							"coral",
+							"cornflowerblue",
+							"cornsilk",
+							"crimson",
+							"cyan",
+							"darkblue",
+							"darkcyan",
+							"darkgoldenrod",
+							"darkgray",
+							"darkgreen",
+							"darkgrey",
+							"darkkhaki",
+							"darkmagenta",
+							"darkolivegreen",
+							"darkorange",
+							"darkorchid",
+							"darkred",
+							"darksalmon",
+							"darkseagreen",
+							"darkslateblue",
+							"darkslategray",
+							"darkslategrey",
+							"darkturquoise",
+							"darkviolet",
+							"deeppink",
+							"deepskyblue",
+							"dimgray",
+							"dimgrey",
+							"dodgerblue",
+							"firebrick",
+							"floralwhite",
+							"forestgreen",
+							"fuchsia",
+							"gainsboro",
+							"ghostwhite",
+							"gold",
+							"goldenrod",
+							"gray",
+							"green",
+							"greenyellow",
+							"grey",
+							"honeydew",
+							"hotpink",
+							"indianred",
+							"indigo",
+							"ivory",
+							"khaki",
+							"lavender",
+							"lavenderblush",
+							"lawngreen",
+							"lemonchiffon",
+							"lightblue",
+							"lightcoral",
+							"lightcyan",
+							"lightgoldenrodyellow",
+							"lightgray",
+							"lightgreen",
+							"lightgrey",
+							"lightpink",
+							"lightsalmon",
+							"lightseagreen",
+							"lightskyblue",
+							"lightslategray",
+							"lightslategrey",
+							"lightsteelblue",
+							"lightyellow",
+							"lime",
+							"limegreen",
+							"linen",
+							"magenta",
+							"maroon",
+							"mediumaquamarine",
+							"mediumblue",
+							"mediumorchid",
+							"mediumpurple",
+							"mediumseagreen",
+							"mediumslateblue",
+							"mediumspringgreen",
+							"mediumturquoise",
+							"mediumvioletred",
+							"midnightblue",
+							"mintcream",
+							"mistyrose",
+							"moccasin",
+							"navajowhite",
+							"navy",
+							"navyblue",
+							"oldlace",
+							"olive",
+							"olivedrab",
+							"orange",
+							"orangered",
+							"orchid",
+							"palegoldenrod",
+							"palegreen",
+							"paleturquoise",
+							"palevioletred",
+							"papayawhip",
+							"peachpuff",
+							"peru",
+							"pink",
+							"plum",
+							"powderblue",
+							"purple",
+							"red",
+							"rosybrown",
+							"royalblue",
+							"saddlebrown",
+							"salmon",
+							"sandybrown",
+							"seagreen",
+							"seashell",
+							"sienna",
+							"silver",
+							"skyblue",
+							"slateblue",
+							"slategray",
+							"slategrey",
+							"snow",
+							"springgreen",
+							"steelblue",
+							"tan",
+							"teal",
+							"thistle",
+							"tomato",
+							"turquoise",
+							"violet",
+							"wheat",
+							"white",
+							"whitesmoke",
+							"yellow",
+							"yellowgreen"
+						  ]
+						}
+					  }
+					},
+					"hs_color": {
+					  "filter": {
+						"attribute": {
+						  "supported_color_modes": [
+							"hs",
+							"xy",
+							"rgb",
+							"rgbw",
+							"rgbww"
+						  ]
+						}
+					  },
+					  "example": "[300, 70]",
+					  "selector": {
+						"object": null
+					  }
+					},
+					"xy_color": {
+					  "filter": {
+						"attribute": {
+						  "supported_color_modes": [
+							"hs",
+							"xy",
+							"rgb",
+							"rgbw",
+							"rgbww"
+						  ]
+						}
+					  },
+					  "example": "[0.52, 0.43]",
+					  "selector": {
+						"object": null
+					  }
+					},
+					"color_temp": {
+					  "filter": {
+						"attribute": {
+						  "supported_color_modes": [
+							"color_temp",
+							"hs",
+							"xy",
+							"rgb",
+							"rgbw",
+							"rgbww"
+						  ]
+						}
+					  },
+					  "selector": {
+						"color_temp": {
+						  "unit": "mired",
+						  "min": 153,
+						  "max": 500
+						}
+					  }
+					},
+					"brightness": {
+					  "filter": {
+						"attribute": {
+						  "supported_color_modes": [
+							"brightness",
+							"color_temp",
+							"hs",
+							"xy",
+							"rgb",
+							"rgbw",
+							"rgbww"
+						  ]
+						}
+					  },
+					  "selector": {
+						"number": {
+						  "min": 0,
+						  "max": 255
+						}
+					  }
+					},
+					"white": {
+					  "filter": {
+						"attribute": {
+						  "supported_color_modes": [
+							"white"
+						  ]
+						}
+					  },
+					  "selector": {
+						"constant": {
+						  "value": true,
+						  "label": "Enabled"
+						}
+					  }
+					},
+					"profile": {
+					  "example": "relax",
+					  "selector": {
+						"text": null
+					  }
+					},
+					"flash": {
+					  "filter": {
+						"supported_features": [
+						  8
+						]
+					  },
+					  "selector": {
+						"select": {
+						  "options": [
+							{
+							  "label": "Long",
+							  "value": "long"
+							},
+							{
+							  "label": "Short",
+							  "value": "short"
+							}
+						  ]
+						}
+					  }
+					}
+				  }
+				}
+			  }
+			}
+		  },
+		  "friendly_name": "shellycolorbulb-485519EE0A6A",
+		  "entity_class": "light"
 		},
 		{
-			"entity_id": "automation.automazione_ricorrenza_temporale",
-			"state": "off",
-			"attributes": {
-				"id": "1727252339602",
-				"last_triggered": null,
-				"mode": "single",
-				"current": 0
-			},
-			"device_id": "None",
-			"services": {
-				"trigger": {
-					"name": "Trigger",
-					"description": "Triggers the actions of an automation.",
-					"fields": {
-						"skip_condition": {
-							"default": true,
-							"selector": {
-								"boolean": null
-							},
-							"name": "Skip conditions",
-							"description": "Defines whether or not the conditions will be skipped."
-						}
-					}
-				},
-				"toggle": {
-					"name": "Toggle",
-					"description": "Toggles (enable / disable) an automation.",
-					"fields": {}
-				},
-				"turn_on": {
-					"name": "Turn on",
-					"description": "Enables an automation.",
-					"fields": {}
-				},
-				"turn_off": {
-					"name": "Turn off",
-					"description": "Disables an automation.",
-					"fields": {
-						"stop_actions": {
-							"default": true,
-							"selector": {
-								"boolean": null
-							},
-							"name": "Stop actions",
-							"description": "Stops currently running actions."
-						}
-					}
-				},
-				"reload": {
-					"name": "Reload",
-					"description": "Reloads the automation configuration.",
-					"fields": {}
-				}
-			},
-			"friendly_name": "Automazione ricorrenza temporale",
-			"entity_class": "automation"
+		  "entity_id": "sensor.shellycolorbulb_485519ee0a6a_power",
+		  "state": "0.0",
+		  "attributes": {
+			"state_class": "measurement"
+		  },
+		  "device_id": "f5f0c29d9170693dcf446ca8bb049a82",
+		  "services": {},
+		  "friendly_name": "shellycolorbulb-485519EE0A6A power",
+		  "unit_of_measurement": "W",
+		  "entity_class": "power"
 		},
 		{
-			"entity_id": "automation.disattiva_pc_la_notte",
-			"state": "on",
-			"attributes": {
-				"id": "1738493084329",
-				"last_triggered": "2025-04-02T00:00:00.166581+00:00",
-				"mode": "single",
-				"current": 0
-			},
-			"device_id": "None",
-			"services": {
-				"trigger": {
-					"name": "Trigger",
-					"description": "Triggers the actions of an automation.",
-					"fields": {
-						"skip_condition": {
-							"default": true,
-							"selector": {
-								"boolean": null
-							},
-							"name": "Skip conditions",
-							"description": "Defines whether or not the conditions will be skipped."
-						}
-					}
-				},
-				"toggle": {
-					"name": "Toggle",
-					"description": "Toggles (enable / disable) an automation.",
-					"fields": {}
-				},
-				"turn_on": {
-					"name": "Turn on",
-					"description": "Enables an automation.",
-					"fields": {}
-				},
-				"turn_off": {
-					"name": "Turn off",
-					"description": "Disables an automation.",
-					"fields": {
-						"stop_actions": {
-							"default": true,
-							"selector": {
-								"boolean": null
-							},
-							"name": "Stop actions",
-							"description": "Stops currently running actions."
-						}
-					}
-				},
-				"reload": {
-					"name": "Reload",
-					"description": "Reloads the automation configuration.",
-					"fields": {}
-				}
-			},
-			"friendly_name": "Turn off pc at night",
-			"entity_class": "automation"
+		  "entity_id": "binary_sensor.shellyplusplugit_80646fc994c8_switch_0_overheating",
+		  "state": "off",
+		  "attributes": {},
+		  "device_id": "60eb315bfa05ddf285ce4bf519497d3e",
+		  "services": {},
+		  "friendly_name": "Tv Cucina switch_0 overheating",
+		  "entity_class": "problem"
 		},
 		{
-			"entity_id": "automation.spegni_luce_attiva",
-			"state": "on",
-			"attributes": {
-				"id": "1740485704149",
-				"last_triggered": "2025-02-26T10:01:45.508981+00:00",
-				"mode": "single",
-				"current": 0
-			},
-			"device_id": "None",
-			"services": {
-				"trigger": {
-					"name": "Trigger",
-					"description": "Triggers the actions of an automation.",
-					"fields": {
-						"skip_condition": {
-							"default": true,
-							"selector": {
-								"boolean": null
-							},
-							"name": "Skip conditions",
-							"description": "Defines whether or not the conditions will be skipped."
-						}
-					}
-				},
-				"toggle": {
-					"name": "Toggle",
-					"description": "Toggles (enable / disable) an automation.",
-					"fields": {}
-				},
-				"turn_on": {
-					"name": "Turn on",
-					"description": "Enables an automation.",
-					"fields": {}
-				},
-				"turn_off": {
-					"name": "Turn off",
-					"description": "Disables an automation.",
-					"fields": {
-						"stop_actions": {
-							"default": true,
-							"selector": {
-								"boolean": null
-							},
-							"name": "Stop actions",
-							"description": "Stops currently running actions."
-						}
-					}
-				},
-				"reload": {
-					"name": "Reload",
-					"description": "Reloads the automation configuration.",
-					"fields": {}
-				}
-			},
-			"friendly_name": "Spegni luce attiva",
-			"entity_class": "automation"
+		  "entity_id": "binary_sensor.shellyplusplugit_80646fc994c8_switch_0_overpowering",
+		  "state": "off",
+		  "attributes": {},
+		  "device_id": "60eb315bfa05ddf285ce4bf519497d3e",
+		  "services": {},
+		  "friendly_name": "Tv Cucina switch_0 overpowering",
+		  "entity_class": "problem"
 		},
 		{
-			"entity_id": "media_player.test",
-			"state": "unavailable",
-			"attributes": {
-				"restored": true,
-				"supported_features": 131968
-			},
-			"device_id": "8cd1e3328e88ccd5ef0f03e2eac04a59",
-			"services": {
-				"turn_on": {
-					"name": "Turn on",
-					"description": "Turns on the power of the media player.",
-					"fields": {}
-				},
-				"turn_off": {
-					"name": "Turn off",
-					"description": "Turns off the power of the media player.",
-					"fields": {}
-				},
-				"play_media": {
-					"name": "Play media",
-					"description": "Starts playing specified media.",
-					"fields": {
-						"media_content_id": {
-							"required": true,
-							"example": "https://home-assistant.io/images/cast/splash.png",
-							"selector": {
-								"text": null
-							},
-							"name": "Content ID",
-							"description": "The ID of the content to play. Platform dependent."
-						},
-						"media_content_type": {
-							"required": true,
-							"example": "music",
-							"selector": {
-								"text": null
-							},
-							"name": "Content type",
-							"description": "The type of the content to play. Such as image, music, tv show, video, episode, channel, or playlist."
-						},
-						"enqueue": {
-							"filter": {
-								"supported_features": [
-									2097152
-								]
-							},
-							"required": false,
-							"selector": {
-								"select": {
-									"options": [
-										"play",
-										"next",
-										"add",
-										"replace"
-									],
-									"translation_key": "enqueue"
-								}
-							},
-							"name": "Enqueue",
-							"description": "If the content should be played now or be added to the queue."
-						},
-						"announce": {
-							"filter": {
-								"supported_features": [
-									1048576
-								]
-							},
-							"required": false,
-							"example": "true",
-							"selector": {
-								"boolean": null
-							},
-							"name": "Announce",
-							"description": "If the media should be played as an announcement."
-						}
-					}
-				}
-			},
-			"friendly_name": "Google Home Mini",
-			"entity_class": "speaker"
+		  "entity_id": "binary_sensor.shellyplusplugit_80646fc994c8_switch_0_overvoltage",
+		  "state": "off",
+		  "attributes": {},
+		  "device_id": "60eb315bfa05ddf285ce4bf519497d3e",
+		  "services": {},
+		  "friendly_name": "Tv Cucina switch_0 overvoltage",
+		  "entity_class": "problem"
 		},
 		{
-			"entity_id": "media_player.lg_webos_tv_oled55g26la",
-			"state": "off",
-			"attributes": {
-				"supported_features": 152461
+		  "entity_id": "binary_sensor.shellyplusplugit_80646fc994c8_switch_0_overcurrent",
+		  "state": "off",
+		  "attributes": {},
+		  "device_id": "60eb315bfa05ddf285ce4bf519497d3e",
+		  "services": {},
+		  "friendly_name": "shellyplusplugit-80646fc994c8 Switch 0 overcurrent",
+		  "entity_class": "problem"
+		},
+		{
+		  "entity_id": "sensor.shellyplusplugit_80646fc994c8_switch_0_power",
+		  "state": "0.0",
+		  "attributes": {
+			"state_class": "measurement"
+		  },
+		  "device_id": "60eb315bfa05ddf285ce4bf519497d3e",
+		  "services": {},
+		  "friendly_name": "Tv Cucina switch_0 power",
+		  "unit_of_measurement": "W",
+		  "entity_class": "power"
+		},
+		{
+		  "entity_id": "sensor.shellyplusplugit_80646fc994c8_switch_0_energy",
+		  "state": "48819.91",
+		  "attributes": {
+			"state_class": "total_increasing"
+		  },
+		  "device_id": "60eb315bfa05ddf285ce4bf519497d3e",
+		  "services": {},
+		  "friendly_name": "Tv Cucina switch_0 energy",
+		  "unit_of_measurement": "Wh",
+		  "entity_class": "energy"
+		},
+		{
+		  "entity_id": "switch.shellyplusplugit_80646fc994c8_switch_0",
+		  "state": "on",
+		  "attributes": {
+			"icon": "mdi:television"
+		  },
+		  "device_id": "60eb315bfa05ddf285ce4bf519497d3e",
+		  "services": {
+			"turn_off": {
+			  "name": "Turn off",
+			  "description": "Turns a switch off.",
+			  "fields": {}
 			},
-			"device_id": "21d5e1589f7b5d08af0d2fbe86900ecc",
-			"services": {
-				"turn_on": {
-					"name": "Turn on",
-					"description": "Turns on the power of the media player.",
-					"fields": {}
-				},
-				"turn_off": {
-					"name": "Turn off",
-					"description": "Turns off the power of the media player.",
-					"fields": {}
-				},
-				"volume_up": {
-					"name": "Turn up volume",
-					"description": "Turns up the volume.",
-					"fields": {}
-				},
-				"volume_down": {
-					"name": "Turn down volume",
-					"description": "Turns down the volume.",
-					"fields": {}
-				},
-				"media_play": {
-					"name": "Play",
-					"description": "Starts playing.",
-					"fields": {}
-				},
-				"media_pause": {
-					"name": "Pause",
-					"description": "Pauses.",
-					"fields": {}
-				},
-				"media_stop": {
-					"name": "Stop",
-					"description": "Stops playing.",
-					"fields": {}
-				},
-				"volume_set": {
-					"name": "Set volume",
-					"description": "Sets the volume level.",
-					"fields": {
-						"volume_level": {
-							"required": true,
-							"selector": {
-								"number": {
-									"min": 0,
-									"max": 1,
-									"step": 0.01
-								}
-							},
-							"name": "Level",
-							"description": "The volume. 0 is inaudible, 1 is the maximum volume."
-						}
+			"turn_on": {
+			  "name": "Turn on",
+			  "description": "Turns a switch on.",
+			  "fields": {}
+			},
+			"toggle": {
+			  "name": "Toggle",
+			  "description": "Toggles a switch on/off.",
+			  "fields": {}
+			}
+		  },
+		  "friendly_name": "Tv Cucina switch_0",
+		  "entity_class": "switch"
+		},
+		{
+		  "entity_id": "media_player.tv_sala",
+		  "state": "on",
+		  "attributes": {
+			"source_list": [
+			  "Amazon Alexa",
+			  "Apple TV",
+			  "Apps",
+			  "Browser Web",
+			  "Disney+",
+			  "Fotocamera",
+			  "HDMI 1",
+			  "HDMI 2",
+			  "HDMI 3",
+			  "HDMI 4",
+			  "Home Hub",
+			  "LG Channels",
+			  "LG Gaming Portal",
+			  "LG Movies & TV",
+			  "Lettore Multimediale",
+			  "Live TV",
+			  "Mediaset Infinity",
+			  "NOW",
+			  "Netflix",
+			  "Prime Video",
+			  "Pronto all'Uso",
+			  "RaiPlay",
+			  "Rakuten TV",
+			  "Sport",
+			  "YouTube"
+			],
+			"volume_level": 0.12,
+			"is_volume_muted": false,
+			"source": "Pronto all'Uso",
+			"sound_output": "tv_external_speaker",
+			"supported_features": 24381
+		  },
+		  "device_id": "03693bc2884b932931228261a1972360",
+		  "services": {
+			"turn_off": {
+			  "name": "Turn off",
+			  "description": "Turns off the power of the media player.",
+			  "fields": {}
+			},
+			"volume_up": {
+			  "name": "Turn up volume",
+			  "description": "Turns up the volume.",
+			  "fields": {}
+			},
+			"volume_down": {
+			  "name": "Turn down volume",
+			  "description": "Turns down the volume.",
+			  "fields": {}
+			},
+			"media_play": {
+			  "name": "Play",
+			  "description": "Starts playing.",
+			  "fields": {}
+			},
+			"media_pause": {
+			  "name": "Pause",
+			  "description": "Pauses.",
+			  "fields": {}
+			},
+			"media_stop": {
+			  "name": "Stop",
+			  "description": "Stops playing.",
+			  "fields": {}
+			},
+			"media_next_track": {
+			  "name": "Next",
+			  "description": "Selects the next track.",
+			  "fields": {}
+			},
+			"media_previous_track": {
+			  "name": "Previous",
+			  "description": "Selects the previous track.",
+			  "fields": {}
+			},
+			"volume_set": {
+			  "name": "Set volume",
+			  "description": "Sets the volume level.",
+			  "fields": {
+				"volume_level": {
+				  "required": true,
+				  "selector": {
+					"number": {
+					  "min": 0,
+					  "max": 1,
+					  "step": 0.01
 					}
-				},
-				"volume_mute": {
-					"name": "Mute/unmute volume",
-					"description": "Mutes or unmutes the media player.",
-					"fields": {
-						"is_volume_muted": {
-							"required": true,
-							"selector": {
-								"boolean": null
-							},
-							"name": "Muted",
-							"description": "Defines whether or not it is muted."
-						}
-					}
-				},
-				"play_media": {
-					"name": "Play media",
-					"description": "Starts playing specified media.",
-					"fields": {
-						"media_content_id": {
-							"required": true,
-							"example": "https://home-assistant.io/images/cast/splash.png",
-							"selector": {
-								"text": null
-							},
-							"name": "Content ID",
-							"description": "The ID of the content to play. Platform dependent."
-						},
-						"media_content_type": {
-							"required": true,
-							"example": "music",
-							"selector": {
-								"text": null
-							},
-							"name": "Content type",
-							"description": "The type of the content to play. Such as image, music, tv show, video, episode, channel, or playlist."
-						},
-						"enqueue": {
-							"filter": {
-								"supported_features": [
-									2097152
-								]
-							},
-							"required": false,
-							"selector": {
-								"select": {
-									"options": [
-										"play",
-										"next",
-										"add",
-										"replace"
-									],
-									"translation_key": "enqueue"
-								}
-							},
-							"name": "Enqueue",
-							"description": "If the content should be played now or be added to the queue."
-						},
-						"announce": {
-							"filter": {
-								"supported_features": [
-									1048576
-								]
-							},
-							"required": false,
-							"example": "true",
-							"selector": {
-								"boolean": null
-							},
-							"name": "Announce",
-							"description": "If the media should be played as an announcement."
-						}
-					}
+				  },
+				  "name": "Level",
+				  "description": "The volume. 0 is inaudible, 1 is the maximum volume."
 				}
+			  }
 			},
-			"friendly_name": "[LG] webOS TV OLED55G26LA",
-			"entity_class": "media_player"
+			"volume_mute": {
+			  "name": "Mute/unmute volume",
+			  "description": "Mutes or unmutes the media player.",
+			  "fields": {
+				"is_volume_muted": {
+				  "required": true,
+				  "selector": {
+					"boolean": null
+				  },
+				  "name": "Muted",
+				  "description": "Defines whether or not it is muted."
+				}
+			  }
+			},
+			"select_source": {
+			  "name": "Select source",
+			  "description": "Sends the media player the command to change input source.",
+			  "fields": {
+				"source": {
+				  "required": true,
+				  "example": "video1",
+				  "selector": {
+					"text": null
+				  },
+				  "name": "Source",
+				  "description": "Name of the source to switch to. Platform dependent."
+				}
+			  }
+			},
+			"play_media": {
+			  "name": "Play media",
+			  "description": "Starts playing specified media.",
+			  "fields": {
+				"media_content_id": {
+				  "required": true,
+				  "example": "https://home-assistant.io/images/cast/splash.png",
+				  "selector": {
+					"text": null
+				  },
+				  "name": "Content ID",
+				  "description": "The ID of the content to play. Platform dependent."
+				},
+				"media_content_type": {
+				  "required": true,
+				  "example": "music",
+				  "selector": {
+					"text": null
+				  },
+				  "name": "Content type",
+				  "description": "The type of the content to play. Such as image, music, tv show, video, episode, channel, or playlist."
+				},
+				"enqueue": {
+				  "filter": {
+					"supported_features": [
+					  2097152
+					]
+				  },
+				  "required": false,
+				  "selector": {
+					"select": {
+					  "options": [
+						"play",
+						"next",
+						"add",
+						"replace"
+					  ],
+					  "translation_key": "enqueue"
+					}
+				  },
+				  "name": "Enqueue",
+				  "description": "If the content should be played now or be added to the queue."
+				},
+				"announce": {
+				  "filter": {
+					"supported_features": [
+					  1048576
+					]
+				  },
+				  "required": false,
+				  "example": "true",
+				  "selector": {
+					"boolean": null
+				  },
+				  "name": "Announce",
+				  "description": "If the media should be played as an announcement."
+				}
+			  }
+			}
+		  },
+		  "friendly_name": "Tv Sala",
+		  "entity_class": "tv"
+		},
+		{
+		  "entity_id": "todo.lista_della_spesa",
+		  "state": "0",
+		  "attributes": {
+			"supported_features": 15
+		  },
+		  "device_id": "None",
+		  "services": {
+			"add_item": {
+			  "name": "Add item",
+			  "description": "Adds a new to-do list item.",
+			  "fields": {
+				"item": {
+				  "required": true,
+				  "example": "Submit income tax return",
+				  "selector": {
+					"text": null
+				  },
+				  "name": "Item name",
+				  "description": "The name that represents the to-do item."
+				},
+				"due_date": {
+				  "filter": {
+					"supported_features": [
+					  16
+					]
+				  },
+				  "example": "2023-11-17",
+				  "selector": {
+					"date": null
+				  },
+				  "name": "Due date",
+				  "description": "The date the to-do item is expected to be completed."
+				},
+				"due_datetime": {
+				  "filter": {
+					"supported_features": [
+					  32
+					]
+				  },
+				  "example": "2023-11-17 13:30:00",
+				  "selector": {
+					"datetime": null
+				  },
+				  "name": "Due date and time",
+				  "description": "The date and time the to-do item is expected to be completed."
+				},
+				"description": {
+				  "filter": {
+					"supported_features": [
+					  64
+					]
+				  },
+				  "example": "A more complete description of the to-do item than that provided by the summary.",
+				  "selector": {
+					"text": null
+				  },
+				  "name": "Description",
+				  "description": "A more complete description of the to-do item than provided by the item name."
+				}
+			  }
+			},
+			"update_item": {
+			  "name": "Update item",
+			  "description": "Updates an existing to-do list item based on its name.",
+			  "fields": {
+				"item": {
+				  "required": true,
+				  "example": "Submit income tax return",
+				  "selector": {
+					"text": null
+				  },
+				  "name": "Item name",
+				  "description": "The current name of the to-do item."
+				},
+				"rename": {
+				  "example": "Something else",
+				  "selector": {
+					"text": null
+				  },
+				  "name": "Rename item",
+				  "description": "The new name for the to-do item"
+				},
+				"status": {
+				  "example": "needs_action",
+				  "selector": {
+					"select": {
+					  "translation_key": "status",
+					  "options": [
+						"needs_action",
+						"completed"
+					  ]
+					}
+				  },
+				  "name": "Set status",
+				  "description": "A status or confirmation of the to-do item."
+				},
+				"due_date": {
+				  "filter": {
+					"supported_features": [
+					  16
+					]
+				  },
+				  "example": "2023-11-17",
+				  "selector": {
+					"date": null
+				  },
+				  "name": "Due date",
+				  "description": "The date the to-do item is expected to be completed."
+				},
+				"due_datetime": {
+				  "filter": {
+					"supported_features": [
+					  32
+					]
+				  },
+				  "example": "2023-11-17 13:30:00",
+				  "selector": {
+					"datetime": null
+				  },
+				  "name": "Due date and time",
+				  "description": "The date and time the to-do item is expected to be completed."
+				},
+				"description": {
+				  "filter": {
+					"supported_features": [
+					  64
+					]
+				  },
+				  "example": "A more complete description of the to-do item than that provided by the summary.",
+				  "selector": {
+					"text": null
+				  },
+				  "name": "Description",
+				  "description": "A more complete description of the to-do item than provided by the item name."
+				}
+			  }
+			},
+			"remove_item": {
+			  "name": "Remove item",
+			  "description": "Removes an existing to-do list item by its name.",
+			  "fields": {
+				"item": {
+				  "required": true,
+				  "selector": {
+					"text": null
+				  },
+				  "name": "Item name",
+				  "description": "The name for the to-do list item."
+				}
+			  }
+			},
+			"get_items": {
+			  "name": "Get items",
+			  "description": "Gets items on a to-do list.",
+			  "fields": {
+				"status": {
+				  "example": "needs_action",
+				  "default": "needs_action",
+				  "selector": {
+					"select": {
+					  "translation_key": "status",
+					  "options": [
+						"needs_action",
+						"completed"
+					  ],
+					  "multiple": true
+					}
+				  },
+				  "name": "Status",
+				  "description": "Only return to-do items with the specified statuses. Returns not completed actions by default."
+				}
+			  },
+			  "response": {
+				"optional": false
+			  }
+			},
+			"remove_completed_items": {
+			  "name": "Remove completed items",
+			  "description": "Removes all to-do list items that have been completed.",
+			  "fields": {}
+			}
+		  },
+		  "friendly_name": "Lista della Spesa",
+		  "entity_class": "todo"
+		},
+		{
+		  "entity_id": "tts.google_en_com",
+		  "state": "2024-12-05T12:47:28.650476+00:00",
+		  "attributes": {},
+		  "device_id": "None",
+		  "services": {
+			"speak": {
+			  "name": "Speak",
+			  "description": "Speaks something using text-to-speech on a media player.",
+			  "fields": {
+				"media_player_entity_id": {
+				  "required": true,
+				  "selector": {
+					"entity": {
+					  "domain": "media_player"
+					}
+				  },
+				  "name": "Media player entity",
+				  "description": "Media players to play the message."
+				},
+				"message": {
+				  "example": "My name is hanna",
+				  "required": true,
+				  "selector": {
+					"text": null
+				  },
+				  "name": "Message",
+				  "description": "The text you want to convert into speech so that you can listen to it on your device."
+				},
+				"cache": {
+				  "default": true,
+				  "selector": {
+					"boolean": null
+				  },
+				  "name": "Cache",
+				  "description": "Stores this message locally so that when the text is requested again, the output can be produced more quickly."
+				},
+				"language": {
+				  "example": "ru",
+				  "selector": {
+					"text": null
+				  },
+				  "name": "Language",
+				  "description": "Language to use for speech generation."
+				},
+				"options": {
+				  "advanced": true,
+				  "example": "platform specific",
+				  "selector": {
+					"object": null
+				  },
+				  "name": "Options",
+				  "description": "A dictionary containing integration-specific options."
+				}
+			  }
+			},
+			"clear_cache": {
+			  "name": "Clear TTS cache",
+			  "description": "Removes all cached text-to-speech files and purges the memory.",
+			  "fields": {}
+			},
+			"cloud_say": {
+			  "name": "Say a TTS message with cloud",
+			  "description": "Say something using text-to-speech on a media player with cloud.",
+			  "fields": {
+				"entity_id": {
+				  "required": true,
+				  "selector": {
+					"entity": {
+					  "domain": "media_player"
+					}
+				  }
+				},
+				"message": {
+				  "example": "My name is hanna",
+				  "required": true,
+				  "selector": {
+					"text": null
+				  }
+				},
+				"cache": {
+				  "default": false,
+				  "selector": {
+					"boolean": null
+				  }
+				},
+				"language": {
+				  "example": "ru",
+				  "selector": {
+					"text": null
+				  }
+				},
+				"options": {
+				  "advanced": true,
+				  "example": "platform specific",
+				  "selector": {
+					"object": null
+				  }
+				}
+			  }
+			}
+		  },
+		  "friendly_name": "Google Translate en com",
+		  "entity_class": "tts"
+		},
+		{
+		  "entity_id": "weather.forecast_home",
+		  "state": "cloudy",
+		  "attributes": {
+			"temperature": 15.9,
+			"dew_point": 12.9,
+			"temperature_unit": "°C",
+			"humidity": 82,
+			"cloud_coverage": 100,
+			"uv_index": 3.9,
+			"pressure": 1013.8,
+			"pressure_unit": "hPa",
+			"wind_bearing": 181.3,
+			"wind_speed": 4.3,
+			"wind_speed_unit": "km/h",
+			"visibility_unit": "km",
+			"precipitation_unit": "mm",
+			"attribution": "Weather forecast from met.no, delivered by the Norwegian Meteorological Institute.",
+			"supported_features": 3
+		  },
+		  "device_id": "8d77325c13d4ba23aa7c68ebbbda80b4",
+		  "services": {
+			"get_forecasts": {
+			  "name": "Get forecasts",
+			  "description": "Get weather forecasts.",
+			  "fields": {
+				"type": {
+				  "required": true,
+				  "selector": {
+					"select": {
+					  "options": [
+						"daily",
+						"hourly",
+						"twice_daily"
+					  ],
+					  "translation_key": "forecast_type"
+					}
+				  },
+				  "name": "Forecast type",
+				  "description": "Forecast type: daily, hourly or twice daily."
+				}
+			  },
+			  "response": {
+				"optional": false
+			  }
+			}
+		  },
+		  "friendly_name": "Forecast Home",
+		  "entity_class": "weather"
+		},
+		{
+		  "entity_id": "event.shelly_blu_button1_bbab_button",
+		  "state": "2024-11-10T20:09:44.682+00:00",
+		  "attributes": {
+			"event_types": [
+			  "press",
+			  "double_press",
+			  "triple_press",
+			  "long_press",
+			  "long_double_press",
+			  "long_triple_press"
+			],
+			"event_type": "press"
+		  },
+		  "device_id": "893d6954dd2779cf1e402d47cf5be7e7",
+		  "services": {},
+		  "friendly_name": "Shelly BLU Button1 BBAB Button",
+		  "entity_class": "button"
+		},
+		{
+		  "entity_id": "sensor.shelly_blu_button1_bbab_battery",
+		  "state": "100",
+		  "attributes": {
+			"state_class": "measurement"
+		  },
+		  "device_id": "893d6954dd2779cf1e402d47cf5be7e7",
+		  "services": {},
+		  "friendly_name": "Shelly BLU Button1 BBAB Battery",
+		  "unit_of_measurement": "%",
+		  "entity_class": "battery"
+		},
+		{
+		  "entity_id": "automation.automazione_media_player",
+		  "state": "off",
+		  "attributes": {
+			"id": "1725286989727",
+			"last_triggered": null,
+			"mode": "single",
+			"current": 0
+		  },
+		  "device_id": "None",
+		  "services": {
+			"trigger": {
+			  "name": "Trigger",
+			  "description": "Triggers the actions of an automation.",
+			  "fields": {
+				"skip_condition": {
+				  "default": true,
+				  "selector": {
+					"boolean": null
+				  },
+				  "name": "Skip conditions",
+				  "description": "Defines whether or not the conditions will be skipped."
+				}
+			  }
+			},
+			"toggle": {
+			  "name": "Toggle",
+			  "description": "Toggles (enable / disable) an automation.",
+			  "fields": {}
+			},
+			"turn_on": {
+			  "name": "Turn on",
+			  "description": "Enables an automation.",
+			  "fields": {}
+			},
+			"turn_off": {
+			  "name": "Turn off",
+			  "description": "Disables an automation.",
+			  "fields": {
+				"stop_actions": {
+				  "default": true,
+				  "selector": {
+					"boolean": null
+				  },
+				  "name": "Stop actions",
+				  "description": "Stops currently running actions."
+				}
+			  }
+			},
+			"reload": {
+			  "name": "Reload",
+			  "description": "Reloads the automation configuration.",
+			  "fields": {}
+			}
+		  },
+		  "friendly_name": "automazione media player",
+		  "entity_class": "automation"
+		},
+		{
+		  "entity_id": "automation.automazione_ricorrenza_temporale",
+		  "state": "off",
+		  "attributes": {
+			"id": "1727252339602",
+			"last_triggered": null,
+			"mode": "single",
+			"current": 0
+		  },
+		  "device_id": "None",
+		  "services": {
+			"trigger": {
+			  "name": "Trigger",
+			  "description": "Triggers the actions of an automation.",
+			  "fields": {
+				"skip_condition": {
+				  "default": true,
+				  "selector": {
+					"boolean": null
+				  },
+				  "name": "Skip conditions",
+				  "description": "Defines whether or not the conditions will be skipped."
+				}
+			  }
+			},
+			"toggle": {
+			  "name": "Toggle",
+			  "description": "Toggles (enable / disable) an automation.",
+			  "fields": {}
+			},
+			"turn_on": {
+			  "name": "Turn on",
+			  "description": "Enables an automation.",
+			  "fields": {}
+			},
+			"turn_off": {
+			  "name": "Turn off",
+			  "description": "Disables an automation.",
+			  "fields": {
+				"stop_actions": {
+				  "default": true,
+				  "selector": {
+					"boolean": null
+				  },
+				  "name": "Stop actions",
+				  "description": "Stops currently running actions."
+				}
+			  }
+			},
+			"reload": {
+			  "name": "Reload",
+			  "description": "Reloads the automation configuration.",
+			  "fields": {}
+			}
+		  },
+		  "friendly_name": "Automazione ricorrenza temporale",
+		  "entity_class": "automation"
+		},
+		{
+		  "entity_id": "automation.disattiva_pc_la_notte",
+		  "state": "on",
+		  "attributes": {
+			"id": "1738493084329",
+			"last_triggered": "2025-04-14T00:00:00.166328+00:00",
+			"mode": "single",
+			"current": 0
+		  },
+		  "device_id": "None",
+		  "services": {
+			"trigger": {
+			  "name": "Trigger",
+			  "description": "Triggers the actions of an automation.",
+			  "fields": {
+				"skip_condition": {
+				  "default": true,
+				  "selector": {
+					"boolean": null
+				  },
+				  "name": "Skip conditions",
+				  "description": "Defines whether or not the conditions will be skipped."
+				}
+			  }
+			},
+			"toggle": {
+			  "name": "Toggle",
+			  "description": "Toggles (enable / disable) an automation.",
+			  "fields": {}
+			},
+			"turn_on": {
+			  "name": "Turn on",
+			  "description": "Enables an automation.",
+			  "fields": {}
+			},
+			"turn_off": {
+			  "name": "Turn off",
+			  "description": "Disables an automation.",
+			  "fields": {
+				"stop_actions": {
+				  "default": true,
+				  "selector": {
+					"boolean": null
+				  },
+				  "name": "Stop actions",
+				  "description": "Stops currently running actions."
+				}
+			  }
+			},
+			"reload": {
+			  "name": "Reload",
+			  "description": "Reloads the automation configuration.",
+			  "fields": {}
+			}
+		  },
+		  "friendly_name": "Turn off pc at night",
+		  "entity_class": "automation"
+		},
+		{
+		  "entity_id": "automation.spegni_luce_attiva",
+		  "state": "on",
+		  "attributes": {
+			"id": "1740485704149",
+			"last_triggered": "2025-04-14T09:49:32.041949+00:00",
+			"mode": "single",
+			"current": 0
+		  },
+		  "device_id": "None",
+		  "services": {
+			"trigger": {
+			  "name": "Trigger",
+			  "description": "Triggers the actions of an automation.",
+			  "fields": {
+				"skip_condition": {
+				  "default": true,
+				  "selector": {
+					"boolean": null
+				  },
+				  "name": "Skip conditions",
+				  "description": "Defines whether or not the conditions will be skipped."
+				}
+			  }
+			},
+			"toggle": {
+			  "name": "Toggle",
+			  "description": "Toggles (enable / disable) an automation.",
+			  "fields": {}
+			},
+			"turn_on": {
+			  "name": "Turn on",
+			  "description": "Enables an automation.",
+			  "fields": {}
+			},
+			"turn_off": {
+			  "name": "Turn off",
+			  "description": "Disables an automation.",
+			  "fields": {
+				"stop_actions": {
+				  "default": true,
+				  "selector": {
+					"boolean": null
+				  },
+				  "name": "Stop actions",
+				  "description": "Stops currently running actions."
+				}
+			  }
+			},
+			"reload": {
+			  "name": "Reload",
+			  "description": "Reloads the automation configuration.",
+			  "fields": {}
+			}
+		  },
+		  "friendly_name": "Spegni luce attiva",
+		  "entity_class": "automation"
+		},
+		{
+		  "entity_id": "media_player.test",
+		  "state": "unavailable",
+		  "attributes": {
+			"restored": true,
+			"supported_features": 131968
+		  },
+		  "device_id": "8cd1e3328e88ccd5ef0f03e2eac04a59",
+		  "services": {
+			"turn_on": {
+			  "name": "Turn on",
+			  "description": "Turns on the power of the media player.",
+			  "fields": {}
+			},
+			"turn_off": {
+			  "name": "Turn off",
+			  "description": "Turns off the power of the media player.",
+			  "fields": {}
+			},
+			"play_media": {
+			  "name": "Play media",
+			  "description": "Starts playing specified media.",
+			  "fields": {
+				"media_content_id": {
+				  "required": true,
+				  "example": "https://home-assistant.io/images/cast/splash.png",
+				  "selector": {
+					"text": null
+				  },
+				  "name": "Content ID",
+				  "description": "The ID of the content to play. Platform dependent."
+				},
+				"media_content_type": {
+				  "required": true,
+				  "example": "music",
+				  "selector": {
+					"text": null
+				  },
+				  "name": "Content type",
+				  "description": "The type of the content to play. Such as image, music, tv show, video, episode, channel, or playlist."
+				},
+				"enqueue": {
+				  "filter": {
+					"supported_features": [
+					  2097152
+					]
+				  },
+				  "required": false,
+				  "selector": {
+					"select": {
+					  "options": [
+						"play",
+						"next",
+						"add",
+						"replace"
+					  ],
+					  "translation_key": "enqueue"
+					}
+				  },
+				  "name": "Enqueue",
+				  "description": "If the content should be played now or be added to the queue."
+				},
+				"announce": {
+				  "filter": {
+					"supported_features": [
+					  1048576
+					]
+				  },
+				  "required": false,
+				  "example": "true",
+				  "selector": {
+					"boolean": null
+				  },
+				  "name": "Announce",
+				  "description": "If the media should be played as an announcement."
+				}
+			  }
+			}
+		  },
+		  "friendly_name": "Google Home Mini",
+		  "entity_class": "speaker"
+		},
+		{
+		  "entity_id": "media_player.lg_webos_tv_oled55g26la",
+		  "state": "paused",
+		  "attributes": {
+			"volume_level": 0.11999999731779099,
+			"is_volume_muted": false,
+			"media_content_id": "https://www.home-assistant.io/images/cast/splash.png",
+			"media_content_type": "video",
+			"media_duration": 0,
+			"media_position": 0,
+			"media_position_updated_at": "2025-04-14T10:03:12.220507+00:00",
+			"app_id": "CC1AD845",
+			"app_name": "Default Media Receiver",
+			"entity_picture_local": null,
+			"supported_features": 152463
+		  },
+		  "device_id": "21d5e1589f7b5d08af0d2fbe86900ecc",
+		  "services": {
+			"turn_on": {
+			  "name": "Turn on",
+			  "description": "Turns on the power of the media player.",
+			  "fields": {}
+			},
+			"turn_off": {
+			  "name": "Turn off",
+			  "description": "Turns off the power of the media player.",
+			  "fields": {}
+			},
+			"volume_up": {
+			  "name": "Turn up volume",
+			  "description": "Turns up the volume.",
+			  "fields": {}
+			},
+			"volume_down": {
+			  "name": "Turn down volume",
+			  "description": "Turns down the volume.",
+			  "fields": {}
+			},
+			"media_play": {
+			  "name": "Play",
+			  "description": "Starts playing.",
+			  "fields": {}
+			},
+			"media_pause": {
+			  "name": "Pause",
+			  "description": "Pauses.",
+			  "fields": {}
+			},
+			"media_stop": {
+			  "name": "Stop",
+			  "description": "Stops playing.",
+			  "fields": {}
+			},
+			"volume_set": {
+			  "name": "Set volume",
+			  "description": "Sets the volume level.",
+			  "fields": {
+				"volume_level": {
+				  "required": true,
+				  "selector": {
+					"number": {
+					  "min": 0,
+					  "max": 1,
+					  "step": 0.01
+					}
+				  },
+				  "name": "Level",
+				  "description": "The volume. 0 is inaudible, 1 is the maximum volume."
+				}
+			  }
+			},
+			"volume_mute": {
+			  "name": "Mute/unmute volume",
+			  "description": "Mutes or unmutes the media player.",
+			  "fields": {
+				"is_volume_muted": {
+				  "required": true,
+				  "selector": {
+					"boolean": null
+				  },
+				  "name": "Muted",
+				  "description": "Defines whether or not it is muted."
+				}
+			  }
+			},
+			"media_seek": {
+			  "name": "Seek",
+			  "description": "Allows you to go to a different part of the media that is currently playing.",
+			  "fields": {
+				"seek_position": {
+				  "required": true,
+				  "selector": {
+					"number": {
+					  "min": 0,
+					  "max": 9223372036854776000,
+					  "step": 0.01,
+					  "mode": "box"
+					}
+				  },
+				  "name": "Position",
+				  "description": "Target position in the currently playing media. The format is platform dependent."
+				}
+			  }
+			},
+			"play_media": {
+			  "name": "Play media",
+			  "description": "Starts playing specified media.",
+			  "fields": {
+				"media_content_id": {
+				  "required": true,
+				  "example": "https://home-assistant.io/images/cast/splash.png",
+				  "selector": {
+					"text": null
+				  },
+				  "name": "Content ID",
+				  "description": "The ID of the content to play. Platform dependent."
+				},
+				"media_content_type": {
+				  "required": true,
+				  "example": "music",
+				  "selector": {
+					"text": null
+				  },
+				  "name": "Content type",
+				  "description": "The type of the content to play. Such as image, music, tv show, video, episode, channel, or playlist."
+				},
+				"enqueue": {
+				  "filter": {
+					"supported_features": [
+					  2097152
+					]
+				  },
+				  "required": false,
+				  "selector": {
+					"select": {
+					  "options": [
+						"play",
+						"next",
+						"add",
+						"replace"
+					  ],
+					  "translation_key": "enqueue"
+					}
+				  },
+				  "name": "Enqueue",
+				  "description": "If the content should be played now or be added to the queue."
+				},
+				"announce": {
+				  "filter": {
+					"supported_features": [
+					  1048576
+					]
+				  },
+				  "required": false,
+				  "example": "true",
+				  "selector": {
+					"boolean": null
+				  },
+				  "name": "Announce",
+				  "description": "If the media should be played as an announcement."
+				}
+			  }
+			}
+		  },
+		  "friendly_name": "[LG] webOS TV OLED55G26LA",
+		  "entity_class": "media_player"
+		},
+		{
+		  "entity_id": "automation.automazione_senza_trigger",
+		  "state": "off",
+		  "attributes": {
+			"id": "1744203982881",
+			"last_triggered": null,
+			"mode": "single",
+			"current": 0
+		  },
+		  "device_id": "None",
+		  "services": {
+			"trigger": {
+			  "name": "Trigger",
+			  "description": "Triggers the actions of an automation.",
+			  "fields": {
+				"skip_condition": {
+				  "default": true,
+				  "selector": {
+					"boolean": null
+				  },
+				  "name": "Skip conditions",
+				  "description": "Defines whether or not the conditions will be skipped."
+				}
+			  }
+			},
+			"toggle": {
+			  "name": "Toggle",
+			  "description": "Toggles (enable / disable) an automation.",
+			  "fields": {}
+			},
+			"turn_on": {
+			  "name": "Turn on",
+			  "description": "Enables an automation.",
+			  "fields": {}
+			},
+			"turn_off": {
+			  "name": "Turn off",
+			  "description": "Disables an automation.",
+			  "fields": {
+				"stop_actions": {
+				  "default": true,
+				  "selector": {
+					"boolean": null
+				  },
+				  "name": "Stop actions",
+				  "description": "Stops currently running actions."
+				}
+			  }
+			},
+			"reload": {
+			  "name": "Reload",
+			  "description": "Reloads the automation configuration.",
+			  "fields": {}
+			}
+		  },
+		  "friendly_name": "Automazione senza trigger",
+		  "entity_class": "automation"
+		},
+		{
+		  "entity_id": "media_player.lg_webos_tv_oled55g26la_2",
+		  "state": "paused",
+		  "attributes": {
+			"volume_level": 0.11999999731779099,
+			"is_volume_muted": false,
+			"media_content_id": "https://www.home-assistant.io/images/cast/splash.png",
+			"media_content_type": "video",
+			"media_duration": 0,
+			"media_position": 0,
+			"media_position_updated_at": "2025-04-14T10:03:12.220317+00:00",
+			"app_id": "CC1AD845",
+			"app_name": "Default Media Receiver",
+			"entity_picture_local": null,
+			"supported_features": 152463
+		  },
+		  "device_id": "58f91da357fbba01dc1458f074c9b955",
+		  "services": {
+			"turn_on": {
+			  "name": "Turn on",
+			  "description": "Turns on the power of the media player.",
+			  "fields": {}
+			},
+			"turn_off": {
+			  "name": "Turn off",
+			  "description": "Turns off the power of the media player.",
+			  "fields": {}
+			},
+			"volume_up": {
+			  "name": "Turn up volume",
+			  "description": "Turns up the volume.",
+			  "fields": {}
+			},
+			"volume_down": {
+			  "name": "Turn down volume",
+			  "description": "Turns down the volume.",
+			  "fields": {}
+			},
+			"media_play": {
+			  "name": "Play",
+			  "description": "Starts playing.",
+			  "fields": {}
+			},
+			"media_pause": {
+			  "name": "Pause",
+			  "description": "Pauses.",
+			  "fields": {}
+			},
+			"media_stop": {
+			  "name": "Stop",
+			  "description": "Stops playing.",
+			  "fields": {}
+			},
+			"volume_set": {
+			  "name": "Set volume",
+			  "description": "Sets the volume level.",
+			  "fields": {
+				"volume_level": {
+				  "required": true,
+				  "selector": {
+					"number": {
+					  "min": 0,
+					  "max": 1,
+					  "step": 0.01
+					}
+				  },
+				  "name": "Level",
+				  "description": "The volume. 0 is inaudible, 1 is the maximum volume."
+				}
+			  }
+			},
+			"volume_mute": {
+			  "name": "Mute/unmute volume",
+			  "description": "Mutes or unmutes the media player.",
+			  "fields": {
+				"is_volume_muted": {
+				  "required": true,
+				  "selector": {
+					"boolean": null
+				  },
+				  "name": "Muted",
+				  "description": "Defines whether or not it is muted."
+				}
+			  }
+			},
+			"media_seek": {
+			  "name": "Seek",
+			  "description": "Allows you to go to a different part of the media that is currently playing.",
+			  "fields": {
+				"seek_position": {
+				  "required": true,
+				  "selector": {
+					"number": {
+					  "min": 0,
+					  "max": 9223372036854776000,
+					  "step": 0.01,
+					  "mode": "box"
+					}
+				  },
+				  "name": "Position",
+				  "description": "Target position in the currently playing media. The format is platform dependent."
+				}
+			  }
+			},
+			"play_media": {
+			  "name": "Play media",
+			  "description": "Starts playing specified media.",
+			  "fields": {
+				"media_content_id": {
+				  "required": true,
+				  "example": "https://home-assistant.io/images/cast/splash.png",
+				  "selector": {
+					"text": null
+				  },
+				  "name": "Content ID",
+				  "description": "The ID of the content to play. Platform dependent."
+				},
+				"media_content_type": {
+				  "required": true,
+				  "example": "music",
+				  "selector": {
+					"text": null
+				  },
+				  "name": "Content type",
+				  "description": "The type of the content to play. Such as image, music, tv show, video, episode, channel, or playlist."
+				},
+				"enqueue": {
+				  "filter": {
+					"supported_features": [
+					  2097152
+					]
+				  },
+				  "required": false,
+				  "selector": {
+					"select": {
+					  "options": [
+						"play",
+						"next",
+						"add",
+						"replace"
+					  ],
+					  "translation_key": "enqueue"
+					}
+				  },
+				  "name": "Enqueue",
+				  "description": "If the content should be played now or be added to the queue."
+				},
+				"announce": {
+				  "filter": {
+					"supported_features": [
+					  1048576
+					]
+				  },
+				  "required": false,
+				  "example": "true",
+				  "selector": {
+					"boolean": null
+				  },
+				  "name": "Announce",
+				  "description": "If the media should be played as an announcement."
+				}
+			  }
+			}
+		  },
+		  "friendly_name": "[LG] webOS TV OLED55G26LA",
+		  "entity_class": "media_player"
 		}
-	],
-	"automation_context": [
-        {
-            "id": "1725286989727",
-            "alias": "automazione media player",
-            "description": "",
-            "trigger": [
-                {
-                    "platform": "time_pattern",
-                    "hours": "8"
-                }
-            ],
-            "condition": [],
-            "action": [
-                {
-                    "service": "media_player.media_play",
-                    "metadata": {},
-                    "data": {},
-                    "target": {
-                        "device_id": "8cd1e3328e88ccd5ef0f03e2eac04a59"
-                    }
-                }
-            ],
-            "mode": "single",
-            "entity_id": "automation.automazione_media_player",
-            "state": "off"
-        },
-        {
-            "id": "1727252339602",
-            "alias": "Automazione ricorrenza temporale",
-            "description": "",
-            "trigger": [
-                {
-                    "platform": "time_pattern",
-                    "hours": "1",
-                    "minutes": "1",
-                    "seconds": "1"
-                }
-            ],
-            "condition": [],
-            "action": [
-                {
-                    "service": "media_player.media_play",
-                    "metadata": {},
-                    "data": {},
-                    "target": {
-                        "device_id": "8cd1e3328e88ccd5ef0f03e2eac04a59"
-                    }
-                }
-            ],
-            "mode": "single",
-            "entity_id": "automation.automazione_ricorrenza_temporale",
-            "state": "off"
-        },
-        {
-            "id": "1738493084329",
-            "alias": "Turn off pc at night",
-            "description": "",
-            "triggers": [
-                {
-                    "trigger": "time",
-                    "at": "02:00:00"
-                }
-            ],
-            "conditions": [
-                {
-                    "type": "is_power",
-                    "condition": "device",
-                    "device_id": "81faa423066ee532f37f15f1897a699d",
-                    "entity_id": "5f50acf3de22e25c3e2ec6a6e42cbfac",
-                    "domain": "sensor",
-                    "below": 2
-                }
-            ],
-            "actions": [
-                {
-                    "type": "turn_off",
-                    "device_id": "81faa423066ee532f37f15f1897a699d",
-                    "entity_id": "26b6a73bbd32a4dce3c2a05fdd50f40b",
-                    "domain": "switch"
-                }
-            ],
-            "mode": "single",
-            "entity_id": "automation.disattiva_pc_la_notte",
-            "state": "on"
-        },
-        {
-            "id": "1740485704149",
-            "alias": "Spegni luce attiva",
-            "description": "",
-            "triggers": [
-                {
-                    "type": "turned_on",
-                    "device_id": "f5f0c29d9170693dcf446ca8bb049a82",
-                    "entity_id": "c36f6903d22bfcce63f28ae993d5772e",
-                    "domain": "light",
-                    "trigger": "device",
-                    "for": {
-                        "hours": 0,
-                        "minutes": 20,
-                        "seconds": 0
-                    }
-                }
-            ],
-            "conditions": [],
-            "actions": [
-                {
-                    "action": "light.turn_off",
-                    "metadata": {},
-                    "data": {},
-                    "target": {
-                        "device_id": "f5f0c29d9170693dcf446ca8bb049a82"
-                    }
-                }
-            ],
-            "mode": "single",
-            "entity_id": "automation.spegni_luce_attiva",
-            "state": "on"
-        }
-    ]
+	  ],
+	"automation_context":[
+		{
+		  "id": "1725286989727",
+		  "entity_id": "automation.automazione_media_player",
+		  "state": "off",
+		  "description": "",
+		  "trigger": [
+			{
+			  "platform": "time_pattern",
+			  "hours": "8",
+			  "description": "Time pattern-based trigger description"
+			}
+		  ],
+		  "condition": [],
+		  "name": "automazione media player",
+		  "time": "",
+		  "days": [],
+		  "action": [
+			{
+			  "average_power": 5,
+			  "average_power_unit": "W",
+			  "average_duration": 35.31858407079646,
+			  "duration_unit": "min",
+			  "maximum_power": 5,
+			  "device_id": "8cd1e3328e88ccd5ef0f03e2eac04a59",
+			  "state": "playing",
+			  "service": "media_play",
+			  "domain": "media_player",
+			  "description": "Media play Test",
+			  "device_name": "Test",
+			  "data": {}
+			}
+		  ],
+		  "average_power_drawn": 5,
+		  "energy_consumption": 2.9432153392330385,
+		  "monthly_cost": -1,
+		  "maximum_cost_per_run": 0.00035318584070796456,
+		  "minimum_cost_per_run": 0.0002648893805309734,
+		  "suggestions": []
+		},
+		{
+		  "id": "1727252339602",
+		  "entity_id": "automation.automazione_ricorrenza_temporale",
+		  "state": "off",
+		  "description": "",
+		  "trigger": [
+			{
+			  "platform": "time_pattern",
+			  "hours": "1",
+			  "minutes": "1",
+			  "seconds": "1",
+			  "description": "Time pattern-based trigger description"
+			}
+		  ],
+		  "condition": [],
+		  "name": "Automazione ricorrenza temporale",
+		  "time": "",
+		  "days": [],
+		  "action": [
+			{
+			  "average_power": 5,
+			  "average_power_unit": "W",
+			  "average_duration": 35.31858407079646,
+			  "duration_unit": "min",
+			  "maximum_power": 5,
+			  "device_id": "8cd1e3328e88ccd5ef0f03e2eac04a59",
+			  "state": "playing",
+			  "service": "media_play",
+			  "domain": "media_player",
+			  "description": "Media play Test",
+			  "device_name": "Test",
+			  "data": {}
+			}
+		  ],
+		  "average_power_drawn": 5,
+		  "energy_consumption": 2.9432153392330385,
+		  "monthly_cost": -1,
+		  "maximum_cost_per_run": 0.00035318584070796456,
+		  "minimum_cost_per_run": 0.0002648893805309734,
+		  "suggestions": []
+		},
+		{
+		  "id": "1738493084329",
+		  "entity_id": "automation.disattiva_pc_la_notte",
+		  "state": "on",
+		  "description": "",
+		  "trigger": [
+			{
+			  "trigger": "time",
+			  "at": "02:00:00",
+			  "description": "Time is 02:00"
+			}
+		  ],
+		  "condition": [
+			{
+			  "type": "is_power",
+			  "condition": "device",
+			  "device_id": "81faa423066ee532f37f15f1897a699d",
+			  "entity_id": "5f50acf3de22e25c3e2ec6a6e42cbfac",
+			  "domain": "sensor",
+			  "below": 2,
+			  "device_name": "PC Fisso",
+			  "description": "\"PC Fisso\" power is below 2"
+			}
+		  ],
+		  "name": "Turn off pc at night",
+		  "time": "02:00",
+		  "days": [],
+		  "action": [
+			{
+			  "average_power": 0.3044528722905538,
+			  "average_power_unit": "W",
+			  "average_duration": 718.1835205992512,
+			  "duration_unit": "min",
+			  "maximum_power": 2.1,
+			  "device_id": "81faa423066ee532f37f15f1897a699d",
+			  "state": "off",
+			  "service": "turn_off",
+			  "domain": "switch",
+			  "description": "Turn off PC Fisso",
+			  "device_name": "PC Fisso",
+			  "data": null
+			}
+		  ],
+		  "average_power_drawn": 0.3044528722905538,
+		  "energy_consumption": 3.6442172613030688,
+		  "monthly_cost": 0.010404575426238556,
+		  "maximum_cost_per_run": -1,
+		  "minimum_cost_per_run": -1,
+		  "suggestions": []
+		},
+		{
+		  "id": "1740485704149",
+		  "entity_id": "automation.spegni_luce_attiva",
+		  "state": "on",
+		  "description": "",
+		  "trigger": [
+			{
+			  "type": "turned_on",
+			  "device_id": "f5f0c29d9170693dcf446ca8bb049a82",
+			  "entity_id": "c36f6903d22bfcce63f28ae993d5772e",
+			  "domain": "light",
+			  "trigger": "device",
+			  "for": {
+				"hours": 0,
+				"minutes": 20,
+				"seconds": 0
+			  },
+			  "device_name": "shellycolorbulb-485519EE0A6A",
+			  "description": "When \"shellycolorbulb-485519EE0A6A\" is turned on for 20 minutes"
+			}
+		  ],
+		  "condition": [],
+		  "name": "Spegni luce attiva",
+		  "time": "",
+		  "days": [],
+		  "action": [
+			{
+			  "average_power": 0,
+			  "average_power_unit": "W",
+			  "average_duration": 1471.1891891891892,
+			  "duration_unit": "min",
+			  "maximum_power": 0,
+			  "device_id": "f5f0c29d9170693dcf446ca8bb049a82",
+			  "state": "off",
+			  "service": "turn_off",
+			  "domain": "light",
+			  "description": "Turn off shellycolorbulb-485519EE0A6A",
+			  "device_name": "shellycolorbulb-485519EE0A6A",
+			  "data": {}
+			}
+		  ],
+		  "average_power_drawn": 0,
+		  "energy_consumption": 0,
+		  "monthly_cost": -1,
+		  "maximum_cost_per_run": 0,
+		  "minimum_cost_per_run": 0,
+		  "suggestions": []
+		}
+	  ]
 }

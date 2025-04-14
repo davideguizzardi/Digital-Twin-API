@@ -7,7 +7,7 @@ from homeassistant_functions import (
     getDeviceId,
     getDeviceInfo)
 from database_functions import (
-    get_configuration_value_by_key,
+    get_configuration_item_by_key,
     get_usage_entry_for_appliance_state,
     get_all_energy_slots_with_cost,get_minimum_cost_slot,get_minimum_energy_slots,get_maximum_cost_slot
     )
@@ -645,7 +645,7 @@ def getConflicts(device_list, automations_list)->list:
     cumulative_power_array = [value for daily_values in cumulative_power_matrix.values() for value in daily_values]
     
 
-    threshold = get_configuration_value_by_key("power_threshold")
+    threshold = get_configuration_item_by_key("power_threshold")
     threshold = float(threshold["value"]) if threshold else POWER_TRESHOLD_DEFAULT
     conflicts_list = defaultdict(lambda: {"type": Conflict.EXCESSIVE_ENERGY.type, "days": [], "threshold": threshold})
 
@@ -745,7 +745,7 @@ def getExcessivePowerConflicts(cumulative_power_array:list)->list:
     Returns:
         list: A list of conflicts identified.
     """
-    threshold = get_configuration_value_by_key("power_threshold")
+    threshold = get_configuration_item_by_key("power_threshold")
     threshold = float(threshold["value"]) if threshold else POWER_TRESHOLD_DEFAULT
     conflicts_list = defaultdict(lambda: {"type": Conflict.EXCESSIVE_ENERGY.type, "days": [], "threshold": threshold})
 
@@ -788,7 +788,7 @@ def getFeasibilityConflicts(automation):
     The control evaluates the instantaneous power drawn by the automations and compare it to the maximum threshold possible. 
     If such treshold is exceeded, a corresponding conflict is produced
     '''
-    threshold = get_configuration_value_by_key("power_threshold")  
+    threshold = get_configuration_item_by_key("power_threshold")  
     threshold=float(threshold["value"]) if threshold else POWER_TRESHOLD_DEFAULT
 
     automation_power=sum([x.get("maximum_power",0) for x in automation["action"]])
@@ -930,7 +930,7 @@ def getAutomationRouter(enable_demo=False):
     @automation_router.get("")
     def Get_Automations(get_suggestions:bool=False):
         if enable_demo:
-            res={"status_code":200,"data":get_demo_automations()} 
+            return get_demo_automations() 
         else:
             res=getAutomations()
         if res["status_code"]!=200:
@@ -1005,7 +1005,7 @@ def getAutomationRouter(enable_demo=False):
 
             sorted_actions=sorted(automation["action"], key=lambda x: x["average_power"])
 
-            threshold = get_configuration_value_by_key("power_threshold")  
+            threshold = get_configuration_item_by_key("power_threshold")  
             threshold=float(threshold["value"]) if threshold else POWER_TRESHOLD_DEFAULT
 
             split_actions=[[]]
