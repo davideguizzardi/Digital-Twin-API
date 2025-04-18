@@ -8,7 +8,8 @@ from database_functions import (
     get_energy_slot_by_day,get_all_energy_slots,add_energy_slots,delete_energy_slots,
     get_all_user_preferences,add_user_preferences,get_user_preferences_by_user,delete_user_preferences_by_user,
     get_all_user_privacy_settings,add_user_privacy_settings,get_user_privacy_settings_by_user,
-    add_devices_configuration,get_all_devices_configuration,get_configuration_of_device
+    add_devices_configuration,get_all_devices_configuration,get_configuration_of_device,
+    get_all_rooms_configuration,add_rooms_configuration,delete_rooms_in_floor,delete_single_room,get_all_rooms_of_floor,get_single_room_by_name
     )
 from schemas import (
     Operation_Out,Map_Entity_List,
@@ -16,7 +17,8 @@ from schemas import (
     Configuration_Value_List,Energy_Plan_Calendar,
     User_Preference_List,User_Privacy_List,
     Home_Assistant_Configuration,
-    Device_Configuration_List
+    Device_Configuration_List,
+    Room_Configuration_List
     )
 
 from homeassistant_functions import setHomeAssistantConfiguration,getHomeAssistantConfiguration
@@ -219,4 +221,30 @@ def getDeviceConfigurationRouter():
         return {"success":add_devices_configuration([tuple(d.__dict__.values()) for d in entities_list.data])}
     
     return device_configuration_router
+#endregion
+
+
+#region Room_Configuration
+
+def getRoomConfigurationRouter():
+    room_configuration_router=APIRouter(tags=["Room configuration"],prefix="/room")
+
+    @room_configuration_router.get("")
+    def Get_All_Rooms():
+        return get_all_rooms_configuration()
+    
+    @room_configuration_router.get("/{floor}")
+    def Get_Room_On_Floor(floor:int):
+        return get_all_rooms_of_floor(floor)
+    
+    @room_configuration_router.put("",response_model=Operation_Out)
+    def Add_Devices_Configuration(entities_list:Room_Configuration_List):
+        return {"success":add_rooms_configuration([tuple(d.__dict__.values()) for d in entities_list.data])}
+    
+
+    @room_configuration_router.delete("/{name}",response_model=Operation_Out)
+    def Delete_Room(name:str):
+        return {"success":delete_single_room(name)}
+    
+    return room_configuration_router
 #endregion

@@ -165,6 +165,7 @@ def initialize_database():
     configuration_db_tables = {
         "Configuration": 'CREATE TABLE "Configuration" ("key" TEXT NOT NULL, "value" TEXT NOT NULL, "unit" TEXT, PRIMARY KEY("key"));',
         "Device": 'CREATE TABLE "Device" ("device_id" TEXT, "name" TEXT, "category" TEXT, "show" INTEGER, PRIMARY KEY("device_id"));',
+        "Room":'CREATE TABLE "Room" ("name"	TEXT,"floor"	INTEGER,"points"	TEXT,PRIMARY KEY("name"))',
         "Energy_Timeslot": 'CREATE TABLE "Energy_Timeslot" ("day" INTEGER, "hour" INTEGER, "slot" INTEGER);',
         "Map_config": 'CREATE TABLE "Map_config" ("id" TEXT NOT NULL, "x" INTEGER NOT NULL, "y" INTEGER NOT NULL, "floor" INTEGER NOT NULL, PRIMARY KEY("id"));',
         "Service_logs": 'CREATE TABLE "Service_logs" ("user" TEXT NOT NULL, "service" TEXT NOT NULL, "target" TEXT, "payload" TEXT, "timestamp" INTEGER NOT NULL);',
@@ -569,4 +570,28 @@ def get_configuration_of_device(device_id:str):
     query='select name,category,show from Device where device_id=?'
     params=(device_id,)
     return fetch_one_element(DbPathEnum.CONFIGURATION,query,params)
+#endregion
+
+
+#region Room configuration
+def add_rooms_configuration(entry_list:list):
+    query="""INSERT or REPLACE into Room
+                    (name,floor,points) 
+                    VALUES (?,?,?)"""
+    return add_multiple_elements(DbPathEnum.CONFIGURATION,query,entry_list)
+
+def get_all_rooms_configuration():
+    return fetch_multiple_elements(DbPathEnum.CONFIGURATION,"SELECT * FROM Room")
+
+def get_all_rooms_of_floor(floor:int):
+    return fetch_multiple_elements(DbPathEnum.CONFIGURATION,f"SELECT * FROM Room where floor={floor}")
+
+def get_single_room_by_name(name:str):
+    return fetch_one_element(DbPathEnum.CONFIGURATION,f"SELECT * FROM Room where name=\"{name}\"")
+
+def delete_single_room(name:str):
+    return execute_one_query(DbPathEnum.CONFIGURATION,f"DELETE FROM Room where name=\"{name}\"")
+
+def delete_rooms_in_floor(floor:int):
+    return execute_one_query(DbPathEnum.CONFIGURATION,f"DELETE FROM Room where floor=\"{floor}\"")
 #endregion

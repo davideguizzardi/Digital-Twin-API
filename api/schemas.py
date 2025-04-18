@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-
+import json
 
 class Service_In(BaseModel):
     entity_id:str
@@ -80,6 +80,15 @@ class Device_Configuration_List(BaseModel):
     data:list[Device_Configuration]
 
 
+class Room_Configuration(BaseModel):
+    name:str
+    floor:int
+    points:str="[x,y,x,y...]"
+
+class Room_Configuration_List(BaseModel):
+    data:list[Room_Configuration]
+
+
 
 triggers={
     "device_trigger":{
@@ -152,3 +161,34 @@ actions={
 }
 
 CONFIGURATION_PATH="./data/configuration.txt"
+def point_in_polygon(x, y, poly_points):
+    """
+    Ray casting algorithm to check if a point is inside a polygon.
+    poly_points: list of flat coordinates [x1, y1, x2, y2, ..., xn, yn]
+    """
+    n = len(poly_points) // 2
+    inside = False
+    px, py = x, y
+    for i in range(n):
+        xi, yi = poly_points[2 * i], poly_points[2 * i + 1]
+        xj, yj = poly_points[2 * ((i + 1) % n)], poly_points[2 * ((i + 1) % n) + 1]
+
+        intersect = ((yi > py) != (yj > py)) and \
+                    (px < (xj - xi) * (py - yi) / (yj - yi + 1e-10) + xi)
+        if intersect:
+            inside = not inside
+    return inside
+
+def find_room(x, y, rooms):
+    """
+    Identifies the room where the point (x, y) is located on the given floor.
+    Returns the room dict or None if not found.
+    """
+    for room in rooms:
+        try:
+            points = json.loads(room['points'])  # Convert string to list
+        except json.JSONDecodeError:
+            continue
+        if point_in_polygon(x, y, points):
+            return room["name"]
+    return None
