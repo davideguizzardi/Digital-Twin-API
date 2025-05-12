@@ -454,13 +454,14 @@ def getEnergyCostMatrix():
     '''
     cost_array=get_all_energy_slots_with_cost() 
     cost_matrix={}
-    for day in DAYS:
-        slots=[x for x in cost_array if x["day"]==day]
-        temp=[0.0]*1440
-        for i in range(1440):
-            index=i//60 #index in slots
-            temp[i]=float(slots[index]["slot_value"])
-        cost_matrix[day]=temp
+    if len(cost_array)>0:
+        for day in DAYS:
+            slots=[x for x in cost_array if x["day"]==day]
+            temp=[0.0]*1440
+            for i in range(1440):
+                index=i//60 #index in slots
+                temp[i]=float(slots[index]["slot_value"])
+            cost_matrix[day]=temp
     return cost_matrix
 
 
@@ -553,7 +554,7 @@ def getMonthlyAutomationCost(automation,energy_cost_matrix,day_list=DAYS):
             #energy_cost is in euro/kWh
             #we are computing the cost of 1 minute =>1/60 kWh each minute
             #TODO:remember that this formula works only for €/kWh unit, power_matrix is in W
-            cost+=(power_matrix[day][i]/1000)*(energy_cost_matrix[day][i])*(1/60)
+            cost+=(power_matrix[day][i]/1000)*(energy_cost_matrix[day][i] if day in energy_cost_matrix else 0)*(1/60)
 
     return cost*4 #assumption, each month is composed of 4 weeks
 

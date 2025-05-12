@@ -85,8 +85,20 @@ class Room_Configuration(BaseModel):
     floor:int
     points:str="[x,y,x,y...]"
 
+class Room_Name_Update(BaseModel):
+    new_name:str
+
 class Room_Configuration_List(BaseModel):
     data:list[Room_Configuration]
+
+class Log(BaseModel):
+    actor:str
+    event:str
+    target:str
+    payload:str
+
+class Log_List(BaseModel):
+    data:list[Log]
 
 
 

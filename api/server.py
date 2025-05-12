@@ -14,14 +14,14 @@ from routers.consumptionRouter import getConsumptionRouter
 from routers.configurationRouter import getHomeAssistantConfigurationRouter
 from routers.historyRouter import getHistoryRouter
 from routers.deviceRouter import getDeviceRouter
+from routers.logsRouter import getLogRouter
 from routers.virtualRouter import getVirtualRouter
 
 from homeassistant_functions import initializeToken,initializeDemo
-from database_functions import initialize_database,get_configuration_value_by_key
+from database_functions import initialize_database,get_configuration_value_by_key,add_log
 from schemas import CONFIGURATION_PATH
 import configparser
-import logging
-import uvicorn
+import logging,uvicorn,datetime
 
 # Configure logging with Uvicorn-like format
 logging.basicConfig(
@@ -51,6 +51,7 @@ def create_api(enable_prediction:False,enable_demo:False):
         getUserRouter(),
         getMapConfigurationRouter(),
         getEnergyCalendarConfigurationRouter(),
+        getLogRouter(),
         getVirtualRouter(),
     ]
 
@@ -100,6 +101,7 @@ def main():
         initializeToken()
 
     api = create_api(enable_prediction,enable_demo)
+    add_log([("System","Startup","DTAPI","{}",datetime.datetime.now().replace(microsecond=0).timestamp())])
     uvicorn.run(api, host=host,port=port,log_level="debug")
 
 if __name__ == "__main__":

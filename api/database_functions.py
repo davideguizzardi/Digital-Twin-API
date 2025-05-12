@@ -9,6 +9,7 @@ import os.path,logging
 class DbPathEnum(StrEnum):
     CONFIGURATION="./data/digital_twin_configuration.db"
     CONSUMPTION="./data/digital_twin_consumption.db"
+    LOGS="./data/digital_twin_logs.db"
     ENTITY_HISTORY="./data/digital_twin_entity_history.db"
 
 
@@ -178,6 +179,10 @@ def initialize_database():
         "Hourly_Consumption": 'CREATE TABLE "Hourly_Consumption" ("device_id" TEXT, "energy_consumption" REAL, "energy_consumption_unit" TEXT, "from" INTEGER, "to" INTEGER, PRIMARY KEY("device_id", "from"));'
     }
 
+    logs_db_tables = {
+        "Logs": 'CREATE TABLE "Logs" ("actor" TEXT NOT NULL,"event" TEXT NOT NULL,"target" TEXT,"payload" TEXT,"timestamp" INTEGER NOT NULL)'
+    }
+
     entity_history_db_tables = {
         "Entity_History": 'CREATE TABLE "Entity_History" ("entity_id" TEXT, "date" TEXT, "state" TEXT, "power" REAL, "unit_of_measurement" TEXT, "energy_consumption" REAL, PRIMARY KEY("entity_id", "date"));'
     }
@@ -185,6 +190,7 @@ def initialize_database():
     databases = [
         (DbPathEnum.CONFIGURATION, configuration_db_tables, "Configuration"),
         (DbPathEnum.CONSUMPTION, consumption_db_tables, "Consumption"),
+        (DbPathEnum.LOGS, logs_db_tables, "Logs"),
         (DbPathEnum.ENTITY_HISTORY, entity_history_db_tables, "Entity History"),
     ]
 
@@ -299,11 +305,11 @@ def add_multiple_elements(db_path:DbPathEnum,query, data):
 #region User preferences and data    
 
 def add_user_preferences(preferences_list:list):
-    query="INSERT or REPLACE into User_Preferences(user_id,preferences) VALUES (?,?)"
+    query = "INSERT INTO User_Preferences(user_id, preferences) VALUES (?, ?) ON CONFLICT(user_id) DO UPDATE SET preferences = excluded.preferences"
     return add_multiple_elements(DbPathEnum.CONFIGURATION,query,preferences_list)
 
 def add_user_privacy_settings(settings_list:list):
-    query="INSERT or REPLACE into User_Preferences(user_id,data_collection,data_disclosure) VALUES (?,?,?)"
+    query = "INSERT INTO User_Preferences(user_id, data_collection, data_disclosure) VALUES (?, ?, ?) ON CONFLICT(user_id) DO UPDATE SET data_collection=excluded.data_collection, data_disclosure=excluded.data_disclosure"
     return add_multiple_elements(DbPathEnum.CONFIGURATION,query,settings_list)
 
 
@@ -589,9 +595,21 @@ def get_all_rooms_of_floor(floor:int):
 def get_single_room_by_name(name:str):
     return fetch_one_element(DbPathEnum.CONFIGURATION,f"SELECT * FROM Room where name=\"{name}\"")
 
+def update_single_room(old_name:str,new_name:str):
+    return execute_one_query(DbPathEnum.CONFIGURATION,f"UPDATE Room SET name=\"{new_name}\" where name=\"{old_name}\"")
+
 def delete_single_room(name:str):
     return execute_one_query(DbPathEnum.CONFIGURATION,f"DELETE FROM Room where name=\"{name}\"")
 
 def delete_rooms_in_floor(floor:int):
     return execute_one_query(DbPathEnum.CONFIGURATION,f"DELETE FROM Room where floor=\"{floor}\"")
+#endregion
+
+#region Logs
+
+def add_log(logs_list:list):
+    query="""INSERT or REPLACE into Logs
+                (actor,event,target,payload,timestamp) 
+                VALUES (?,?,?,?,?)"""
+    return add_multiple_elements(DbPathEnum.LOGS,query,logs_list)
 #endregion

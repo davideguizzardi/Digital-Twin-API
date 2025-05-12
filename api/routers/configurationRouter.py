@@ -9,7 +9,7 @@ from database_functions import (
     get_all_user_preferences,add_user_preferences,get_user_preferences_by_user,delete_user_preferences_by_user,
     get_all_user_privacy_settings,add_user_privacy_settings,get_user_privacy_settings_by_user,
     add_devices_configuration,get_all_devices_configuration,get_configuration_of_device,
-    get_all_rooms_configuration,add_rooms_configuration,delete_rooms_in_floor,delete_single_room,get_all_rooms_of_floor,get_single_room_by_name
+    get_all_rooms_configuration,add_rooms_configuration,delete_rooms_in_floor,delete_single_room,get_all_rooms_of_floor,get_single_room_by_name,update_single_room
     )
 from schemas import (
     Operation_Out,Map_Entity_List,
@@ -18,7 +18,7 @@ from schemas import (
     User_Preference_List,User_Privacy_List,
     Home_Assistant_Configuration,
     Device_Configuration_List,
-    Room_Configuration_List
+    Room_Configuration_List,Room_Name_Update
     )
 
 from homeassistant_functions import setHomeAssistantConfiguration,getHomeAssistantConfiguration
@@ -240,6 +240,10 @@ def getRoomConfigurationRouter():
     @room_configuration_router.put("",response_model=Operation_Out)
     def Add_Devices_Configuration(entities_list:Room_Configuration_List):
         return {"success":add_rooms_configuration([tuple(d.__dict__.values()) for d in entities_list.data])}
+    
+    @room_configuration_router.patch("/{room_name}",response_model=Operation_Out)
+    def Update_Single_Device_Configuration(room_name,new_configuration:Room_Name_Update):
+        return {"success":update_single_room(room_name,new_configuration.new_name)}
     
 
     @room_configuration_router.delete("/{name}",response_model=Operation_Out)

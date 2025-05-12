@@ -11,9 +11,9 @@ from schemas import (
 
     )
 
-import datetime,json
+from database_functions import add_log
 
-
+import json,datetime
 
 
 def getServiceRouter():
@@ -23,7 +23,8 @@ def getServiceRouter():
         res=callService(service=service)
         if res["status_code"]!=200:
             raise HTTPException(status_code=res["status_code"],detail=res["data"])
-        add_service_logs([(service.user,service.service,service.entity_id,json.dumps(service.data),datetime.datetime.now().replace(microsecond=0).timestamp())])
+        add_log([(service.user,f"Service:{service.service}",service.entity_id,json.dumps(service.data),datetime.datetime.now().replace(microsecond=0).timestamp())])
+        #add_service_logs([(service.user,service.service,service.entity_id,json.dumps(service.data),datetime.datetime.now().replace(microsecond=0).timestamp())])
         return res["data"]
     
 
