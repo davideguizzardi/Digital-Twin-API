@@ -91,6 +91,17 @@ class Room_Name_Update(BaseModel):
 class Room_Configuration_List(BaseModel):
     data:list[Room_Configuration]
 
+
+class Group_Configuration(BaseModel):
+    name: str
+
+class Group_Name_Update(BaseModel):
+    new_name: str
+
+class Group_Configuration_List(BaseModel):
+    data: list[Group_Configuration]
+
+
 class Log(BaseModel):
     actor:str
     event:str

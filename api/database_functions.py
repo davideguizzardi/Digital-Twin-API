@@ -167,6 +167,7 @@ def initialize_database():
         "Configuration": 'CREATE TABLE "Configuration" ("key" TEXT NOT NULL, "value" TEXT NOT NULL, "unit" TEXT, PRIMARY KEY("key"));',
         "Device": 'CREATE TABLE "Device" ("device_id" TEXT, "name" TEXT, "category" TEXT, "show" INTEGER, PRIMARY KEY("device_id"));',
         "Room":'CREATE TABLE "Room" ("name"	TEXT,"floor"	INTEGER,"points"	TEXT,PRIMARY KEY("name"))',
+        "Group": 'CREATE TABLE "Group" ("id" INTEGER PRIMARY KEY AUTOINCREMENT, "name" TEXT NOT NULL)',
         "Energy_Timeslot": 'CREATE TABLE "Energy_Timeslot" ("day" INTEGER, "hour" INTEGER, "slot" INTEGER);',
         "Map_config": 'CREATE TABLE "Map_config" ("id" TEXT NOT NULL, "x" INTEGER NOT NULL, "y" INTEGER NOT NULL, "floor" INTEGER NOT NULL, PRIMARY KEY("id"));',
         "Service_logs": 'CREATE TABLE "Service_logs" ("user" TEXT NOT NULL, "service" TEXT NOT NULL, "target" TEXT, "payload" TEXT, "timestamp" INTEGER NOT NULL);',
@@ -612,4 +613,22 @@ def add_log(logs_list:list):
                 (actor,event,target,payload,timestamp) 
                 VALUES (?,?,?,?,?)"""
     return add_multiple_elements(DbPathEnum.LOGS,query,logs_list)
+#endregion
+
+#region Group configuration
+def add_groups_configuration(entry_list: list):
+    query = "INSERT OR REPLACE INTO \"Group\" (name) VALUES (?)"
+    return add_multiple_elements(DbPathEnum.CONFIGURATION, query, entry_list)
+
+def get_all_groups_configuration():
+    return fetch_multiple_elements(DbPathEnum.CONFIGURATION, "SELECT * FROM \"Group\"")
+
+def get_single_group_by_id(group_id: int):
+    return fetch_one_element(DbPathEnum.CONFIGURATION, f"SELECT * FROM Gro\"Group\"up WHERE id={group_id}")
+
+def update_single_group(group_id: int, new_name: str):
+    return execute_one_query(DbPathEnum.CONFIGURATION, f"UPDATE \"Group\" SET name=\"{new_name}\" WHERE id={group_id}")
+
+def delete_single_group(group_id: int):
+    return execute_one_query(DbPathEnum.CONFIGURATION, f"DELETE FROM \"Group\" WHERE id={group_id}")
 #endregion

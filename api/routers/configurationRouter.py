@@ -9,7 +9,8 @@ from database_functions import (
     get_all_user_preferences,add_user_preferences,get_user_preferences_by_user,delete_user_preferences_by_user,
     get_all_user_privacy_settings,add_user_privacy_settings,get_user_privacy_settings_by_user,
     add_devices_configuration,get_all_devices_configuration,get_configuration_of_device,
-    get_all_rooms_configuration,add_rooms_configuration,delete_rooms_in_floor,delete_single_room,get_all_rooms_of_floor,get_single_room_by_name,update_single_room
+    get_all_rooms_configuration,add_rooms_configuration,delete_rooms_in_floor,delete_single_room,get_all_rooms_of_floor,get_single_room_by_name,update_single_room,
+    get_all_groups_configuration,add_groups_configuration,get_single_group_by_id,delete_single_group,update_single_group
     )
 from schemas import (
     Operation_Out,Map_Entity_List,
@@ -18,7 +19,8 @@ from schemas import (
     User_Preference_List,User_Privacy_List,
     Home_Assistant_Configuration,
     Device_Configuration_List,
-    Room_Configuration_List,Room_Name_Update
+    Room_Configuration_List,Room_Name_Update,
+    Group_Configuration_List,Group_Name_Update
     )
 
 from homeassistant_functions import setHomeAssistantConfiguration,getHomeAssistantConfiguration
@@ -251,4 +253,39 @@ def getRoomConfigurationRouter():
         return {"success":delete_single_room(name)}
     
     return room_configuration_router
+#endregion
+
+
+#region Group_Configuration
+
+def getGroupConfigurationRouter():
+    group_configuration_router = APIRouter(tags=["Group configuration"], prefix="/group")
+
+    @group_configuration_router.get("")
+    def Get_All_Groups():
+        return get_all_groups_configuration()
+
+    @group_configuration_router.get("/{group_id}")
+    def Get_Single_Group(group_id: int):
+        return get_single_group_by_id(group_id)
+
+    @group_configuration_router.put("", response_model=Operation_Out)
+    def Add_Groups(entities_list: Group_Configuration_List):
+        return {
+            "success": add_groups_configuration([tuple(d.__dict__.values()) for d in entities_list.data])
+        }
+
+    @group_configuration_router.patch("/{group_id}", response_model=Operation_Out)
+    def Update_Single_Group(group_id: int, new_configuration: Group_Name_Update):
+        return {
+            "success": update_single_group(group_id, new_configuration.new_name)
+        }
+
+    @group_configuration_router.delete("/{group_id}", response_model=Operation_Out)
+    def Delete_Group(group_id: int):
+        return {
+            "success": delete_single_group(group_id)
+        }
+
+    return group_configuration_router
 #endregion
