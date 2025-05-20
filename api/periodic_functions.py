@@ -296,7 +296,7 @@ def main():
     last_timestamp_entity_history=fetch_one_element(DbPathEnum.ENTITY_HISTORY,"select max(timestamp) from Entity_History")
     last_timestamp_entity_history=last_timestamp_entity_history["max(timestamp)"]
     if last_timestamp_entity_history!=None:
-        starting_date=datetime.datetime.fromtimestamp(last_timestamp_entity_history["max(timestamp)"]).astimezone(tz.tzlocal())
+        starting_date=datetime.datetime.fromtimestamp(last_timestamp_entity_history).astimezone(tz.tzlocal())
         starting_date=starting_date.replace(minute=0,second=0)
     else:
         starting_date=datetime.datetime.now()-timedelta(days=2)
