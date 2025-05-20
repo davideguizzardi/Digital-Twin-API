@@ -186,7 +186,7 @@ def initialize_database():
     }
 
     entity_history_db_tables = {
-        "Entity_History": 'CREATE TABLE "Entity_History" ("entity_id" TEXT, "date" TEXT, "state" TEXT, "power" REAL, "unit_of_measurement" TEXT, "energy_consumption" REAL, PRIMARY KEY("entity_id", "date"));'
+        "Entity_History": 'CREATE TABLE "Entity_History" ("entity_id" TEXT, "timestamp" INTEGER, "state" TEXT, "power" REAL, "unit_of_measurement" TEXT, "energy_consumption" REAL, PRIMARY KEY("entity_id", "date"));'
     }
 
     databases = [
