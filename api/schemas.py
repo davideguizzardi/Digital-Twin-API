@@ -101,6 +101,13 @@ class Group_Name_Update(BaseModel):
 class Group_Configuration_List(BaseModel):
     data: list[Group_Configuration]
 
+class DeviceGroupMapping(BaseModel):
+    device_id: str
+    group_id: int
+
+class DeviceGroupMappingList(BaseModel):
+    data: list[DeviceGroupMapping]
+
 
 class Log(BaseModel):
     actor:str

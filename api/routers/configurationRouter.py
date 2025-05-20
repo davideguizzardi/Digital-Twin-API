@@ -10,7 +10,9 @@ from database_functions import (
     get_all_user_privacy_settings,add_user_privacy_settings,get_user_privacy_settings_by_user,
     add_devices_configuration,get_all_devices_configuration,get_configuration_of_device,
     get_all_rooms_configuration,add_rooms_configuration,delete_rooms_in_floor,delete_single_room,get_all_rooms_of_floor,get_single_room_by_name,update_single_room,
-    get_all_groups_configuration,add_groups_configuration,get_single_group_by_id,delete_single_group,update_single_group
+    get_all_groups_configuration,add_groups_configuration,get_single_group_by_id,delete_single_group,update_single_group,
+    get_all_groups_configuration,get_single_group_by_id,add_groups_configuration,update_single_group,delete_single_group,add_device_group_mapping,get_groups_for_device,get_devices_for_group,
+    remove_device_group_mapping,
     )
 from schemas import (
     Operation_Out,Map_Entity_List,
@@ -20,7 +22,8 @@ from schemas import (
     Home_Assistant_Configuration,
     Device_Configuration_List,
     Room_Configuration_List,Room_Name_Update,
-    Group_Configuration_List,Group_Name_Update
+    Group_Configuration_List,Group_Name_Update,
+    DeviceGroupMappingList
     )
 
 from homeassistant_functions import setHomeAssistantConfiguration,getHomeAssistantConfiguration
@@ -288,4 +291,32 @@ def getGroupConfigurationRouter():
         }
 
     return group_configuration_router
+#endregion
+
+#region Device_Group_Configuration
+def getDeviceGroupRouter():
+    device_group_router = APIRouter(tags=["Device-Group Mapping"], prefix="/device-group")
+
+    @device_group_router.get("/device/{device_id}")
+    def Get_Groups_For_Device(device_id: str):
+        return get_groups_for_device(device_id)
+
+    @device_group_router.get("/group/{group_id}")
+    def Get_Devices_For_Group(group_id: int):
+        return get_devices_for_group(group_id)
+
+    @device_group_router.put("", response_model=Operation_Out)
+    def Add_Device_Group_Mappings(mappings: DeviceGroupMappingList):
+        formatted = [(m.device_id, m.group_id) for m in mappings.data]
+        return {
+            "success": add_device_group_mapping(formatted)
+        }
+
+    @device_group_router.delete("/{device_id}/{group_id}", response_model=Operation_Out)
+    def Remove_Device_From_Group(device_id: str, group_id: int):
+        return {
+            "success": remove_device_group_mapping(device_id, group_id)
+        }
+
+    return device_group_router
 #endregion

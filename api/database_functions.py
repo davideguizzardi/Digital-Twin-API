@@ -168,6 +168,7 @@ def initialize_database():
         "Device": 'CREATE TABLE "Device" ("device_id" TEXT, "name" TEXT, "category" TEXT, "show" INTEGER, PRIMARY KEY("device_id"));',
         "Room":'CREATE TABLE "Room" ("name"	TEXT,"floor"	INTEGER,"points"	TEXT,PRIMARY KEY("name"))',
         "Group": 'CREATE TABLE "Group" ("id" INTEGER PRIMARY KEY AUTOINCREMENT, "name" TEXT NOT NULL)',
+        "DeviceGroup": 'CREATE TABLE "DeviceGroup" ("device_id" TEXT NOT NULL, "group_id" INTEGER NOT NULL, PRIMARY KEY("device_id", "group_id"))',
         "Energy_Timeslot": 'CREATE TABLE "Energy_Timeslot" ("day" INTEGER, "hour" INTEGER, "slot" INTEGER);',
         "Map_config": 'CREATE TABLE "Map_config" ("id" TEXT NOT NULL, "x" INTEGER NOT NULL, "y" INTEGER NOT NULL, "floor" INTEGER NOT NULL, PRIMARY KEY("id"));',
         "Service_logs": 'CREATE TABLE "Service_logs" ("user" TEXT NOT NULL, "service" TEXT NOT NULL, "target" TEXT, "payload" TEXT, "timestamp" INTEGER NOT NULL);',
@@ -175,7 +176,7 @@ def initialize_database():
     }
 
     consumption_db_tables = {
-        "Appliances_Usage": 'CREATE TABLE "Appliances_Usage" ("device_id" TEXT, "state" TEXT, "average_duration" REAL, "duration_unit" TEXT, "duration_samples" INTEGER, "average_power" REAL, "average_power_unit" TEXT, "power_samples" INTEGER, "last_timestamp" INTEGER, PRIMARY KEY("device_id", "state"));',
+        "Appliances_Usage": 'CREATE TABLE "Appliances_Usage" ("device_id" TEXT, "state" TEXT, "average_duration" REAL, "duration_unit" TEXT, "duration_samples" INTEGER, "average_power" REAL, "average_power_unit" TEXT, "power_samples" INTEGER, "maximum_power" REAL, "last_timestamp" INTEGER, PRIMARY KEY("device_id", "state"));',
         "Device_History": 'CREATE TABLE "Device_History" ("device_id" TEXT, "timestamp" INTEGER, "state" TEXT, "power" REAL, "power_unit" TEXT, "energy_consumption" REAL, "energy_consumption_unit" TEXT, PRIMARY KEY("device_id", "timestamp"));',
         "Hourly_Consumption": 'CREATE TABLE "Hourly_Consumption" ("device_id" TEXT, "energy_consumption" REAL, "energy_consumption_unit" TEXT, "from" INTEGER, "to" INTEGER, PRIMARY KEY("device_id", "from"));'
     }
@@ -632,3 +633,54 @@ def update_single_group(group_id: int, new_name: str):
 def delete_single_group(group_id: int):
     return execute_one_query(DbPathEnum.CONFIGURATION, f"DELETE FROM \"Group\" WHERE id={group_id}")
 #endregion
+
+#region Device-Group mapping
+
+def add_device_group_mapping(mapping_list: list[tuple[str, int]]):
+    """
+    Adds multiple (device_id, group_id) mappings to DeviceGroup table.
+    Each entry in mapping_list should be a tuple: (device_id, group_id)
+    """
+    query = 'INSERT OR REPLACE INTO "DeviceGroup" (device_id, group_id) VALUES (?, ?)'
+    return add_multiple_elements(DbPathEnum.CONFIGURATION, query, mapping_list)
+
+def get_groups_for_device(device_id: str):
+    """
+    Returns list of groups (id and name) linked to the given device_id.
+    """
+    query = '''
+    SELECT g.id as group_id, g.name as name
+    FROM "DeviceGroup" dg
+    JOIN "Group" g ON dg.group_id = g.id
+    WHERE dg.device_id = ?
+    '''
+    return fetch_multiple_elements(DbPathEnum.CONFIGURATION, query, (device_id,))
+
+def get_devices_for_group(group_id: int):
+    """
+    Returns list of devices (device_id and name) linked to the given group_id.
+    """
+    query = '''
+    SELECT d.device_id as device_id, d.name as name
+    FROM "DeviceGroup" dg
+    JOIN "Device" d ON dg.device_id = d.device_id
+    WHERE dg.group_id = ?
+    '''
+    return fetch_multiple_elements(DbPathEnum.CONFIGURATION, query, (group_id,))
+
+def remove_device_group_mapping(device_id: str, group_id: int):
+    """
+    Removes a specific device-to-group link.
+    """
+    query = 'DELETE FROM "DeviceGroup" WHERE device_id = ? AND group_id = ?'
+    return execute_one_query(DbPathEnum.CONFIGURATION, query, (device_id, group_id))
+
+def clear_groups_for_device(device_id: str):
+    """
+    Removes all group links for a given device.
+    """
+    query = 'DELETE FROM "DeviceGroup" WHERE device_id = ?'
+    return execute_one_query(DbPathEnum.CONFIGURATION, query, (device_id,))
+
+#endregion
+

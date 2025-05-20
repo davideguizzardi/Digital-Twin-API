@@ -494,7 +494,7 @@ def main():
     #getHourlyAndUsageData(start_timestamp=starting_date)
 
     last_timestamp_entity_history=fetch_one_element(DbPathEnum.ENTITY_HISTORY,"select max(timestamp) from Entity_History")
-    if last_timestamp_entity_history["max(timestamp)"]!=None:
+    if "max(timestamp)" in last_timestamp_entity_history:
         starting_date=datetime.datetime.fromtimestamp(last_timestamp_entity_history["max(timestamp)"]).astimezone(tz.tzlocal())
         starting_date=starting_date.replace(minute=0,second=0)
     else:

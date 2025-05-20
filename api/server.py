@@ -11,6 +11,7 @@ from routers.configurationRouter import getUserRouter
 from routers.configurationRouter import getDeviceConfigurationRouter
 from routers.configurationRouter import getRoomConfigurationRouter
 from routers.configurationRouter import getGroupConfigurationRouter
+from routers.configurationRouter import getDeviceGroupRouter
 from routers.consumptionRouter import getConsumptionRouter
 from routers.configurationRouter import getHomeAssistantConfigurationRouter
 from routers.historyRouter import getHistoryRouter
@@ -50,6 +51,7 @@ def create_api(enable_prediction:False,enable_demo:False):
         getDeviceConfigurationRouter(),
         getRoomConfigurationRouter(),
         getGroupConfigurationRouter(),
+        getDeviceGroupRouter(),
         getUserRouter(),
         getMapConfigurationRouter(),
         getEnergyCalendarConfigurationRouter(),
