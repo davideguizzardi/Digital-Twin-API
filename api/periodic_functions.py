@@ -55,7 +55,7 @@ def initializeLogger():
 
 def entitiesHistoryExtractionProcedure(start_timestamp:datetime.datetime=datetime.date.today()):
     start_call=datetime.datetime.now()
-    logger.info(f"Starting Entity History extraction. Required timestamp:{start_timestamp.print("%d/%m/%Y %H:%M")}")
+    logger.info(f"Starting Entity History extraction. Required timestamp:{start_timestamp.strftime('%d/%m/%Y %H:%M')}")
     end_timestamp=datetime.datetime.today().astimezone(tz.tzlocal())
     end_timestamp=end_timestamp.replace(minute=0,second=0)
     #Getting the list of devices
@@ -93,7 +93,7 @@ def entitiesHistoryExtractionProcedure(start_timestamp:datetime.datetime=datetim
 
 def getDevicesHistory(start_timestamp:datetime.datetime=datetime.date.today()):
     start_call=datetime.datetime.now()
-    logger.info(f"Starting Device History extraction. Required timestamp:{start_timestamp.print("%d/%m/%Y %H:%M")}")
+    logger.info(f"Starting Device History extraction. Required timestamp:{start_timestamp.strftime('%d/%m/%Y %H:%M')}")
     end_timestamp=datetime.datetime.today().astimezone(tz.tzlocal())
     end_timestamp=end_timestamp.replace(second=0)
     #Getting the list of devices
@@ -124,7 +124,7 @@ def getDevicesHistory(start_timestamp:datetime.datetime=datetime.date.today()):
 
 def getAppliancesUsageData(start_timestamp:datetime.datetime=datetime.date.today()):
     start_call=datetime.datetime.now() 
-    logger.info(f"Starting Appliance Usage extraction. Required timestamp:{start_timestamp.print("%d/%m/%Y %H:%M")}")
+    logger.info(f"Starting Appliance Usage extraction. Required timestamp:{start_timestamp.strftime('%d/%m/%Y %H:%M')}")
     end_timestamp=datetime.datetime.today().astimezone(tz.tzlocal())
     end_timestamp=end_timestamp.replace(minute=0,second=0)
     #Getting the list of devices
