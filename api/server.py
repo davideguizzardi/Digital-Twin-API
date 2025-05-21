@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from routers.entityRouter import getEntityRouter
 from routers.automationRouter import getAutomationRouter
@@ -65,6 +66,7 @@ def create_api(enable_prediction:False,enable_demo:False):
 
     for router in routers:
         api.include_router(router)
+
         
     api.add_middleware(
     CORSMiddleware,
@@ -73,6 +75,8 @@ def create_api(enable_prediction:False,enable_demo:False):
     allow_methods=["*"],
     allow_headers=["*"],
     )
+    
+    api.mount("/files", StaticFiles(directory="./data"), name="files")
     
     return api
 

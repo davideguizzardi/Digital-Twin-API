@@ -23,7 +23,7 @@ default_configuration_values = {
     "token": ("token", ""),
     "w_to_gco2": ("0.431", "kgCO2/kWh"),
     "enable_prediction": ("1", ""),
-    "enable_demo": ("1", ""),
+    "enable_demo": ("0", ""),
     "host": ("0.0.0.0", ""),
     "port": ("8000", "")
 }
