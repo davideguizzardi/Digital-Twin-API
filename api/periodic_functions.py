@@ -3,7 +3,7 @@ import datetime,logging
 from datetime import timedelta
 from dateutil import tz,parser
 from collections import defaultdict
-
+import os
 
 
 
@@ -34,8 +34,20 @@ def initializeLogger():
     # Set the overall logging level
     logger.setLevel(logging.INFO)
 
+    # Define log directory and file
+    log_dir = './logs'
+    log_file = os.path.join(log_dir, 'periodic_functions.log')
+
+    # Ensure the logs directory exists
+    os.makedirs(log_dir, exist_ok=True)
+
+    # Create the log file if it doesn't exist
+    if not os.path.exists(log_file):
+        open(log_file, 'w', encoding='utf-8').close()
+
+
     # Create a file handler to log messages to a file
-    file_handler = logging.FileHandler('./logs/periodic_functions.log', encoding='utf-8')
+    file_handler = logging.FileHandler(log_file, encoding='utf-8')
     file_handler.setLevel(logging.INFO)
 
     # Create a console handler to log messages to the console
