@@ -168,7 +168,7 @@ def initialize_database():
         "Device": 'CREATE TABLE "Device" ("device_id" TEXT, "name" TEXT, "category" TEXT, "show" INTEGER, PRIMARY KEY("device_id"));',
         "Room":'CREATE TABLE "Room" ("name"	TEXT,"floor"	INTEGER,"points"	TEXT,PRIMARY KEY("name"))',
         "Group": 'CREATE TABLE "Group" ("id" INTEGER PRIMARY KEY AUTOINCREMENT, "name" TEXT NOT NULL)',
-        "DeviceGroup": 'CREATE TABLE "DeviceGroup" ("device_id" TEXT NOT NULL, "group_id" INTEGER NOT NULL, PRIMARY KEY("device_id", "group_id"))',
+        "DeviceGroup": 'CREATE TABLE "DeviceGroup" ("device_id" TEXT NOT NULL, "group_id" INTEGER NOT NULL,FOREIGN KEY("group_id") REFERENCES "Group"("id") ON DELETE CASCADE, PRIMARY KEY("device_id", "group_id"))',
         "Energy_Timeslot": 'CREATE TABLE "Energy_Timeslot" ("day" INTEGER, "hour" INTEGER, "slot" INTEGER);',
         "Map_config": 'CREATE TABLE "Map_config" ("id" TEXT NOT NULL, "x" INTEGER NOT NULL, "y" INTEGER NOT NULL, "floor" INTEGER NOT NULL, PRIMARY KEY("id"));',
         "Service_logs": 'CREATE TABLE "Service_logs" ("user" TEXT NOT NULL, "service" TEXT NOT NULL, "target" TEXT, "payload" TEXT, "timestamp" INTEGER NOT NULL);',
