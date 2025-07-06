@@ -4,7 +4,7 @@ from homeassistant_functions import (
     getSingleDeviceFast)
 from database_functions import (
     get_all_appliances_usage_entries,get_usage_entry_for_appliance,get_configuration_of_device,get_names_and_id_configuration,
-    get_map_entity,get_all_rooms_of_floor)
+    get_map_entity,get_all_rooms_of_floor,get_groups_for_device)
 from collections import defaultdict
 from demo_functions import get_all_demo_devices
 from schemas import find_room
@@ -37,6 +37,7 @@ def getDeviceRouter(enable_demo=False):
                     dev["name"]=configuration_data["name"]
                     dev["category"]=configuration_data["category"]
                     dev["show"]=configuration_data["show"]==1
+
                 map_data=get_map_entity(dev["device_id"])
                 if map_data:
                     floor_rooms=get_all_rooms_of_floor(map_data["floor"])
@@ -47,6 +48,8 @@ def getDeviceRouter(enable_demo=False):
                         "floor":map_data["floor"],
                         "room":room_name
                     }
+                group_data=get_groups_for_device(dev["device_id"])
+                dev["groups"]=group_data or []
 
         if res["status_code"]!=200:
             raise HTTPException(status_code=res["status_code"],detail=res["data"])

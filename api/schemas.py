@@ -118,6 +118,10 @@ class Log(BaseModel):
 class Log_List(BaseModel):
     data:list[Log]
 
+class AutomationStateUpdate(BaseModel):
+    automation_id: str
+    state: str 
+
 
 
 triggers={

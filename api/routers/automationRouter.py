@@ -373,7 +373,7 @@ def extract_action_operations(action):
     action_data=action.get("data",None)
     if action.get("device_id")!=None:
         #if contains "device_id" then it is an action on device, the "type" field represent the service
-        pairs.append((action["device_id"],action["type"],action["domain"],action_data))
+        pairs.append((action["device_id"],action["type"] if "type" in action else action["service"],action["domain"],action_data))
 
     if action.get("service")!=None or action.get("action")!=None:
         #if contains "service" then is a service type of action, target->entity_id/device_id is the recipient 

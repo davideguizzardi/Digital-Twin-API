@@ -3,7 +3,8 @@ from contextlib import contextmanager
 
 from enum import StrEnum
 import os.path,logging
-
+from pymongo import MongoClient
+import datetime
 #DB_PATH="./data/digital_twin.db"
 
 class DbPathEnum(StrEnum):
@@ -684,3 +685,29 @@ def clear_groups_for_device(device_id: str):
 
 #endregion
 
+
+
+#region Rulebot Mongodb database functions
+
+
+def set_automation_state(automation_id, state):
+    client = MongoClient("mongodb://localhost:27017/")
+    db = client["Rulebot"]
+    automations = db["automations"]
+
+    result = automations.update_many(
+        {"automation_data.id": automation_id},
+        {
+            "$set": {
+                "automation_data.$[elem].state": state,
+                "last_update": datetime.utcnow()
+            }
+        },
+        array_filters=[{"elem.id": automation_id}]
+    )
+
+    if result.modified_count > 0:
+        print(f"Updated {result.modified_count} automation(s) with id: {automation_id}")
+    else:
+        print(f"No automation found with id: {automation_id}")
+#endregion
