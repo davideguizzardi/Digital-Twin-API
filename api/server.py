@@ -19,6 +19,7 @@ from routers.historyRouter import getHistoryRouter
 from routers.deviceRouter import getDeviceRouter
 from routers.logsRouter import getLogRouter
 from routers.virtualRouter import getVirtualRouter
+from routers.rulebotRouter import getRulebotRouter
 
 from homeassistant_functions import initializeToken,initializeDemo
 from database_functions import initialize_database,get_configuration_value_by_key,add_log
@@ -58,6 +59,7 @@ def create_api(enable_prediction:False,enable_demo:False):
         getEnergyCalendarConfigurationRouter(),
         getLogRouter(),
         getVirtualRouter(),
+        getRulebotRouter()
     ]
 
     if enable_prediction:
