@@ -14,3 +14,4 @@ api/__pycache__/*
 api/logs/*
 api/routers/__pycache__/*
 ignore/*
+env/*

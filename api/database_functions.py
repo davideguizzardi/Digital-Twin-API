@@ -700,14 +700,15 @@ def set_automation_state(automation_id, state):
         {
             "$set": {
                 "automation_data.$[elem].state": state,
-                "last_update": datetime.utcnow()
+                "last_update": datetime.datetime.now()
             }
         },
         array_filters=[{"elem.id": automation_id}]
     )
 
     if result.modified_count > 0:
-        print(f"Updated {result.modified_count} automation(s) with id: {automation_id}")
+        return True
     else:
-        print(f"No automation found with id: {automation_id}")
+        print(f"No rulebot automation found with id: {automation_id}")
+        return False
 #endregion

@@ -1,4 +1,4 @@
-from requests import get,post
+from requests import get,post,delete
 from random import randint
 from schemas import Service_In
 from urllib.parse import urlencode
@@ -470,6 +470,23 @@ def getAutomations():
         to_add.update({"entity_id":entity_id,"state":automation_state})
         automations.append(to_add)
     return {"status_code":200,"data":automations}
+
+def deleteAutomation(automation_id):
+    '''Elimina un'automazione in Home Assistant.'''
+    url = f"{base_url}/config/automation/config/{automation_id}"
+
+    try:
+        response =delete(url, headers=headers)
+
+        if response.status_code != 200:
+            print(f"Errore nella cancellazione dell'automazione {automation_id}: {response.status_code}")
+            return False
+
+        return True
+    except Exception as e:
+        print(f"Errore durante la cancellazione dell'automazione {automation_id}: {e}")
+        return False
+
 
 
 def callService(service:Service_In):

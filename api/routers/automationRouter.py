@@ -2,14 +2,14 @@
 from fastapi import APIRouter,HTTPException
 from homeassistant_functions import (
     getEntity,
-    getAutomations,createAutomationDirect,
+    getAutomations,createAutomationDirect,deleteAutomation,
     getDevicesFast,
     getDeviceId,
     getDeviceInfo)
 from database_functions import (
     get_configuration_item_by_key,
     get_usage_entry_for_appliance_state,
-    get_all_energy_slots_with_cost,get_minimum_cost_slot,get_minimum_energy_slots,get_maximum_cost_slot
+    get_all_energy_slots_with_cost,get_minimum_cost_slot,get_minimum_energy_slots,get_maximum_cost_slot,set_automation_state
     )
 from schemas import (
     Automation
@@ -956,6 +956,18 @@ def getAutomationRouter(enable_demo=False):
     def Automation_Addition(automation_in:Automation):
         return createAutomationDirect(automation_in.automation)
     
+    @automation_router.delete("/{automation_id}")
+    def Delete_Automation(automation_id:str):
+        res=True
+        try:
+            res=deleteAutomation(automation_id)
+            if res:
+                res=set_automation_state(automation_id, "deleted")
+            return {"success": res}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
+
+    
     @automation_router.get("/matrix")
     def Get_State_Matrix():
         ret = Get_Automations()
@@ -994,7 +1006,7 @@ def getAutomationRouter(enable_demo=False):
         automation=getAutomationDetails(automation_in.automation)
         saved_automations = Get_Automations()
         #TODO:de-comment this part in the final release
-        #saved_automations=[a for a in saved_automations if a["state"]=="on"]
+        saved_automations=[a for a in saved_automations if a["state"]=="on"]
         new_automation_list=saved_automations+[automation]
 
         #Getting the list of devices
