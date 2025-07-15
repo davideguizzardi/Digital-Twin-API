@@ -26,7 +26,8 @@ default_configuration_values = {
     "enable_prediction": ("1", ""),
     "enable_demo": ("0", ""),
     "host": ("0.0.0.0", ""),
-    "port": ("8000", "")
+    "port": ("8000", ""),
+    "mongourl":("mongodb://localhost:27017/","")
 }
 
 
@@ -691,7 +692,8 @@ def clear_groups_for_device(device_id: str):
 
 
 def set_automation_state(automation_id, state):
-    client = MongoClient("mongodb://localhost:27017/")
+    mongourl=get_configuration_value_by_key("mongourl")
+    client = MongoClient(mongourl)
     db = client["Rulebot"]
     automations = db["automations"]
 
