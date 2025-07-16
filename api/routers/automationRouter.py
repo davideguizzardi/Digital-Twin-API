@@ -527,20 +527,43 @@ def getAutomationStateMatrix(state_array,power_array, automation,day):
             for j in indexes_empty:
                 dev_state_array[j]=""
 
-def getAutomationCost(automation,energy_cost_matrix,day_list=DAYS):
+
+def getAutomationCost(automation, energy_cost_matrix=None, day_list=DAYS):
     '''Returns the monthly cost of running an automation'''
-    #energy_cost_matrix=getEnergyCostMatrix()
-    power_matrix=getPowerMatrix(automation)
-    cost_matrix={day: 0.0 for day in day_list}  
+    power_matrix = getPowerMatrix(automation)
+    cost_matrix = {day: 0.0 for day in day_list}
+
+    # Validate power_matrix is a dict
+    if not isinstance(power_matrix, dict):
+        return cost_matrix
+
+    # If energy_cost_matrix is missing or empty, return zeros immediately
+    if not energy_cost_matrix or not isinstance(energy_cost_matrix, dict):
+        return cost_matrix
+
     for day in day_list:
+        if day not in power_matrix or day not in energy_cost_matrix:
+            continue
+
+        power_day = power_matrix[day]
+        cost_day = energy_cost_matrix[day]
+
+        if not isinstance(power_day, list) or len(power_day) != 1440:
+            continue
+
+        if not isinstance(cost_day, list) or len(cost_day) != 1440:
+            continue
+
         for i in range(1440):
             #power is in W so we need to divide by 1000 to get kW
             #energy_cost is in euro/kWh
             #we are computing the cost of 1 minute =>1/60 kWh each minute
             #TODO:remember that this formula works only for €/kWh unit, power_matrix is in W
-            cost_matrix[day]+=(power_matrix[day][i]/1000)*(energy_cost_matrix[day][i])*(1/60)
+            cost_matrix[day] += (power_day[i] / 1000) * cost_day[i] * (1 / 60)
 
     return cost_matrix
+
+
 
 def getMonthlyAutomationCost(automation,energy_cost_matrix,day_list=DAYS):
     '''Returns the monthly cost of running an automation'''
@@ -925,150 +948,188 @@ def getAutomationsToDeactivateSuggestions(conflict_list,saved_automations):
 
     
 #region GetRouterFunction
+from fastapi import APIRouter, HTTPException
+from fastapi.responses import JSONResponse
+import json, datetime
+from dateutil import parser
+import logging
+
+logger = logging.getLogger(__name__)
+
 def getAutomationRouter(enable_demo=False):
-    automation_router=APIRouter(tags=["Automation"],prefix="/automation")
+    automation_router = APIRouter(tags=["Automation"], prefix="/automation")
 
     @automation_router.get("")
-    def Get_Automations(get_suggestions:bool=False):
-        if enable_demo:
-            return get_demo_automations() 
-        else:
-            res=getAutomations()
-        if res["status_code"]!=200:
-            raise HTTPException(status_code=res["status_code"],detail=res["data"])
-        else:
-            automations_list = res["data"]
-            with open("./data/devices_new_state_map.json") as file:  # TODO: Extract path to config
-                state_map = json.load(file)
+    def get_automations(get_suggestions: bool = False):
+        try:
+            if enable_demo:
+                return get_demo_automations()
 
-                
+            res = getAutomations()
+            if res.get("status_code") != 200:
+                raise HTTPException(status_code=res["status_code"], detail=f"Failed to fetch automations: {res.get('data')}")
+            
+            automations_list = res.get("data", [])
+            try:
+                with open("./data/devices_new_state_map.json") as file:
+                    state_map = json.load(file)
+            except Exception as e:
+                raise HTTPException(status_code=500, detail=f"Failed to load state map: {e}")
 
             automations_details = [getAutomationDetails(automation, state_map) for automation in automations_list]
-            dev_list=getDevicesFast()
-            ret=[]
+
+            try:
+                dev_list = getDevicesFast()
+            except Exception as e:
+                raise HTTPException(status_code=500, detail=f"Failed to load device list: {e}")
+
+            result = []
             for automation in automations_details:
                 if get_suggestions:
-                    automation["suggestions"]=findBetterActivationTime(automation,dev_list,automations_details)
-                ret.append(automation)
-            return ret
-        
-    @automation_router.post("")
-    def Automation_Addition(automation_in:Automation):
-        return createAutomationDirect(automation_in.automation)
-    
-    @automation_router.delete("/{automation_id}")
-    def Delete_Automation(automation_id:str):
-        res=True
-        try:
-            res=deleteAutomation(automation_id)
-            if res:
-                res=set_automation_state(automation_id, "deleted")
-            return {"success": res}
+                    try:
+                        automation["suggestions"] = findBetterActivationTime(automation, dev_list, automations_details)
+                    except Exception as e:
+                        logger.warning(f"Failed to generate suggestions: {e}")
+                        automation["suggestions"] = []
+                result.append(automation)
+            return result
+
         except Exception as e:
-            raise HTTPException(status_code=500, detail=str(e))
+            logger.exception("Unhandled error in get_automations")
+            raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
-    
+    @automation_router.post("")
+    def add_automation(automation_in: Automation):
+        try:
+            return createAutomationDirect(automation_in.automation)
+        except Exception as e:
+            logger.exception("Failed to add automation")
+            raise HTTPException(status_code=500, detail=f"Failed to create automation: {e}")
+
+    @automation_router.delete("/{automation_id}")
+    def delete_automation(automation_id: str):
+        try:
+            success = deleteAutomation(automation_id)
+            if success:
+                success = set_automation_state(automation_id, "deleted")
+            return {"success": success}
+        except Exception as e:
+            logger.exception(f"Error deleting automation {automation_id}")
+            raise HTTPException(status_code=500, detail=f"Failed to delete automation: {e}")
+
     @automation_router.get("/matrix")
-    def Get_State_Matrix():
-        ret = Get_Automations()
-        dev_list=getDevicesFast()
-        state_matrix={}
-        for dev in dev_list["data"]:
-            if dev["device_class"] not in ["sensor","event","sun","weather","device_tracker"]:
-                state_matrix[dev["device_id"]]={
-                    "state_list":[""]*1440,
-                    "power_list":[0]*1440,
-                    "device_id":dev["device_id"],
-                    "device_name":dev["name"]
-                }
-        ret=sorted(ret,key=lambda x:x["time"])
-        for aut in ret:
-            if aut["time"]!="":
-                activation_time=parser.parse(aut["time"])
-                activation_index=activation_time.hour*60+activation_time.minute
-                for act in aut["action"]:
-                    end_index=min(activation_index+int(act["average_duration"]),1440)
-                    state_matrix[act["device_id"]]["state_list"][activation_index:end_index]=[act["state"]]*(end_index-activation_index)
-                    state_matrix[act["device_id"]]["power_list"][activation_index:end_index]=[act["average_power"]]*(end_index-activation_index)
-                    state_matrix[act["device_id"]]["device_id"]=act["device_id"]
-                    state_matrix[act["device_id"]]["device_name"]=act["device_name"]
+    def get_state_matrix():
+        try:
+            automations = get_automations()
+            dev_list = getDevicesFast()
+            state_matrix = {}
 
-        return dict(state_matrix)
-    
-    
+            for dev in dev_list["data"]:
+                if dev["device_class"] not in ["sensor", "event", "sun", "weather", "device_tracker"]:
+                    state_matrix[dev["device_id"]] = {
+                        "state_list": [""] * 1440,
+                        "power_list": [0] * 1440,
+                        "device_id": dev["device_id"],
+                        "device_name": dev["name"]
+                    }
+
+            automations = sorted(automations, key=lambda x: x.get("time", ""))
+            for aut in automations:
+                if aut.get("time"):
+                    try:
+                        activation_time = parser.parse(aut["time"])
+                        activation_index = activation_time.hour * 60 + activation_time.minute
+                        for act in aut.get("action", []):
+                            end_index = min(activation_index + int(act["average_duration"]), 1440)
+                            device_id = act["device_id"]
+                            if device_id in state_matrix:
+                                state_matrix[device_id]["state_list"][activation_index:end_index] = [act["state"]] * (end_index - activation_index)
+                                state_matrix[device_id]["power_list"][activation_index:end_index] = [act["average_power"]] * (end_index - activation_index)
+                    except Exception as e:
+                        logger.warning(f"Error processing automation {aut.get('name', '<unknown>')}: {e}")
+                        continue
+
+            return state_matrix
+        except Exception as e:
+            logger.exception("Failed to generate state matrix")
+            raise HTTPException(status_code=500, detail=f"Error generating state matrix: {e}")
+
     @automation_router.post("/simulate")
-    def Simulate_Automation_Addition(automation_in:Automation,return_state_matrix:bool=True):
-        start_call=datetime.datetime.now()
-        conflicts=[]
-        suggestions=[]
+    def simulate_automation_addition(automation_in: Automation, return_state_matrix: bool = True):
+        start_call = datetime.datetime.now()
+        conflicts = []
+        suggestions = []
 
-        #Get automations saved and details of the one we want to add
-        automation=getAutomationDetails(automation_in.automation)
-        saved_automations = Get_Automations()
-        #TODO:de-comment this part in the final release
-        saved_automations=[a for a in saved_automations if a["state"]=="on"]
-        new_automation_list=saved_automations+[automation]
+        try:
+            automation = getAutomationDetails(automation_in.automation)
+            saved_automations = get_automations()
+            saved_automations = [a for a in saved_automations if a.get("state") == "on"]
+            new_automation_list = saved_automations + [automation]
 
-        #Getting the list of devices
-        dev_list=getDevicesFast()
+            dev_list = getDevicesFast()
 
-        feasibilty_conflicts=getFeasibilityConflicts(automation)
-        if feasibilty_conflicts:
-            conflicts=[feasibilty_conflicts]
+            # Feasibility check
+            feasibility_conflicts = getFeasibilityConflicts(automation)
+            if feasibility_conflicts:
+                conflicts = [feasibility_conflicts]
 
-            sorted_actions=sorted(automation["action"], key=lambda x: x["average_power"])
+                sorted_actions = sorted(automation["action"], key=lambda x: x["average_power"])
+                threshold_item = get_configuration_item_by_key("power_threshold")
+                threshold = float(threshold_item["value"]) if threshold_item else POWER_TRESHOLD_DEFAULT
 
-            threshold = get_configuration_item_by_key("power_threshold")  
-            threshold=float(threshold["value"]) if threshold else POWER_TRESHOLD_DEFAULT
+                split_actions = [[]]
+                current_total = 0
+                for action in sorted_actions:
+                    if current_total + action["average_power"] < threshold:
+                        split_actions[-1].append(action)
+                        current_total += action["average_power"]
+                    else:
+                        split_actions.append([action])
+                        current_total = action["average_power"]
 
-            split_actions=[[]]
-            current_total=0
-            for action in sorted_actions:
-                if current_total+action["average_power"]<threshold:
-                    split_actions[-1].append(action)
-                    current_total+=action["average_power"]
-                else:
-                    split_actions.append([action])
-                    current_total=action["average_power"]
+                suggestions.append(ConflictResolutionSplitSuggestion(actions_split=split_actions).to_dict())
+            else:
+                # General conflict detection
+                energy_conflicts = getConflicts(device_list=dev_list, automations_list=new_automation_list)
+                if energy_conflicts:
+                    conflicts.extend(energy_conflicts)
+                    try:
+                        suggestions += getChangeTimeSuggestions(energy_conflicts[0], automation, dev_list, saved_automations)
+                        getAutomationsToDeactivateSuggestions(energy_conflicts, saved_automations)
+                    except Exception as e:
+                        logger.warning(f"Failed to get time/deactivation suggestions: {e}")
 
-            suggestions.append(ConflictResolutionSplitSuggestion(actions_split=split_actions).to_dict())
-        else:
-        
-            #Getting conflicts
-            excessive_energy_conflicts=getConflicts(device_list=dev_list,automations_list=new_automation_list)
+            # Suggestions when no conflicts
+            if not conflicts and automation["average_power_drawn"] > MIN_AUTOMATION_POWER:
+                try:
+                    suggestions += findBetterActivationTime(automation, dev_list, saved_automations)
+                except Exception as e:
+                    logger.warning(f"Suggestion generation failed: {e}")
 
-            #If there are conflicts i look for suggestions on how to solve them
-            if len(excessive_energy_conflicts)>0:
-                conflicts+=excessive_energy_conflicts
-                suggestions+=getChangeTimeSuggestions(excessive_energy_conflicts[0],automation,dev_list,saved_automations)
-                getAutomationsToDeactivateSuggestions(excessive_energy_conflicts,saved_automations)
+            result = {
+                "automation": automation,
+                "conflicts": conflicts,
+                "suggestions": suggestions,
+            }
 
-                
-                
-    
-        #Suggestions identification if no conflict occurs
-        if len(conflicts)<=0 and automation["average_power_drawn"]>MIN_AUTOMATION_POWER:
-            suggestions+=findBetterActivationTime(automation,dev_list,saved_automations)
-        
+            if return_state_matrix:
+                try:
+                    state_matrix, cumulative_power_matrix = getStatePowerMatrix(device_list=dev_list, automations_list=new_automation_list)
+                    result.update({
+                        "state_matrix": state_matrix,
+                        "cumulative_power_matrix": cumulative_power_matrix
+                    })
+                except Exception as e:
+                    logger.warning(f"Failed to generate state/power matrix: {e}")
 
+            logger.debug(f"Simulation completed in {(datetime.datetime.now() - start_call).total_seconds()}s")
+            return result
 
+        except Exception as e:
+            logger.exception("Unhandled error in simulation")
+            raise HTTPException(status_code=500, detail=f"Simulation failed: {e}")
 
-        
-        logger.debug(f"Simulate_Automation_Addition required {(datetime.datetime.now()-start_call).total_seconds()} [s]")
-
-        ret={
-            "automation":automation,
-            "conflicts":conflicts,
-            "suggestions":suggestions,
-        }
-
-        if return_state_matrix:
-            state_matrix,cumulative_power_matrix=getStatePowerMatrix(device_list=dev_list,automations_list=new_automation_list)
-            ret.update({
-            "state_matrix":state_matrix,
-            "cumulative_power_matrix":cumulative_power_matrix})
-        return ret
-    
     return automation_router
+
 
 #endregion
