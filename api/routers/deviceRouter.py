@@ -4,7 +4,7 @@ from homeassistant_functions import (
     getSingleDeviceFast)
 from database_functions import (
     get_all_appliances_usage_entries,get_usage_entry_for_appliance,get_configuration_of_device,get_names_and_id_configuration,
-    get_map_entity,get_all_rooms_of_floor,get_groups_for_device)
+    get_map_entity,get_all_rooms_of_floor,get_groups_for_device,get_configured_devices)
 from collections import defaultdict
 from demo_functions import get_all_demo_devices
 from schemas import find_room
@@ -27,7 +27,10 @@ def getDeviceRouter(enable_demo=False):
             res=getDevicesFast()
         
         if res["status_code"]==200:
+            entities_list=get_configured_devices()
             for dev in res['data']:
+                if len(entities_list)>0:
+                    dev["list_of_entities"] = [e for e in dev["list_of_entities"] if e["entity_id"] in entities_list]
                 dev["name"]=dev["name_by_user"] if dev["name_by_user"] else dev["name"]
                 dev["category"]=dev["device_class"]
                 dev["show"]=True

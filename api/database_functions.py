@@ -692,25 +692,53 @@ def clear_groups_for_device(device_id: str):
 
 
 def set_automation_state(automation_id, state):
+    try:
+        mongourl=get_configuration_value_by_key("mongourl")
+        client = MongoClient(mongourl["value"])
+        db = client["Rulebot"]
+        automations = db["automations"]
+
+        result = automations.update_many(
+            {"automation_data.id": automation_id},
+            {
+                "$set": {
+                    "automation_data.$[elem].state": state,
+                    "last_update": datetime.datetime.now()
+                }
+            },
+            array_filters=[{"elem.id": automation_id}]
+        )
+        if result.modified_count > 0:
+            return True
+        else:
+            print(f"No rulebot automation found with id: {automation_id}")
+            return False
+    except Exception as e:
+        print(e)
+    
+
+
+def get_configured_devices():
+    """
+    returns the list of entities ids that were selected during the configuration of rulebot
+    """
     mongourl=get_configuration_value_by_key("mongourl")
-    client = MongoClient(mongourl)
-    db = client["Rulebot"]
-    automations = db["automations"]
-
-    result = automations.update_many(
-        {"automation_data.id": automation_id},
-        {
-            "$set": {
-                "automation_data.$[elem].state": state,
-                "last_update": datetime.datetime.now()
-            }
-        },
-        array_filters=[{"elem.id": automation_id}]
-    )
-
-    if result.modified_count > 0:
-        return True
-    else:
-        print(f"No rulebot automation found with id: {automation_id}")
-        return False
+    entities=[]
+    try:
+        client = MongoClient(mongourl["value"])
+        db = client["Rulebot"]
+        config = db["config"]
+        conf_cursor = config.find()
+        conf = list(conf_cursor)
+        if conf:
+            for user in conf:
+                configuration=user["selected"]
+                for x in configuration:
+                    if x["e"] not in entities:
+                        entities.append(x["e"])
+    except Exception as e:
+        print(e)
+    finally:                 
+        return entities
+    
 #endregion
