@@ -8,7 +8,7 @@ from collections import defaultdict
 from homeassistant_functions import (
     getHistory)
 from database_functions import (
-    get_total_consumption
+    get_total_consumption,get_all_energy_slots_with_cost
     )
 
 ACTIVE_MODES = ["on", "playing"]
@@ -195,7 +195,7 @@ def getConsumptionRouter():
         to_ts=int(end_timestamp.replace(microsecond=0).timestamp())
         return get_total_consumption(from_ts,to_ts,group,device_id)
     
-    @consumption_router.get("/total")
+    @consumption_router.get("/total_old")
     def Get_Total_Consumption_Fast(start_timestamp:datetime.date=datetime.date.today(),end_timestamp:datetime.date=datetime.date.today(),group:str="hourly",minutes=60):
         start_timestamp=datetime.datetime.combine(start_timestamp, datetime.time.min).astimezone(tz.tzlocal())
         end_timestamp=datetime.datetime.combine(end_timestamp,  datetime.time(23, 59)).astimezone(tz.tzlocal())
@@ -203,5 +203,35 @@ def getConsumptionRouter():
         from_ts=int(start_timestamp.replace(microsecond=0).timestamp())
         to_ts=int(end_timestamp.replace(microsecond=0).timestamp())
         return get_total_consumption(from_ts,to_ts,group,minutes=minutes)
+    
+    @consumption_router.get("/total")
+    def Get_Total_Consumption_Fast(start_timestamp:datetime.date=datetime.date.today(),end_timestamp:datetime.date=datetime.date.today(),group:str="hourly"):
+        start_timestamp=datetime.datetime.combine(start_timestamp, datetime.time.min).astimezone(tz.tzlocal())
+        end_timestamp=datetime.datetime.combine(end_timestamp,  datetime.time(23, 59)).astimezone(tz.tzlocal())
+
+        from_ts=int(start_timestamp.replace(microsecond=0).timestamp())
+        to_ts=int(end_timestamp.replace(microsecond=0).timestamp())
+
+        output=defaultdict(lambda:{"date":"","energy_consumption":0,"energy_consumption_unit": "Wh","cost":0,"cost_unit":"€"})
+        consumption_array=get_total_consumption(from_ts,to_ts,"hourly",minutes=60)
+        cost_slots=get_all_energy_slots_with_cost()
+        if len(cost_slots)<168:
+            return consumption_array
+        i=0
+        while i<len(consumption_array):
+            cost=(consumption_array[i]["energy_consumption"]/1000)*float(cost_slots[start_timestamp.hour+24*(start_timestamp.weekday()-1)]["slot_value"])
+            if group=="hourly":
+                key=consumption_array[i]["date"]
+            if group=="daily":
+                key=start_timestamp.strftime("%d-%m-%Y")
+            if group=="monthly":
+                key=start_timestamp.strftime("%m-%Y")
+            output[key]["date"]=key
+            output[key]["energy_consumption"]+=consumption_array[i]["energy_consumption"]
+            output[key]["cost"]+=cost
+            i=i+1
+            start_timestamp=start_timestamp+datetime.timedelta(hours=1)
+        output=dict(output)
+        return list(output.values())
 
     return consumption_router
