@@ -39,7 +39,7 @@ def extractSingleDeviceHistory(device_id, start_timestamp,end_timestamp):
     elements_list=states_list if states_list else (powers_list if powers_list else [])
     for i in range(len(elements_list)):
         if power_entity_id!="" and powers_list:
-            power=float(powers_list[i]["state"]) if powers_list[i]["state"] not in ["unavailable","unknown"] else 0
+            power=float(powers_list[i]["state"]) if powers_list[i]["state"] not in ["unavailable","unknown",None] else 0
             power_unit=powers_list[i]["unit_of_measurement"]
             energy_consumption=powers_list[i]["energy_consumption"]
             energy_consumption_unit=powers_list[i]["unit_of_measurement"]+"h" if powers_list[i]["unit_of_measurement"] !="" else "Wh"

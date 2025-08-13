@@ -355,7 +355,7 @@ def getHistory(entities_id:str,start_timestamp:datetime.datetime |None, end_time
                     state_consumption=0
             else:
                 try:
-                    state_consumption=float(entity_data["state"])
+                    state_consumption=float(entity_data.get("state") or 0)
                 except ValueError:
                     state_consumption=0
             entity_data.update({"unit_of_measurement":unit,"power_consumption":state_consumption})
