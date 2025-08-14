@@ -563,6 +563,28 @@ def getDeviceInfo(device_id:str):
     obj=json.loads(response.text)
     return obj
 
+def getEntityInfo(entity_id: str):
+    '''
+    Dato l'id di un'entità ritorna un dizionario personalizzato:
+    {
+        "type": <device_class>,
+        "entity_name": <name_by_user se esiste, altrimenti name>,
+        "unit_of_measurement": <unit_of_measurement>
+    }
+    '''
+    templ = '{' \
+            '"type": "{{ state_attr("' + entity_id + '", "device_class") }}",' \
+            '"entity_name": "{{ state_attr("' + entity_id + '", "name_by_user") if state_attr("' + entity_id + '", "name_by_user") else state_attr("' + entity_id + '", "name") }}",' \
+            '"unit_of_measurement": "{{ state_attr("' + entity_id + '", "unit_of_measurement") }}"' \
+            '}'
+    
+    response = post(base_url + "/template", headers=headers, json={"template": templ})
+    obj = json.loads(response.text)
+    return obj
+
+
+
+
 def getTriggerForDevice(entity_id:str,type:str)->dict:
     domain=str.split(entity_id,'.')[0]
     device_id=getDeviceId(entity_id)

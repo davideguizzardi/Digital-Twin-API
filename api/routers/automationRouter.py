@@ -5,11 +5,12 @@ from homeassistant_functions import (
     getAutomations,createAutomationDirect,deleteAutomation,
     getDevicesFast,
     getDeviceId,
-    getDeviceInfo)
+    getDeviceInfo,getEntityInfo)
 from database_functions import (
     get_configuration_item_by_key,
     get_usage_entry_for_appliance_state,
-    get_all_energy_slots_with_cost,get_minimum_cost_slot,get_minimum_energy_slots,get_maximum_cost_slot,set_automation_state
+    get_all_energy_slots_with_cost,get_minimum_cost_slot,get_minimum_energy_slots,get_maximum_cost_slot,set_automation_state,
+    get_configuration_of_device
     )
 from schemas import (
     Automation
@@ -239,6 +240,14 @@ def formatServiceString(service):
 
 #endregion
 
+def getDeviceName(device_id):
+    device_configuration=get_configuration_of_device(device_id)
+    if device_configuration:
+        return device_configuration.get("name")
+    else:
+        device_info=getDeviceInfo(device_id)
+        return device_info["name_by_user"] if device_info["name_by_user"] != "None" else device_info["name"]
+
 
 #region Support functions
 def getAutomationDetails(automation,state_map={}):
@@ -260,22 +269,33 @@ def getAutomationDetails(automation,state_map={}):
     activation_time=getAutomationTime(automation.get(trigger_key,{}))
 
     for trigger in automation.get(trigger_key,[]):
+        device_id=None
         if trigger.get("platform")=="device" or trigger.get("trigger")=="device":
-            device_info = getDeviceInfo(trigger.get('device_id'))  
-            trigger["device_name"] = device_info["name_by_user"] if device_info["name_by_user"] != "None" else device_info["name"]
-        if "entity_id" in trigger:
-            device_info = getDeviceInfo(getDeviceId(trigger.get('entity_id')))  
-            trigger["device_name"] = device_info["name_by_user"] if device_info["name_by_user"] != "None" else device_info["name"]
+            device_id = trigger.get('device_id')
+            
+        elif "entity_id" in trigger:
+            device_id = getDeviceId(trigger.get('entity_id'))
+            entity_info=getEntityInfo(trigger.get('entity_id'))
+            trigger["type"]=entity_info["type"]
+            trigger["unit_of_measurement"]=entity_info["unit_of_measurement"]
         
+        if device_id:
+            trigger["device_name"] = getDeviceName(device_id)
+
         trigger["description"]=getTriggerDescription(trigger)
 
     for condition in automation.get(condition_key,[]):
+        device_id=None
         if condition["condition"]=="device":
-            device_info = getDeviceInfo(condition.get('device_id'))  
-            condition["device_name"] = device_info["name_by_user"] if device_info["name_by_user"] != "None" else device_info["name"]
-        if "entity_id" in condition:
-            device_info = getDeviceInfo(getDeviceId(condition.get('entity_id')))  
-            condition["device_name"] = device_info["name_by_user"] if device_info["name_by_user"] != "None" else device_info["name"]
+            device_id = condition.get('device_id')
+        elif "entity_id" in condition:
+            device_id = getDeviceId(condition.get('entity_id'))
+            entity_info=getEntityInfo(condition.get('entity_id'))
+            condition.update(entity_info)
+        
+        if device_id:
+            condition["device_name"] = getDeviceName(device_id)
+
         condition["description"]=getConditionDescription(condition) 
 
     time_condition=[x for x in automation.get(condition_key,[]) if x["condition"]=="time"]
@@ -292,8 +312,7 @@ def getAutomationDetails(automation,state_map={}):
     for device_id,service,domain,action_data in temp:
 
         state=state_map[service]
-        device_info=getDeviceInfo(device_id)
-        device_name=device_info["name_by_user"] if device_info["name_by_user"]!="None" else device_info["name"]
+        device_name=getDeviceName(device_id)
 
         if state not in ["on|off","same"]:#TODO:manage also this cases
             usage_data=get_usage_entry_for_appliance_state(device_id,state)
