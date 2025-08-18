@@ -218,6 +218,7 @@ def getConsumptionRouter():
         if len(cost_slots)<168:
             return consumption_array
         i=0
+        key="total"
         while i<len(consumption_array):
             cost=(consumption_array[i]["energy_consumption"]/1000)*float(cost_slots[start_timestamp.hour+24*(start_timestamp.weekday()-1)]["slot_value"])
             if group=="hourly":
