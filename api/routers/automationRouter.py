@@ -247,6 +247,37 @@ def getDeviceName(device_id):
     else:
         device_info=getDeviceInfo(device_id)
         return device_info["name_by_user"] if device_info["name_by_user"] != "None" else device_info["name"]
+    
+def processCondition(condition):
+    """Recursively enrich a condition (including nested and/or groups)."""
+    device_id = None
+
+    if condition.get("condition") in ("and", "or"):
+        for i, sub in enumerate(condition.get("conditions", [])):
+            condition["conditions"][i] = processCondition(sub)
+        return condition
+
+    if condition.get("condition") == "device":
+        device_id = condition.get("device_id")
+        new_condition = condition.copy()
+
+    elif "entity_id" in condition:
+        eid = condition.get("entity_id")
+        device_id = getDeviceId(eid)
+        entity_info = getEntityInfo(eid)
+
+        new_condition = condition.copy()
+        new_condition.update(entity_info)
+        new_condition["entity_id"] = eid
+
+    else:
+        new_condition = condition.copy()
+
+    if device_id:
+        new_condition["device_name"] = getDeviceName(device_id)
+
+    new_condition["description"] = getConditionDescription(new_condition)
+    return new_condition
 
 
 #region Support functions
@@ -268,35 +299,55 @@ def getAutomationDetails(automation,state_map={}):
 
     activation_time=getAutomationTime(automation.get(trigger_key,{}))
 
-    for trigger in automation.get(trigger_key,[]):
-        device_id=None
-        if trigger.get("platform")=="device" or trigger.get("trigger")=="device":
-            device_id = trigger.get('device_id')
-            
+    expanded_triggers = []
+
+    for trigger in automation.get(trigger_key, []):
+        device_id = None
+
+        if trigger.get("platform") == "device" or trigger.get("trigger") == "device":
+            device_id = trigger.get("device_id")
+            new_trigger = trigger.copy()
+
         elif "entity_id" in trigger:
-            device_id = getDeviceId(trigger.get('entity_id'))
-            entity_info=getEntityInfo(trigger.get('entity_id'))
-            trigger["type"]=entity_info["type"]
-            trigger["unit_of_measurement"]=entity_info["unit_of_measurement"]
-        
+            entity_ids = trigger.get("entity_id")
+
+            if not isinstance(entity_ids, list):
+                entity_ids = [entity_ids]
+
+            for eid in entity_ids:
+                device_id = getDeviceId(eid)
+                entity_info = getEntityInfo(eid)
+
+                new_trigger = trigger.copy()
+                new_trigger["entity_id"] = eid
+                new_trigger["device_id"] = device_id
+                new_trigger["type"] = entity_info["type"]
+                new_trigger["unit_of_measurement"] = entity_info["unit_of_measurement"]
+
+                if device_id:
+                    new_trigger["device_name"] = getDeviceName(device_id)
+
+                new_trigger["description"] = getTriggerDescription(new_trigger)
+                expanded_triggers.append(new_trigger)
+
+            # skip `continue` so we don’t process `trigger` again
+            continue
+
+        else:
+            new_trigger = trigger.copy()
+
         if device_id:
-            trigger["device_name"] = getDeviceName(device_id)
+            new_trigger["device_name"] = getDeviceName(device_id)
 
-        trigger["description"]=getTriggerDescription(trigger)
+        new_trigger["description"] = getTriggerDescription(new_trigger)
+        expanded_triggers.append(new_trigger)
 
-    for condition in automation.get(condition_key,[]):
-        device_id=None
-        if condition["condition"]=="device":
-            device_id = condition.get('device_id')
-        elif "entity_id" in condition:
-            device_id = getDeviceId(condition.get('entity_id'))
-            entity_info=getEntityInfo(condition.get('entity_id'))
-            condition.update(entity_info)
-        
-        if device_id:
-            condition["device_name"] = getDeviceName(device_id)
+    automation[trigger_key] = expanded_triggers
 
-        condition["description"]=getConditionDescription(condition) 
+    expanded_conditions = [
+        processCondition(cond) for cond in automation.get(condition_key, [])
+    ]
+    automation[condition_key] = expanded_conditions
 
     time_condition=[x for x in automation.get(condition_key,[]) if x["condition"]=="time"]
     if len(time_condition)>0:
