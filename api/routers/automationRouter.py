@@ -362,25 +362,46 @@ def getAutomationDetails(automation,state_map={}):
         
     for device_id,service,domain,action_data in temp:
 
-        state=state_map[service]
-        device_name=getDeviceName(device_id)
-
-        if state not in ["on|off","same"]:#TODO:manage also this cases
-            usage_data=get_usage_entry_for_appliance_state(device_id,state)
-            #TODO:if there are no data you should extract static data from somewhere
-            if usage_data:
-                usage_data.update({
-                    "device_id":device_id,
-                    "state":state,
-                    "service":service,
-                    "domain":domain,
-                    "description":f"{formatServiceString(service)} {device_name}",
-                    "device_name":device_name,
-                    "data":action_data
+        if domain=="notify":
+            action_list.append({
+                "device_id":"",
+                "state":"notify",
+                "service":"send_notification_to",
+                "domain":domain,
+                "description":"",
+                "device_name":service.replace("_"," "),
+                "data":action_data
                 })
-                automation_average_power_drawn+=usage_data["average_power"]
-                automation_energy_consumption+=usage_data["average_power"]*(usage_data["average_duration"]/60) #Remember that use time is express in minutes
-                action_list.append(usage_data)
+        else:
+            state=state_map[service]
+            device_name=getDeviceName(device_id)
+
+            if state not in ["on|off","same"]:#TODO:manage also this cases
+                usage_data=get_usage_entry_for_appliance_state(device_id,state)
+                #TODO:if there are no data you should extract static data from somewhere
+                if usage_data:
+                    usage_data.update({
+                        "device_id":device_id,
+                        "state":state,
+                        "service":service,
+                        "domain":domain,
+                        "description":f"{formatServiceString(service)} {device_name}",
+                        "device_name":device_name,
+                        "data":action_data
+                    })
+                    automation_average_power_drawn+=usage_data["average_power"]
+                    automation_energy_consumption+=usage_data["average_power"]*(usage_data["average_duration"]/60) #Remember that use time is express in minutes
+                    action_list.append(usage_data)
+                else:
+                    action_list.append({
+                        "device_id":device_id,
+                        "state":state,
+                        "service":service,
+                        "domain":domain,
+                        "description":f"{formatServiceString(service)} {device_name}",
+                        "device_name":device_name,
+                        "data":action_data
+                    })
             else:
                 action_list.append({
                     "device_id":device_id,
@@ -390,17 +411,7 @@ def getAutomationDetails(automation,state_map={}):
                     "description":f"{formatServiceString(service)} {device_name}",
                     "device_name":device_name,
                     "data":action_data
-                })
-        else:
-            action_list.append({
-                "device_id":device_id,
-                "state":state,
-                "service":service,
-                "domain":domain,
-                "description":f"{formatServiceString(service)} {device_name}",
-                "device_name":device_name,
-                "data":action_data
-                })
+                    })
             
 
     automation_out={
@@ -450,6 +461,10 @@ def extract_action_operations(action):
         # while "service" is the service
         service=action["service"].split(".")[1] if "service" in action else action["action"].split(".")[1]
         domain=action["service"].split(".")[0] if "service" in action else action["action"].split(".")[0]
+
+        if domain =="notify":
+            pairs.append((service,service,domain,action_data))
+            return pairs
         #some actions (like notify) don't have target in that case we assume no action
         target=action.get("target")
         if target: 
@@ -574,6 +589,8 @@ def getAutomationStateMatrix(state_array,power_array, automation,day):
         for act in automation["action"]:
             indexes_state=[]
             indexes_empty=[]
+            if len(act["device_id"])==0:
+                continue
             dev_state_array=state_array[act["device_id"]]
             dev_power_array=power_array[act["device_id"]]
 
@@ -1059,7 +1076,7 @@ def getAutomationRouter(enable_demo=False):
                     try:
                         automation["suggestions"] = findBetterActivationTime(automation, dev_list, automations_details)
                     except Exception as e:
-                        logger.warning(f"Failed to generate suggestions: {e}")
+                        logger.warning(f"Failed to generate suggestions for automation {automation['id']}: {e}")
                         automation["suggestions"] = []
                 result.append(automation)
             return result

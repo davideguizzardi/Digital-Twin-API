@@ -27,7 +27,7 @@ default_configuration_values = {
     "enable_demo": ("0", ""),
     "host": ("0.0.0.0", ""),
     "port": ("8000", ""),
-    "mongourl":("mongodb://localhost:27017/","")
+    "mongourl":("mongodb://mongodb:27017/","")
 }
 
 
