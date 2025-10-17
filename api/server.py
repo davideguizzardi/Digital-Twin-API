@@ -1,6 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI,status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import JSONResponse
 
 from routers.entityRouter import getEntityRouter
 from routers.automationRouter import getAutomationRouter
@@ -21,10 +22,10 @@ from routers.logsRouter import getLogRouter
 from routers.virtualRouter import getVirtualRouter
 from routers.rulebotRouter import getRulebotRouter
 
-from homeassistant_functions import initializeToken,initializeDemo
-from database_functions import initialize_database,get_configuration_value_by_key,add_log
+from homeassistant_functions import initializeToken,initializeDemo,checkHomeAssistant
+from database_functions import initialize_database,get_configuration_value_by_key,add_log,checkMongodb,checkConsumptionExtraction
 from schemas import CONFIGURATION_PATH
-import configparser
+import requests
 import logging,uvicorn,datetime
 
 # Configure logging with Uvicorn-like format
@@ -36,6 +37,14 @@ logging.basicConfig(
 
 # Required for "levelprefix" to work (Uvicorn uses this)
 logging.getLogger().handlers[0].setFormatter(uvicorn.logging.DefaultFormatter("%(levelprefix)s %(message)s"))
+
+def check_frontend(url: str):
+    try:
+        resp = requests.get(url, timeout=3, verify=False)  # ignore SSL validation
+        return resp.status_code == 200
+    except Exception as e:
+        print(f"Frontend check failed for {url}: {e}")
+        return False
 
 
 def create_api(enable_prediction:False,enable_demo:False):
@@ -68,6 +77,35 @@ def create_api(enable_prediction:False,enable_demo:False):
 
     for router in routers:
         api.include_router(router)
+
+    @api.get("/health")
+    def health():
+        results= {
+            "fastapi": True,  # if this runs, FastAPI is alive
+            "mongodb": checkMongodb(),
+            "home_assistant": checkHomeAssistant(),
+            "digital_twin": check_frontend("https://192.168.1.118/login"),
+            "rulebot": check_frontend("https://192.168.1.118:8888")
+        }
+        all_ok = all(results.values())
+        if all_ok:
+            return results
+        else:
+            return JSONResponse(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                content={"error": "One or more services are down", "details": results}
+            )
+        
+    @api.get("/health/consumption")
+    def health_consumption():
+        consumption_extraction=checkConsumptionExtraction()
+        if consumption_extraction:
+            return {"consumption_extraction":consumption_extraction}
+        else:
+            return JSONResponse(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                content={"error": "The system didn't poll the consumption for more than one hour"}
+            )
 
         
     api.add_middleware(

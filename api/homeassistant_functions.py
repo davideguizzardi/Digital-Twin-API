@@ -86,6 +86,16 @@ def getHomeAssistantConfiguration() -> dict:
         "server_url": server_url_entry["value"],
         "token": token_entry["value"]
     }
+
+    
+def checkHomeAssistant():
+    try:
+        # reuse same base_url and headers from your integration
+        resp = get(f"{base_url}/", headers=headers, timeout=2)
+        return resp.status_code == 200
+    except Exception as e:
+        print(f"Home Assistant health error: {e}")
+        return False
     
 
 def extractEntityData(entity,skip_services=False):

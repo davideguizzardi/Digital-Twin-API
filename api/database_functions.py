@@ -742,3 +742,27 @@ def get_configured_devices():
         return entities
     
 #endregion
+
+#region Health checks 
+def checkMongodb():
+    try:
+        mongourl = get_configuration_value_by_key("mongourl")
+        client = MongoClient(mongourl["value"], serverSelectionTimeoutMS=2000)
+        client.admin.command("ping")
+        return True
+    except Exception as e:
+        print(f"MongoDB health error: {e}")
+        return False
+
+
+def checkConsumptionExtraction():
+    try:
+        maxtimestamp=fetch_one_element(DbPathEnum.CONSUMPTION,"select max(timestamp) from Device_History")
+        if maxtimestamp and maxtimestamp["max(timestamp)"]:
+            #if the data haven't been updated in an hour i assume service is down
+            return datetime.datetime.now().timestamp()-float(maxtimestamp["max(timestamp)"])<1000*60*60
+        else:
+            return False
+    except Exception as e:
+        return False
+#endregion
