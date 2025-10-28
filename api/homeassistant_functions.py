@@ -2,25 +2,23 @@ from requests import get,post,delete
 from random import randint
 from schemas import Service_In
 from urllib.parse import urlencode
-import json,datetime,time,configparser,os
+import json,datetime,time
 from dateutil import tz,parser
 
 from database_functions import get_configuration_value_by_key,add_configuration_values
 
 from demo_functions import get_all_demo_devices,get_all_demo_entities,get_demo_automations,get_demo_entity,get_single_demo_device
-
+from config_loader import ENABLE_DEMO as demo
 base_url="http://homeassistant.local:8123/api"
 headers = {}
-demo=False
-CONFIGURATION_PATH="./data/configuration.txt"
+#demo=False
 
 def buildError(response):
     return {"status_code":response.status_code,"data":response.text}
 
-def initializeDemo():
-    global demo
-    dm=get_configuration_value_by_key("enable_demo")
-    demo=dm["value"] or demo
+# def initializeDemo():
+#     global demo
+#     demo=ENABLE_DEMO
 
 
 def initializeToken():

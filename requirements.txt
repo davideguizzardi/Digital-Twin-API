@@ -9,3 +9,7 @@ Requests==2.31.0
 uvicorn==0.30.1
 tensorflow==2.18.0
 pymongo==4.13.2
+pymysql==1.1.2
+pyjwt==2.10.2
+bcrypt==5.0.0
+python-dotenv==1.1.1

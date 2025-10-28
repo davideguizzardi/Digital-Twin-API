@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel,EmailStr
 import json
 
 class Service_In(BaseModel):
@@ -120,7 +120,25 @@ class Log_List(BaseModel):
 
 class AutomationStateUpdate(BaseModel):
     automation_id: str
-    state: str 
+    state: str
+    
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str
+
+class UserInfo(BaseModel):
+    user_id: int
+    email: str
+
+class UserCreateRequest(BaseModel):
+    username: str
+    email: EmailStr
+    password: str
+    use_sqlite: bool = True
 
 
 
@@ -193,8 +211,6 @@ actions={
 				}
 			}
 }
-
-CONFIGURATION_PATH="./data/configuration.txt"
 def point_in_polygon(x, y, poly_points):
     """
     Ray casting algorithm to check if a point is inside a polygon.

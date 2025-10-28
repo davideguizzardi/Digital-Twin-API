@@ -1,8 +1,10 @@
 import sqlite3
 from contextlib import contextmanager
+from config_loader import MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE
+import pymysql
 
 from enum import StrEnum
-import os.path,logging
+import logging
 from pymongo import MongoClient
 import datetime
 #DB_PATH="./data/digital_twin.db"
@@ -20,7 +22,7 @@ default_configuration_values = {
     "cost_slot_1":("0.1","€/kWh"),
     "cost_slot_2":("0.1","€/kWh"),
     "power_threshold":("3000","W"),
-    "server_url": ("http://homeassistant.local:8123/api", ""),
+    "server_url": ("http://homeassistant:8123/api", ""),
     "token": ("token", ""),
     "w_to_gco2": ("0.431", "kgCO2/kWh"),
     "enable_prediction": ("0", ""),
@@ -174,7 +176,8 @@ def initialize_database():
         "Energy_Timeslot": 'CREATE TABLE "Energy_Timeslot" ("day" INTEGER, "hour" INTEGER, "slot" INTEGER);',
         "Map_config": 'CREATE TABLE "Map_config" ("id" TEXT NOT NULL, "x" INTEGER NOT NULL, "y" INTEGER NOT NULL, "floor" INTEGER NOT NULL, PRIMARY KEY("id"));',
         "Service_logs": 'CREATE TABLE "Service_logs" ("user" TEXT NOT NULL, "service" TEXT NOT NULL, "target" TEXT, "payload" TEXT, "timestamp" INTEGER NOT NULL);',
-        "User_Preferences": 'CREATE TABLE "User_Preferences" ("user_id" TEXT NOT NULL, "preferences" TEXT, "data_collection" INTEGER, "data_disclosure" INTEGER, PRIMARY KEY("user_id"));'
+        "User_Preferences": 'CREATE TABLE "User_Preferences" ("user_id" TEXT NOT NULL, "preferences" TEXT, "data_collection" INTEGER, "data_disclosure" INTEGER, PRIMARY KEY("user_id"));',
+        "User": 'CREATE TABLE "User" ("id" INTEGER PRIMARY KEY AUTOINCREMENT, "username" TEXT NOT NULL, "email" TEXT NOT NULL UNIQUE, "email_verified_at" TEXT, "password" TEXT NOT NULL, "remember_token" TEXT, "created_at" TEXT, "updated_at" TEXT, "preference" TEXT, "url_photo" TEXT, "privacy_1" INTEGER, "privacy_2" INTEGER);'
     }
 
     consumption_db_tables = {
@@ -765,4 +768,17 @@ def checkConsumptionExtraction():
             return False
     except Exception as e:
         return False
+#endregion
+
+
+
+#region MySQL
+def get_mysql_connection():
+    return pymysql.connect(
+        host=MYSQL_HOST,
+        user=MYSQL_USER,
+        password=MYSQL_PASSWORD,
+        database=MYSQL_DATABASE,
+        cursorclass=pymysql.cursors.DictCursor
+    )
 #endregion

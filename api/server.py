@@ -1,4 +1,4 @@
-from fastapi import FastAPI,status
+from fastapi import FastAPI,status,HTTPException,Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
@@ -21,12 +21,14 @@ from routers.deviceRouter import getDeviceRouter
 from routers.logsRouter import getLogRouter
 from routers.virtualRouter import getVirtualRouter
 from routers.rulebotRouter import getRulebotRouter
+from routers.authenticationRouter import getAuthenticationRouter,get_current_user
+from routers.healthCheckRouter import getHealthRouter
 
-from homeassistant_functions import initializeToken,initializeDemo,checkHomeAssistant
-from database_functions import initialize_database,get_configuration_value_by_key,add_log,checkMongodb,checkConsumptionExtraction
-from schemas import CONFIGURATION_PATH
-import requests
-import logging,uvicorn,datetime
+from homeassistant_functions import initializeToken,checkHomeAssistant
+from database_functions import initialize_database,add_log,checkMongodb,checkConsumptionExtraction
+from config_loader import HOST, PORT, ENABLE_DEMO, ENABLE_PREDICTION,ENABLE_AUTHENTICATION
+import requests,logging,uvicorn,datetime,os
+
 
 # Configure logging with Uvicorn-like format
 logging.basicConfig(
@@ -38,19 +40,19 @@ logging.basicConfig(
 # Required for "levelprefix" to work (Uvicorn uses this)
 logging.getLogger().handlers[0].setFormatter(uvicorn.logging.DefaultFormatter("%(levelprefix)s %(message)s"))
 
-def check_frontend(url: str):
-    try:
-        resp = requests.get(url, timeout=3, verify=False)  # ignore SSL validation
-        return resp.status_code == 200
-    except Exception as e:
-        print(f"Frontend check failed for {url}: {e}")
-        return False
 
 
 def create_api(enable_prediction:False,enable_demo:False):
     api=FastAPI(title="Digial Twin API",docs_url="/")
 
-    routers=[
+    open_routers=[
+        getAuthenticationRouter(),
+        getVirtualRouter(),
+        getRulebotRouter(),
+        getHealthRouter()
+    ]
+
+    protected_routers=[
         getEntityRouter(enable_demo),
         getDeviceRouter(enable_demo),
         getHistoryRouter(),
@@ -67,46 +69,17 @@ def create_api(enable_prediction:False,enable_demo:False):
         getMapConfigurationRouter(),
         getEnergyCalendarConfigurationRouter(),
         getLogRouter(),
-        getVirtualRouter(),
-        getRulebotRouter()
     ]
 
     if enable_prediction:
         from routers.predictionRouter import getPredictionRouter
-        routers.append(getPredictionRouter())
+        protected_routers.append(getPredictionRouter()) 
 
-    for router in routers:
+    for router in open_routers:
         api.include_router(router)
 
-    @api.get("/health")
-    def health():
-        results= {
-            "fastapi": True,  # if this runs, FastAPI is alive
-            "mongodb": checkMongodb(),
-            "home_assistant": checkHomeAssistant(),
-            "digital_twin": check_frontend("https://192.168.1.118/login"),
-            "rulebot": check_frontend("https://192.168.1.118:8888")
-        }
-        all_ok = all(results.values())
-        if all_ok:
-            return results
-        else:
-            return JSONResponse(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                content={"error": "One or more services are down", "details": results}
-            )
-        
-    @api.get("/health/consumption")
-    def health_consumption():
-        consumption_extraction=checkConsumptionExtraction()
-        if consumption_extraction:
-            return {"consumption_extraction":consumption_extraction}
-        else:
-            return JSONResponse(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                content={"error": "The system didn't poll the consumption for more than one hour"}
-            )
-
+    for router in protected_routers:
+        api.include_router(router,dependencies=[Depends(get_current_user)]) if ENABLE_AUTHENTICATION else api.include_router(router)
         
     api.add_middleware(
     CORSMiddleware,
@@ -128,29 +101,16 @@ def main():
 
     initialize_database()
 
-    host=get_configuration_value_by_key("host")
-    host=host["value"] or "0.0.0.0"
-
-    port=get_configuration_value_by_key("port")
-    port=int(port["value"] or 8000)
-    
-    enable_prediction=get_configuration_value_by_key("enable_prediction")
-    enable_prediction=enable_prediction["value"] =="1"
-
-        
-    enable_demo=get_configuration_value_by_key("enable_demo")
-    enable_demo=enable_demo["value"]=="1"
-
-    if enable_demo:
-        initializeDemo()
+    if ENABLE_DEMO:
+        #initializeDemo()
         logger.info("Running server in demo mode.")
     else:
         logger.info("Initializing home assistant configuration and token...")
         initializeToken()
 
-    api = create_api(enable_prediction,enable_demo)
+    api = create_api(ENABLE_PREDICTION,ENABLE_DEMO)
     add_log([("System","Startup","DTAPI","{}",datetime.datetime.now().replace(microsecond=0).timestamp())])
-    uvicorn.run(api, host=host,port=port,log_level="debug")
+    uvicorn.run(api, host=HOST,port=PORT,log_level="debug")
 
 if __name__ == "__main__":
     main()
