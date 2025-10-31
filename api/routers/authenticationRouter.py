@@ -68,7 +68,7 @@ def getAuthenticationRouter():
         token = create_access_token({"user_id": user["id"], "email": data.email})
         return {"access_token": token, "token_type": "bearer"}
 
-    @auth_router.put("/register")
+    @auth_router.post("/register")
     def register(user_data: UserCreateRequest):
         # Hash password and convert to Laravel $2y$ format
         hashed_pw = bcrypt.hashpw(user_data.password.encode(), bcrypt.gensalt(rounds=12)).decode()
