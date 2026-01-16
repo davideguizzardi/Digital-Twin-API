@@ -22,8 +22,8 @@ def getHealthRouter():
             "fastapi": True,  # if this runs, FastAPI is alive
             "mongodb": checkMongodb(),
             "home_assistant": checkHomeAssistant(),
-            "digital_twin": check_frontend("https://192.168.1.118/login"),
-            "rulebot": check_frontend("https://192.168.1.118:8888")
+            "digital_twin": check_frontend("https://nginx/login"),
+            "rulebot": check_frontend("https://rulebot:8888")
         }
         all_ok = all(results.values())
         if all_ok:

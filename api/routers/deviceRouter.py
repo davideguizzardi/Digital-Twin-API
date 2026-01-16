@@ -1,14 +1,83 @@
 from fastapi import APIRouter,HTTPException
 from homeassistant_functions import (
     getDevicesFast,getDevicesNameAndId,
-    getSingleDeviceFast)
+    getSingleDeviceFast,getLastLogbookEntry)
 from database_functions import (
     get_all_appliances_usage_entries,get_usage_entry_for_appliance,get_configuration_of_device,get_names_and_id_configuration,
-    get_map_entity,get_all_rooms_of_floor,get_groups_for_device,get_configured_devices)
+    get_map_entity,get_all_rooms_of_floor,get_groups_for_device,get_configured_devices,get_last_event_for_target)
 from collections import defaultdict
 from demo_functions import get_all_demo_devices
 from schemas import find_room
 import json
+
+from datetime import datetime, timezone, timedelta
+
+def merge_last_event_and_logbook(last_event: dict, last_booklog: dict):
+    """
+    Merge Home Assistant last_event and last_booklog data into a unified entry.
+    Rules:
+      - Convert UTC datetime (from last_booklog) to local time.
+      - If datetimes match (same moment), merge fields.
+      - If different, newer wins.
+      - If logbook is an automation trigger, build special entry.
+    """
+    event_timestamp= last_event.get("timestamp") if last_event else None
+    # --- Parse last_booklog datetime (UTC) ---
+    log_timestamp=None
+    if last_booklog and "when" in last_booklog:
+        log_timestamp = datetime.fromisoformat(last_booklog["when"].replace("Z", "+00:00")).timestamp()
+
+    # --- If both exist, compare times ---
+    if event_timestamp and log_timestamp:
+        #same manual event
+        if abs((event_timestamp - log_timestamp)) < 60:
+            return {
+                "actor": last_event.get("actor", last_booklog.get("context_domain")),
+                "state": last_booklog.get("state"),
+                "domain":"manual_command",
+                "service": last_event.get("event", last_booklog.get("context_service")).replace("Service:",""),
+                "datetime": datetime.fromtimestamp(event_timestamp).astimezone().strftime("%d/%m/%Y %H:%M")
+            }
+        # Rare occurency in which the DT get an event and HA didnt
+        elif event_timestamp > log_timestamp:
+            return {
+                "actor": last_event.get("actor"),
+                "state": None,
+                "domain":"manual_command",
+                "service": last_event.get("event").replace("Service:",""),
+                "datetime": datetime.fromtimestamp(event_timestamp).astimezone().strftime("%d/%m/%Y %H:%M")
+            }
+        else:
+            #A more recent automation activation changed device state (no local log can exist)
+            return {
+            "actor": last_booklog.get("context_name", "automation"),
+            "state": last_booklog.get("state"),
+            "domain": "automation_triggered",
+            "service":"automation",
+            "datetime": datetime.fromtimestamp(log_timestamp).astimezone().strftime("%d/%m/%Y %H:%M")
+            }
+
+    # --- If only one exists ---
+    if last_event:
+        return {
+            "actor": last_event.get("actor"),
+            "state": None,
+            "domain":"manual_command",
+            "service": last_event.get("event").replace("Service:",""),
+            "datetime": datetime.fromtimestamp(event_timestamp).astimezone().strftime("%d/%m/%Y %H:%M")
+        }
+
+    if last_booklog:
+        return {
+            "actor": last_booklog.get("context_domain", "unknown"),
+            "state": last_booklog.get("state"),
+            "domain":last_booklog.get("context_event_type",""),
+            "service": last_booklog.get("context_service", "unknown"),
+            "datetime": datetime.fromtimestamp(log_timestamp).astimezone().strftime("%d/%m/%Y %H:%M")
+        }
+
+    return {}
+
 
 
 def getDeviceRouter(enable_demo=False):
@@ -53,6 +122,12 @@ def getDeviceRouter(enable_demo=False):
                     }
                 group_data=get_groups_for_device(dev["device_id"])
                 dev["groups"]=group_data or []
+
+                if len(dev["state_entity_id"])>0:
+                    last_local_log = get_last_event_for_target(dev["state_entity_id"])
+                    last_ha_log=getLastLogbookEntry(dev["state_entity_id"]) #TODO:unify functions notations
+                    dev["last_event"]=merge_last_event_and_logbook(last_local_log,last_ha_log)
+ 
 
         if res["status_code"]!=200:
             raise HTTPException(status_code=res["status_code"],detail=res["data"])

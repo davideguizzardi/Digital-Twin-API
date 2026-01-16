@@ -619,6 +619,36 @@ def add_log(logs_list:list):
                 (actor,event,target,payload,timestamp) 
                 VALUES (?,?,?,?,?)"""
     return add_multiple_elements(DbPathEnum.LOGS,query,logs_list)
+
+def get_all_logs():
+    return fetch_multiple_elements(DbPathEnum.LOGS,f"select actor, event,target,payload, strftime('%d/%m/%Y %H:%M', timestamp, 'unixepoch') AS datetime from Logs order by actor,timestamp")
+
+def get_logs_for_actor(actor: str):
+    """
+    Fetch all logs for a specific actor, ordered by timestamp.
+    Returns: list of dicts with fields actor, event, target, payload, datetime
+    """
+    query = f"""
+        SELECT actor, event, target, payload,
+               strftime('%d/%m/%Y %H:%M', timestamp, 'unixepoch','localtime') AS datetime
+        FROM Logs
+        WHERE actor = ?
+        ORDER BY timestamp
+    """
+    return fetch_multiple_elements(DbPathEnum.LOGS, query, (actor,))
+
+
+def get_last_event_for_target(target: str):
+    query = """
+        SELECT actor, event, target, payload,timestamp
+        FROM Logs
+        WHERE target = ?
+        ORDER BY timestamp DESC
+        LIMIT 1
+    """
+    return fetch_one_element(DbPathEnum.LOGS, query, (target,))
+
+
 #endregion
 
 #region Group configuration

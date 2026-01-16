@@ -620,7 +620,6 @@ def getListOfSupported(supported_features:int)->list[int]:
     return res
 
 from collections import defaultdict
-from database_functions import add_multiple_elements
 
 def main():
     initializeToken()
@@ -630,6 +629,44 @@ def main():
     if res["status_code"]==200:
         with open("devices.json", "w") as json_file:
             json.dump({"list":res["data"]}, json_file, indent=4) 
+
+def getLastLogbookEntry(entity_id):
+    """
+    Ottiene l'ultima voce del logbook per un'entità specificata in Home Assistant.
+    Ritorna un dizionario con i dettagli dell'ultima voce del logbook,
+    oppure {} in caso di errore o se non ci sono voci.
+    """
+    try:
+        days_backward=5
+        start_time = (datetime.datetime.now() - datetime.timedelta(days=days_backward)).isoformat()
+        end_time = datetime.datetime.now().isoformat()
+
+        url = f"{base_url}/logbook/{start_time}"
+
+        params = {
+            "end_time": end_time,
+            "entity": entity_id
+        }
+
+        response = get(url, headers=headers, params=params)
+
+        if response.status_code != 200:
+            print(f"Errore nel recupero del logbook per {entity_id}: {response.status_code}")
+            return {}
+
+        data = response.json()
+        if not data:
+            return {}
+
+        # The API returns entries sorted by time ascending, so the last one is the most recent
+        last_entry = data[-1]
+
+        return last_entry
+
+    except Exception as e:
+        print(f"Errore durante il recupero del logbook per {entity_id}: {e}")
+        return {}
+
 
 
 if __name__ == "__main__":

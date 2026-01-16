@@ -23,11 +23,12 @@ from routers.virtualRouter import getVirtualRouter
 from routers.rulebotRouter import getRulebotRouter
 from routers.authenticationRouter import getAuthenticationRouter,get_current_user
 from routers.healthCheckRouter import getHealthRouter
+from routers.simulationRouter import getSimulationRouter
 
 from homeassistant_functions import initializeToken,checkHomeAssistant
 from database_functions import initialize_database,add_log,checkMongodb,checkConsumptionExtraction
 from config_loader import HOST, PORT, ENABLE_DEMO, ENABLE_PREDICTION,ENABLE_AUTHENTICATION
-import requests,logging,uvicorn,datetime,os
+import requests,logging,uvicorn,datetime,json
 
 
 # Configure logging with Uvicorn-like format
@@ -58,6 +59,7 @@ def create_api(enable_prediction:False,enable_demo:False):
         getHistoryRouter(),
         getConsumptionRouter(),
         getAutomationRouter(enable_demo),
+        getSimulationRouter(),
         getServiceRouter(),
         getConfigurationRouter(),
         getHomeAssistantConfigurationRouter(),
@@ -80,6 +82,12 @@ def create_api(enable_prediction:False,enable_demo:False):
 
     for router in protected_routers:
         api.include_router(router,dependencies=[Depends(get_current_user)]) if ENABLE_AUTHENTICATION else api.include_router(router)
+
+
+    @api.get("/diary")
+    def Get_Diary_Submission():
+        with open("./data/diary.json", "r") as file:
+            return json.load(file)
         
     api.add_middleware(
     CORSMiddleware,
