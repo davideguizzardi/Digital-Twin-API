@@ -1,0 +1,533 @@
+[
+  {
+    "device_class": "sensor",
+    "device_id": "a08683fbae146af462581836c2679a69",
+    "energy_entity_id": "",
+    "list_of_entities": [
+      {
+        "entity_class": "timestamp",
+        "entity_id": "sensor.sun_next_dawn",
+        "name": " Prossima alba",
+        "state": "2026-01-29T06:12:45+00:00",
+        "unit_of_measurement": null
+      },
+      {
+        "entity_class": "timestamp",
+        "entity_id": "sensor.sun_next_dusk",
+        "name": " Prossimo crepuscolo",
+        "state": "2026-01-28T16:52:05+00:00",
+        "unit_of_measurement": null
+      },
+      {
+        "entity_class": "timestamp",
+        "entity_id": "sensor.sun_next_midnight",
+        "name": " Prossima mezzanotte",
+        "state": "2026-01-28T23:32:51+00:00",
+        "unit_of_measurement": null
+      },
+      {
+        "entity_class": "timestamp",
+        "entity_id": "sensor.sun_next_noon",
+        "name": " Prossimo mezzogiorno",
+        "state": "2026-01-28T11:32:34+00:00",
+        "unit_of_measurement": null
+      },
+      {
+        "entity_class": "timestamp",
+        "entity_id": "sensor.sun_next_rising",
+        "name": " Prossima levata",
+        "state": "2026-01-29T06:45:25+00:00",
+        "unit_of_measurement": null
+      },
+      {
+        "entity_class": "timestamp",
+        "entity_id": "sensor.sun_next_setting",
+        "name": " Prossimo tramonto",
+        "state": "2026-01-28T16:19:18+00:00",
+        "unit_of_measurement": null
+      }
+    ],
+    "manufacturer": null,
+    "model": null,
+    "name": "Sun",
+    "power_entity_id": "",
+    "state": "",
+    "state_entity_id": "",
+    "category": "sensor",
+    "show": false,
+    "groups": []
+  },
+  {
+    "device_class": "device_tracker",
+    "device_id": "3fcfb66d3396eba2ea7751dbff47f559",
+    "energy_entity_id": "device_tracker.telefono_natalia",
+    "list_of_entities": [
+      {
+        "entity_class": null,
+        "entity_id": "device_tracker.telefono_natalia",
+        "name": "",
+        "state": "unknown",
+        "unit_of_measurement": null
+      }
+    ],
+    "manufacturer": "realme",
+    "model": "RMX3867",
+    "name": "Telefono Natalia",
+    "power_entity_id": "",
+    "state": "unknown",
+    "state_entity_id": "device_tracker.telefono_natalia",
+    "category": "device_tracker",
+    "show": true,
+    "groups": []
+  },
+  {
+    "device_class": "device_tracker",
+    "device_id": "232277b67997544a74cddc5ba64daa24",
+    "energy_entity_id": "device_tracker.telefono_vj",
+    "list_of_entities": [
+      {
+        "entity_class": null,
+        "entity_id": "device_tracker.telefono_vj",
+        "name": "",
+        "state": "unknown",
+        "unit_of_measurement": null
+      }
+    ],
+    "manufacturer": "Xiaomi",
+    "model": "24122RKC7G",
+    "name": "Vladimir's phone",
+    "power_entity_id": "",
+    "state": "unknown",
+    "state_entity_id": "device_tracker.telefono_vj",
+    "category": "device_tracker",
+    "show": true,
+    "groups": []
+  },
+  {
+    "device_class": "sensor",
+    "device_id": "a7726610bf0ca2857b9fdc325a030be2",
+    "energy_entity_id": "",
+    "list_of_entities": [
+      {
+        "entity_class": "temperature",
+        "entity_id": "sensor.sensore_h_t_sala_temperature",
+        "name": " Temperature",
+        "state": "19.38",
+        "unit_of_measurement": "°C"
+      },
+      {
+        "entity_class": "humidity",
+        "entity_id": "sensor.sensore_h_t_sala_humidity",
+        "name": " Humidity",
+        "state": "45.5",
+        "unit_of_measurement": "%"
+      }
+    ],
+    "manufacturer": "Shelly",
+    "model": "Shelly H&T",
+    "name": "Sensor H&T Living room",
+    "power_entity_id": "",
+    "state": "",
+    "state_entity_id": "",
+    "category": "thermostat",
+    "show": true,
+    "map_data": {
+      "x": 45,
+      "y": 59,
+      "floor": 0,
+      "room": null
+    },
+    "groups": []
+  },
+  {
+    "device_class": "sensor",
+    "device_id": "6705acb2dcce1b959027571ad3452e18",
+    "energy_entity_id": "",
+    "list_of_entities": [
+      {
+        "entity_class": "temperature",
+        "entity_id": "sensor.sensore_h_t_camera_matrimoniale_temperature",
+        "name": " Temperature",
+        "state": "unknown",
+        "unit_of_measurement": "°C"
+      },
+      {
+        "entity_class": "humidity",
+        "entity_id": "sensor.sensore_h_t_camera_matrimoniale_humidity",
+        "name": " Humidity",
+        "state": "unknown",
+        "unit_of_measurement": "%"
+      }
+    ],
+    "manufacturer": "Shelly",
+    "model": "Shelly H&T",
+    "name": "Sensor H&T Bedroom",
+    "power_entity_id": "",
+    "state": "",
+    "state_entity_id": "",
+    "category": "thermostat",
+    "show": true,
+    "map_data": {
+      "x": 35,
+      "y": 20,
+      "floor": 0,
+      "room": null
+    },
+    "groups": []
+  },
+  {
+    "device_class": "sensor",
+    "device_id": "3fed8a9201c6291fb6515cc6d64b4ca8",
+    "energy_entity_id": "",
+    "list_of_entities": [
+      {
+        "entity_class": "temperature",
+        "entity_id": "sensor.sensore_h_t_gaming_room_temperature",
+        "name": " Temperature",
+        "state": "19.25",
+        "unit_of_measurement": "°C"
+      },
+      {
+        "entity_class": "humidity",
+        "entity_id": "sensor.sensore_h_t_gaming_room_humidity",
+        "name": " Humidity",
+        "state": "42.0",
+        "unit_of_measurement": "%"
+      }
+    ],
+    "manufacturer": "Shelly",
+    "model": "Shelly H&T",
+    "name": "Sensor H&T Office",
+    "power_entity_id": "",
+    "state": "",
+    "state_entity_id": "",
+    "category": "thermostat",
+    "show": true,
+    "map_data": {
+      "x": 83,
+      "y": 16,
+      "floor": 0,
+      "room": null
+    },
+    "groups": []
+  },
+  {
+    "device_class": "weather",
+    "device_id": "e51e565216a03f7b766e6d5ec74c3711",
+    "energy_entity_id": "weather.forecast_casa",
+    "list_of_entities": [],
+    "manufacturer": "Met.no",
+    "model": "Forecast",
+    "name": "Forecast",
+    "power_entity_id": "",
+    "state": "rainy",
+    "state_entity_id": "weather.forecast_casa",
+    "category": "weather",
+    "show": true,
+    "groups": []
+  },
+  {
+    "device_class": "switch",
+    "device_id": "87baaa618296f782d48c37c33bdaa26e",
+    "energy_entity_id": "switch.lavatrice",
+    "list_of_entities": [
+      {
+        "entity_class": "power",
+        "entity_id": "sensor.lavatrice_power",
+        "name": "Power",
+        "state": "0",
+        "unit_of_measurement": "W"
+      },
+      {
+        "entity_class": null,
+        "entity_id": "switch.lavatrice",
+        "name": "",
+        "state": "off",
+        "unit_of_measurement": null
+      }
+    ],
+    "manufacturer": "Shelly",
+    "model": "Shelly Plus Plug S",
+    "name": "Washing machine",
+    "power_entity_id": "sensor.lavatrice_power",
+    "state": "off",
+    "state_entity_id": "switch.lavatrice",
+    "category": "washing_machine",
+    "show": true,
+    "map_data": {
+      "x": 71,
+      "y": 84,
+      "floor": 0,
+      "room": null
+    },
+    "groups": []
+  },
+  {
+    "device_class": "switch",
+    "device_id": "45736be47d57449948efdc372dc2a969",
+    "energy_entity_id": "switch.asciugatrice",
+    "list_of_entities": [
+      {
+        "entity_class": "power",
+        "entity_id": "sensor.asciugatrice_power",
+        "name": "Power",
+        "state": "0",
+        "unit_of_measurement": "W"
+      },
+      {
+        "entity_class": null,
+        "entity_id": "switch.asciugatrice",
+        "name": "",
+        "state": "off",
+        "unit_of_measurement": null
+      }
+    ],
+    "manufacturer": "Shelly",
+    "model": "Shelly Plus Plug S",
+    "name": "Dryer",
+    "power_entity_id": "sensor.asciugatrice_power",
+    "state": "off",
+    "state_entity_id": "switch.asciugatrice",
+    "category": "washing_machine",
+    "show": true,
+    "map_data": {
+      "x": 54,
+      "y": 30,
+      "floor": 0,
+      "room": null
+    },
+    "groups": []
+  },
+  {
+    "device_class": "switch",
+    "device_id": "a4a30f2c34fecd0cf727623bdadbabab",
+    "energy_entity_id": "switch.forno_a_microonde",
+    "list_of_entities": [
+      {
+        "entity_class": "power",
+        "entity_id": "sensor.forno_a_microonde_power",
+        "name": "Power",
+        "state": "0",
+        "unit_of_measurement": "W"
+      },
+      {
+        "entity_class": null,
+        "entity_id": "switch.forno_a_microonde",
+        "name": "",
+        "state": "off",
+        "unit_of_measurement": null
+      }
+    ],
+    "manufacturer": "Shelly",
+    "model": "Shelly Plus Plug S",
+    "name": "Microwave",
+    "power_entity_id": "sensor.forno_a_microonde_power",
+    "state": "off",
+    "state_entity_id": "switch.forno_a_microonde",
+    "category": "microwave",
+    "show": true,
+    "map_data": {
+      "x": 54,
+      "y": 64,
+      "floor": 0,
+      "room": null
+    },
+    "groups": []
+  },
+  {
+    "device_class": "switch",
+    "device_id": "92d49ae0e807d4912277db62f9a869d1",
+    "energy_entity_id": "switch.televisione",
+    "list_of_entities": [
+      {
+        "entity_class": "power",
+        "entity_id": "sensor.televisione_power",
+        "name": "Power",
+        "state": "0",
+        "unit_of_measurement": "W"
+      },
+      {
+        "entity_class": null,
+        "entity_id": "switch.televisione",
+        "name": "",
+        "state": "off",
+        "unit_of_measurement": null
+      }
+    ],
+    "manufacturer": "Shelly",
+    "model": "Shelly Plus Plug IT",
+    "name": "Television",
+    "power_entity_id": "sensor.televisione_power",
+    "state": "off",
+    "state_entity_id": "switch.televisione",
+    "category": "tv",
+    "show": true,
+    "map_data": {
+      "x": 16,
+      "y": 68,
+      "floor": 0,
+      "room": null
+    },
+    "groups": []
+  },
+  {
+    "device_class": "light",
+    "device_id": "bccd03c5c33725c7754acb533699edc0",
+    "energy_entity_id": "light.shellycolorbulb_08f9e0701c78",
+    "list_of_entities": [
+      {
+        "entity_class": null,
+        "entity_id": "light.shellycolorbulb_08f9e0701c78",
+        "name": "",
+        "state": "off",
+        "unit_of_measurement": null
+      }
+    ],
+    "manufacturer": "Shelly",
+    "model": "Shelly Bulb RGBW",
+    "name": "Bedroom light",
+    "power_entity_id": "sensor.shellycolorbulb_08f9e0701c78_power",
+    "state": "off",
+    "state_entity_id": "light.shellycolorbulb_08f9e0701c78",
+    "category": "light",
+    "show": true,
+    "map_data": {
+      "x": 20,
+      "y": 19,
+      "floor": 0,
+      "room": null
+    },
+    "groups": []
+  },
+  {
+    "device_class": "light",
+    "device_id": "c859fca361dc1d7bfe1e280bacd73533",
+    "energy_entity_id": "light.shellycolorbulb_08f9e0701fe0",
+    "list_of_entities": [
+      {
+        "entity_class": null,
+        "entity_id": "light.shellycolorbulb_08f9e0701fe0",
+        "name": "",
+        "state": "off",
+        "unit_of_measurement": null
+      }
+    ],
+    "manufacturer": "Shelly",
+    "model": "Shelly Bulb RGBW",
+    "name": "Bathroom light",
+    "power_entity_id": "sensor.shellycolorbulb_08f9e0701fe0_power",
+    "state": "off",
+    "state_entity_id": "light.shellycolorbulb_08f9e0701fe0",
+    "category": "light",
+    "show": true,
+    "map_data": {
+      "x": 45,
+      "y": 14,
+      "floor": 0,
+      "room": null
+    },
+    "groups": []
+  },
+  {
+    "device_class": "switch",
+    "device_id": "982213c1e10580008de477d4ca16b77b",
+    "energy_entity_id": "siren.smart_hub_sensori",
+    "list_of_entities": [
+      {
+        "entity_class": null,
+        "entity_id": "siren.smart_hub_sensori",
+        "name": "",
+        "state": "off",
+        "unit_of_measurement": null
+      }
+    ],
+    "manufacturer": "TP-Link",
+    "model": "H100",
+    "name": "Smart Hub",
+    "power_entity_id": "",
+    "state": "off",
+    "state_entity_id": "switch.smart_hub_sensori_led",
+    "category": "doorbell",
+    "show": true,
+    "map_data": {
+      "x": 44,
+      "y": 69,
+      "floor": 0,
+      "room": null
+    },
+    "groups": []
+  },
+  {
+    "device_class": "sensor",
+    "device_id": "ad38a08f5d6562332ac2edecf9fd9b82",
+    "energy_entity_id": "",
+    "list_of_entities": [
+      {
+        "entity_class": "motion",
+        "entity_id": "binary_sensor.sensore_di_movimento_soggiorno_movimento",
+        "name": "Movimento",
+        "state": "off",
+        "unit_of_measurement": null
+      }
+    ],
+    "manufacturer": "TP-Link",
+    "model": "T100",
+    "name": "Motion sensor living room",
+    "power_entity_id": "",
+    "state": "",
+    "state_entity_id": "",
+    "category": "sensor",
+    "show": true,
+    "map_data": {
+      "x": 18,
+      "y": 56,
+      "floor": 0,
+      "room": null
+    },
+    "groups": []
+  },
+  {
+    "device_class": "sensor",
+    "device_id": "9ad6fb4d4b286572df36945c781d34ba",
+    "energy_entity_id": "",
+    "list_of_entities": [
+      {
+        "entity_class": "motion",
+        "entity_id": "binary_sensor.sensore_di_movimento_camera_movimento",
+        "name": "Movimento",
+        "state": "off",
+        "unit_of_measurement": null
+      }
+    ],
+    "manufacturer": "TP-Link",
+    "model": "T100",
+    "name": "Motion sensor bedroom",
+    "power_entity_id": "",
+    "state": "",
+    "state_entity_id": "",
+    "category": "sensor",
+    "show": true,
+    "map_data": {
+      "x": 7,
+      "y": 22,
+      "floor": 0,
+      "room": null
+    },
+    "groups": []
+  },
+  {
+    "device_class": "media_player",
+    "device_id": "ffe5dc7e1c8fe6d14b651a33480d20d1",
+    "energy_entity_id": "media_player.tv",
+    "list_of_entities": [],
+    "manufacturer": "Changhong",
+    "model": "AI PONT",
+    "name": "TV",
+    "power_entity_id": "",
+    "state": "off",
+    "state_entity_id": "media_player.tv",
+    "category": "media_player",
+    "show": true,
+    "groups": []
+  }
+]

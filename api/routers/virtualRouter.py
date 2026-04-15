@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-import json
+import json,os
 
 def getVirtualRouter():
     virtual_router = APIRouter(tags=["Virtual"], prefix="/virtual")
@@ -17,6 +17,17 @@ def getVirtualRouter():
             if not get_only_names
             else virtual_context["device_context_only_names"]
         )
+    
+    @virtual_router.get("/device/{home}")
+    def Get_All_Devices_Home(home=""):
+        file_path = f"./data/{home}/device.json"
+
+        if not os.path.isfile(file_path):
+            raise HTTPException(status_code=404, detail="House not found")
+        
+        with open(file_path, "r") as file:
+            return json.load(file)
+
 
     @virtual_router.get("/entity")
     def Get_All_Virtual_Entities():

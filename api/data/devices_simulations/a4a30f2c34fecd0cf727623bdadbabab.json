@@ -1,0 +1,15 @@
+{
+  "k_best": 2,
+  "device_name":"Microonde",
+  "updated_at": "2026-01-23T15:05:25.406439Z",
+  "clusters": [
+    {
+      "id": "On",
+      "medoid": [
+        1157.6
+      ],
+      "count": 43,
+      "percent": 100
+    }
+  ]
+}

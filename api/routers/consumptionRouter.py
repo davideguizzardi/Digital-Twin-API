@@ -187,13 +187,25 @@ def getConsumptionRouter():
         return res
     
     @consumption_router.get("/device")
-    def Get_Device_Consumption_Fast(device_id:str="81faa423066ee532f37f15f1897a699d",start_timestamp:datetime.date=datetime.date.today(),end_timestamp:datetime.date=datetime.date.today(),group:str="hourly"):
+    def Get_Device_Consumption_Fast(device_ids:str="81faa423066ee532f37f15f1897a699d",start_timestamp:datetime.date=datetime.date.today(),end_timestamp:datetime.date=datetime.date.today(),group:str="hourly"):
         start_timestamp=datetime.datetime.combine(start_timestamp, datetime.time.min).astimezone(tz.tzlocal())
         end_timestamp=datetime.datetime.combine(end_timestamp,  datetime.time(23, 59)).astimezone(tz.tzlocal())
-
         from_ts=int(start_timestamp.replace(microsecond=0).timestamp())
         to_ts=int(end_timestamp.replace(microsecond=0).timestamp())
-        return get_total_consumption(from_ts,to_ts,group,device_id)
+        
+        devices=device_ids.split(",")
+        if len(devices)==1: #if we have only one device we return only one object
+            return get_total_consumption(from_ts,to_ts,group,devices[0])
+        elif len(devices)>1:
+            result=[]
+            for id in devices:
+                to_append=get_total_consumption(from_ts,to_ts,group,id)
+                if to_append[0]["device_id"]:
+                    result.append(to_append[0] if len(to_append)==1 else to_append) #if i call group=total i only get one value in the array, this will remove the array in array situation
+            return result
+        else:
+            return {}
+        
     
     @consumption_router.get("/total_old")
     def Get_Total_Consumption_Fast(start_timestamp:datetime.date=datetime.date.today(),end_timestamp:datetime.date=datetime.date.today(),group:str="hourly",minutes=60):
