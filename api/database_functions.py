@@ -1,7 +1,7 @@
 import sqlite3
 from contextlib import contextmanager
 from config_loader import MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE
-import pymysql
+import pymysql,bcrypt
 
 from enum import StrEnum
 import logging
@@ -175,6 +175,7 @@ def initialize_database():
         "DeviceGroup": 'CREATE TABLE "DeviceGroup" ("device_id" TEXT NOT NULL, "group_id" INTEGER NOT NULL,FOREIGN KEY("group_id") REFERENCES "Group"("id") ON DELETE CASCADE, PRIMARY KEY("device_id", "group_id"))',
         "Energy_Timeslot": 'CREATE TABLE "Energy_Timeslot" ("day" INTEGER, "hour" INTEGER, "slot" INTEGER);',
         "Map_config": 'CREATE TABLE "Map_config" ("id" TEXT NOT NULL, "x" INTEGER NOT NULL, "y" INTEGER NOT NULL, "floor" INTEGER NOT NULL, PRIMARY KEY("id"));',
+        "Map_file": 'CREATE TABLE "Map_file" ("id" INTEGER PRIMARY KEY AUTOINCREMENT, "floor" INTEGER NOT NULL UNIQUE, "url" TEXT NOT NULL)', 
         "Service_logs": 'CREATE TABLE "Service_logs" ("user" TEXT NOT NULL, "service" TEXT NOT NULL, "target" TEXT, "payload" TEXT, "timestamp" INTEGER NOT NULL);',
         "User_Preferences": 'CREATE TABLE "User_Preferences" ("user_id" TEXT NOT NULL, "preferences" TEXT, "data_collection" INTEGER, "data_disclosure" INTEGER, PRIMARY KEY("user_id"));',
         "User": 'CREATE TABLE "User" ("id" INTEGER PRIMARY KEY AUTOINCREMENT, "username" TEXT NOT NULL, "email" TEXT NOT NULL UNIQUE, "email_verified_at" TEXT, "password" TEXT NOT NULL, "remember_token" TEXT, "created_at" TEXT, "updated_at" TEXT, "preference" TEXT, "url_photo" TEXT, "privacy_1" INTEGER, "privacy_2" INTEGER);'
@@ -345,6 +346,47 @@ def delete_user_preferences_by_user(user_id:str):
 
 #endregion
 
+#region User authentication
+
+def get_user_by_email(email:str):
+    query = "SELECT id, password FROM User WHERE email = ?"
+    return fetch_one_element(DbPathEnum.CONFIGURATION, query, (email,))
+
+def add_user(username:str, email:str,password:str):
+    # Hash password and convert to Laravel $2y$ format
+    hashed_pw = bcrypt.hashpw(password.encode(), bcrypt.gensalt(rounds=12)).decode()
+    laravel_hash = "$2y$" + hashed_pw[4:]
+
+    # Default values
+    now_iso = datetime.utcnow().isoformat()
+    email_verified_at = None
+    remember_token = None
+    preference = "Health;Security;Entertainment;Study"
+    url_photo = None
+    privacy_1 = 0
+    privacy_2 = 0
+    query = (
+        "INSERT INTO User (username, email, email_verified_at, password, remember_token, "
+        "created_at, updated_at, preference, url_photo, privacy_1, privacy_2) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    )
+    values = (
+        username,
+        email,
+        email_verified_at,
+        laravel_hash,
+        remember_token,
+        now_iso,
+        now_iso,
+        preference,
+        url_photo,
+        privacy_1,
+        privacy_2,
+    )
+    return add_multiple_elements(DbPathEnum.CONFIGURATION, query, [values])
+
+#endregion
+
 #region Service logs
 
 def add_service_logs(logs_list:list):
@@ -362,9 +404,30 @@ def get_service_logs_by_user(user:str):
 
 #endregion
 
+
+#region Map files
+
+def add_map_files(map_files_list:list):
+    query="INSERT or REPLACE into Map_file VALUES (?,?)"
+    return add_multiple_elements(DbPathEnum.CONFIGURATION,query,map_files_list)
+
+def get_all_map_files():
+    return fetch_multiple_elements(DbPathEnum.CONFIGURATION,"SELECT * FROM Map_file")
+
+def get_map_file_by_id(id):
+    query = "SELECT * FROM Map_file WHERE id = ?"
+    params = (id,) 
+    return fetch_one_element(DbPathEnum.CONFIGURATION,query,params)
+
+def delete_map_file(id:str):
+    query = "DELETE FROM Map_file WHERE id= ?"
+    params = (id,)
+    return execute_one_query(DbPathEnum.CONFIGURATION,query,params)
+
+#endregion
+
 #region Map entries configuration
 
-    
 def add_map_entities(entities_list:list):
     """
     Aggiunge al db tutte le entita' passate in input.

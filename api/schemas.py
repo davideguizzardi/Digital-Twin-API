@@ -16,6 +16,13 @@ class History_In(BaseModel):
 class Operation_Out(BaseModel):
     success:bool
 
+class Map_File(BaseModel):
+    floor:int
+    url:str
+
+class Map_File_List(BaseModel):
+    data:list[Map_File]
+
 class Map_Entity(BaseModel):
     entity_id:str
     x:int

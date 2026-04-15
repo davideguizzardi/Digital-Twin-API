@@ -3,7 +3,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import pymysql, bcrypt, jwt
 from datetime import datetime, timedelta
 
-from database_functions import get_mysql_connection,add_multiple_elements,DbPathEnum,fetch_one_element
+from database_functions import get_mysql_connection,get_user_by_email,add_user
 from schemas import LoginRequest, TokenResponse, UserInfo,UserCreateRequest
 from config_loader import JWT_SECRET_KEY,JWT_TOKEN_EXPIRE_MINUTES,JWT_ALGORITHM
 
@@ -47,8 +47,7 @@ def getAuthenticationRouter():
     def login(data: LoginRequest, use_sqlite: bool = True):
         user = None
         if use_sqlite:
-            query = "SELECT id, password FROM User WHERE email = ?"
-            user = fetch_one_element(DbPathEnum.CONFIGURATION, query, (data.email,))
+            user=get_user_by_email(data.email)
         else:
             conn = get_mysql_connection()
             try:
@@ -85,25 +84,7 @@ def getAuthenticationRouter():
 
         # SQLite path
         if user_data.use_sqlite:
-            query = (
-                "INSERT INTO User (username, email, email_verified_at, password, remember_token, "
-                "created_at, updated_at, preference, url_photo, privacy_1, privacy_2) "
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-            )
-            values = (
-                user_data.username,
-                user_data.email,
-                email_verified_at,
-                laravel_hash,
-                remember_token,
-                now_iso,
-                now_iso,
-                preference,
-                url_photo,
-                privacy_1,
-                privacy_2,
-            )
-            success = add_multiple_elements(DbPathEnum.CONFIGURATION, query, [values])
+            success = add_user(user_data.username,user_data.email,user_data.password)
             if not success:
                 raise HTTPException(status_code=500, detail="Failed to insert user into SQLite")
             return {"status": "success", "message": f"User '{user_data.username}' added to SQLite"}

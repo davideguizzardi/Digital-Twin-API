@@ -13,6 +13,7 @@ from database_functions import (
     get_all_groups_configuration,add_groups_configuration,get_single_group_by_id,delete_single_group,update_single_group,
     get_all_groups_configuration,get_single_group_by_id,add_groups_configuration,update_single_group,delete_single_group,add_device_group_mapping,get_groups_for_device,get_devices_for_group,
     remove_device_group_mapping,
+    add_map_files,get_all_map_files,delete_map_file,get_map_file_by_id
     )
 from schemas import (
     Operation_Out,Map_Entity_List,
@@ -23,7 +24,8 @@ from schemas import (
     Device_Configuration_List,
     Room_Configuration_List,Room_Name_Update,
     Group_Configuration_List,Group_Name_Update,
-    DeviceGroupMappingList
+    DeviceGroupMappingList,
+    Map_File_List
     )
 
 from homeassistant_functions import setHomeAssistantConfiguration,getHomeAssistantConfiguration
@@ -128,10 +130,10 @@ def getEnergyCalendarConfigurationRouter():
 
 #endregion
 
-#region Map
+#region Map Configuration
 
 def getMapConfigurationRouter():
-    map_configuration_router=APIRouter(tags=["Map configuration"],prefix="/map")
+    map_configuration_router=APIRouter(tags=["Map configuration"],prefix="/map_configuration")
 
     @map_configuration_router.get("")
     def Get_All_Entities():
@@ -154,6 +156,30 @@ def getMapConfigurationRouter():
         return {"success":delete_map_entry(entity_id)}
     
     return map_configuration_router
+#endregion
+
+#region Map File
+
+def getMapFileRouter():
+    map_file_router=APIRouter(tags=["Map Files"],prefix="/map_file")
+
+    @map_file_router.get("")
+    def Get_All_Files():
+        return get_all_map_files()
+    
+    @map_file_router.get("/{id}")
+    def Get_Single_Map_File(id:str):
+        return get_map_file_by_id(id)
+    
+    @map_file_router.put("",response_model=Operation_Out)
+    def Add_Map_Files(files_list:Map_File_List):
+        return {"success":add_map_files([tuple(d.__dict__.values()) for d in files_list.data])}
+    
+    @map_file_router.delete("/{id}",response_model=Operation_Out)
+    def Delete_Map_File(id:int):
+        return {"success":delete_map_file(id)}
+        
+    return map_file_router
 #endregion
 
 #region User

@@ -1,5 +1,5 @@
 data/configuration.txt
-__pycache__/*
+*/__pycache__/*
 data/configuration.txt
 routers/__pycache__/*
 logs/periodic_functions.log
@@ -15,3 +15,5 @@ api/logs/*
 api/routers/__pycache__/*
 ignore/*
 env/*
+*/.venv/*
+.venv/*

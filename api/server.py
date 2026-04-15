@@ -7,6 +7,7 @@ from routers.entityRouter import getEntityRouter
 from routers.automationRouter import getAutomationRouter
 from routers.serviceRouter import getServiceRouter
 from routers.configurationRouter import getConfigurationRouter
+from routers.configurationRouter import getMapFileRouter
 from routers.configurationRouter import getMapConfigurationRouter
 from routers.configurationRouter import getEnergyCalendarConfigurationRouter
 from routers.configurationRouter import getUserRouter
@@ -68,6 +69,7 @@ def create_api(enable_prediction:False,enable_demo:False):
         getGroupConfigurationRouter(),
         getDeviceGroupRouter(),
         getUserRouter(),
+        getMapFileRouter(),
         getMapConfigurationRouter(),
         getEnergyCalendarConfigurationRouter(),
         getLogRouter(),
