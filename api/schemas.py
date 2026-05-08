@@ -143,9 +143,6 @@ class UserInfo(BaseModel):
 
 class UserCreateRequest(BaseModel):
     username: str
-    email: EmailStr
-    password: str
-    use_sqlite: bool = True
 
 
 

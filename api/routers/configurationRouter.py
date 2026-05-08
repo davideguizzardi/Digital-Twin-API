@@ -1,13 +1,15 @@
-import ipaddress
-from fastapi import APIRouter,HTTPException
+import ipaddress,os,shutil
+from fastapi import APIRouter,HTTPException,UploadFile, File, Form
+from typing import List
+
+MAPS_DIR = "storage/maps"
+os.makedirs(MAPS_DIR, exist_ok=True)
 
 from database_functions import (
     initialize_database,
     get_all_configuration_values,get_configuration_item_by_key,add_configuration_values,delete_configuration_value,
     add_map_entities, get_all_map_entities,get_map_entity,delete_map_entry,delete_floor_map_configuration,
     get_energy_slot_by_day,get_all_energy_slots,add_energy_slots,delete_energy_slots,
-    get_all_user_preferences,add_user_preferences,get_user_preferences_by_user,delete_user_preferences_by_user,
-    get_all_user_privacy_settings,add_user_privacy_settings,get_user_privacy_settings_by_user,
     add_devices_configuration,get_all_devices_configuration,get_configuration_of_device,
     get_all_rooms_configuration,add_rooms_configuration,delete_rooms_in_floor,delete_single_room,get_all_rooms_of_floor,get_single_room_by_name,update_single_room,
     get_all_groups_configuration,add_groups_configuration,get_single_group_by_id,delete_single_group,update_single_group,
@@ -19,7 +21,6 @@ from schemas import (
     Operation_Out,Map_Entity_List,
     Map_Entity,Configuration_Value,
     Configuration_Value_List,Energy_Plan_Calendar,
-    User_Preference_List,User_Privacy_List,
     Home_Assistant_Configuration,
     Device_Configuration_List,
     Room_Configuration_List,Room_Name_Update,
@@ -178,60 +179,30 @@ def getMapFileRouter():
     @map_file_router.delete("/{id}",response_model=Operation_Out)
     def Delete_Map_File(id:int):
         return {"success":delete_map_file(id)}
+    
+    @map_file_router.post("/upload")
+    async def Upload_Map_Files(files: List[UploadFile] = File(...), floors: List[int] = Form(...)):
+        """
+        Riceve una lista di file e i corrispondenti piani,
+        salva i file su disco e inserisce i record nel DB.
+        Il frontend invia: files=[file0, file1, ...] floors=[0, 1, ...]
+        """
+        saved = []
+        for floor, file in zip(floors, files):
+            ext = file.filename.split(".")[-1]
+            filename = f"map_{floor}.{ext}"
+            path = os.path.join(MAPS_DIR, filename)
+
+            with open(path, "wb") as f:
+                shutil.copyfileobj(file.file, f)
+
+            url = f"storage/maps/{filename}"
+            add_map_files([(floor, url)])
+            saved.append({"floor": floor, "url": url})
+
+        return saved
         
     return map_file_router
-#endregion
-
-#region User
-def getUserRouter():
-    user_router=APIRouter(tags=["User"],prefix="/user")
-
-    @user_router.get("/preferences")
-    def Get_All_Preferences():
-        preferences=get_all_user_preferences()
-        res=[]
-        for user in preferences:
-            res.append({"user_id":user["user_id"],"preferences":user["preferences"].split(",")})
-        return res
-    
-    @user_router.get("/preferences/{user_id}")
-    def Get_Preferences_Of_Single_User(user_id:str):
-        user= get_user_preferences_by_user(user_id)
-        return {"user_id":user["user_id"],"preferences":user["preferences"].split(",")} if user else {}
-    
-    @user_router.put("/preferences",response_model=Operation_Out)
-    def Add_User_Preferences(preferences_list:User_Preference_List):
-        to_add=[]
-        for user in preferences_list.data:
-            to_add.append((user.user_id,','.join(user.preferences)))
-        return {"success":add_user_preferences(to_add)}
-    
-    @user_router.get("/privacy")
-    def Get_All_Privacy_settings():
-        preferences=get_all_user_privacy_settings()
-        res=[]
-        for user in preferences:
-            res.append({"user_id":user["user_id"],"data_collection":bool(user["data_collection"]),"data_disclosure":bool(user["data_disclosure"])})
-        return res
-    
-    @user_router.get("/privacy/{user_id}")
-    def Get_Privacy_Setting_Of_Single_User(user_id:str):
-        user= get_user_privacy_settings_by_user(user_id)
-        return {"user_id":user["user_id"],"data_collection":bool(user["data_collection"]),"data_disclosure":bool(user["data_disclosure"])} if user else {}
-    
-    @user_router.put("/privacy",response_model=Operation_Out)
-    def Add_User_Privacy_Settings(privacy_list:User_Privacy_List):
-        to_add=[]
-        for user in privacy_list.data:
-            to_add.append((user.user_id,user.data_collection,user.data_disclosure))
-        return {"success":add_user_privacy_settings(to_add)}
-    
-    @user_router.delete("/{user_id}",response_model=Operation_Out)
-    def Delete_All_User_Preferences(user_id:str):
-        return {"success":delete_user_preferences_by_user(user_id)}
-
-    
-    return user_router
 #endregion
 
 #region Device_Configuration

@@ -1,15 +1,30 @@
 {
+  "device_name": "Forno a microonde",
   "k_best": 2,
-  "device_name":"Microonde",
-  "updated_at": "2026-01-23T15:05:25.406439Z",
   "clusters": [
     {
-      "id": "On",
+      "id": 0,
       "medoid": [
-        1157.6
+        1137.1,
+        1143.1,
+        1139.2
       ],
-      "count": 43,
-      "percent": 100
+      "count": 8,
+      "percent": 67
+    },
+    {
+      "id": 1,
+      "medoid": [
+        1201.1,
+        1193.1,
+        1169.9,
+        1142.0,
+        1132.6,
+        1113.0
+      ],
+      "count": 4,
+      "percent": 33
     }
-  ]
+  ],
+  "updated_at": "2026-04-28T15:42:51.812591Z"
 }

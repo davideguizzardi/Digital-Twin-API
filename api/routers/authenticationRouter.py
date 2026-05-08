@@ -3,7 +3,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import pymysql, bcrypt, jwt
 from datetime import datetime, timedelta
 
-from database_functions import get_mysql_connection,get_user_by_email,add_user
+from database_functions import get_mysql_connection,add_configuration_values,get_configuration_value_by_key
 from schemas import LoginRequest, TokenResponse, UserInfo,UserCreateRequest
 from config_loader import JWT_SECRET_KEY,JWT_TOKEN_EXPIRE_MINUTES,JWT_ALGORITHM
 
@@ -47,7 +47,9 @@ def getAuthenticationRouter():
     def login(data: LoginRequest, use_sqlite: bool = True):
         user = None
         if use_sqlite:
-            user=get_user_by_email(data.email)
+            user=get_configuration_value_by_key("admin_username")
+            password=get_configuration_value_by_key("admin_password")
+            email=get_configuration_value_by_key("admin_email")
         else:
             conn = get_mysql_connection()
             try:
@@ -57,14 +59,18 @@ def getAuthenticationRouter():
             finally:
                 conn.close()
 
-        if not user:
+        
+        if not user or not password or not email:
+            raise HTTPException(status_code=404, detail="Admin credentials missing from the system")
+
+        if data.email!=email["value"]:
             raise HTTPException(status_code=401, detail="Invalid email")
 
-        stored_pw = normalize_hash_for_check(user["password"])
+        stored_pw = normalize_hash_for_check(password["value"])
         if not bcrypt.checkpw(data.password.encode(), stored_pw.encode()):
             raise HTTPException(status_code=401, detail="Invalid credentials")
 
-        token = create_access_token({"user_id": user["id"], "email": data.email})
+        token = create_access_token({"user_id": 1, "email": email["value"]})
         return {"access_token": token, "token_type": "bearer"}
 
     @auth_router.post("/register")
@@ -74,7 +80,7 @@ def getAuthenticationRouter():
         laravel_hash = "$2y$" + hashed_pw[4:]
 
         # Default values
-        now_iso = datetime.utcnow().isoformat()
+        now_iso = datetime.now().isoformat()
         email_verified_at = None
         remember_token = None
         preference = "Health;Security;Entertainment;Study"
@@ -84,7 +90,7 @@ def getAuthenticationRouter():
 
         # SQLite path
         if user_data.use_sqlite:
-            success = add_user(user_data.username,user_data.email,user_data.password)
+            success= add_configuration_values([("admin_username",user_data.username,""),("admin_email",user_data.email,""),("admin_password",laravel_hash,"")])
             if not success:
                 raise HTTPException(status_code=500, detail="Failed to insert user into SQLite")
             return {"status": "success", "message": f"User '{user_data.username}' added to SQLite"}

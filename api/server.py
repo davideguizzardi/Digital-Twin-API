@@ -10,7 +10,7 @@ from routers.configurationRouter import getConfigurationRouter
 from routers.configurationRouter import getMapFileRouter
 from routers.configurationRouter import getMapConfigurationRouter
 from routers.configurationRouter import getEnergyCalendarConfigurationRouter
-from routers.configurationRouter import getUserRouter
+from routers.userRouter import getUserRouter
 from routers.configurationRouter import getDeviceConfigurationRouter
 from routers.configurationRouter import getRoomConfigurationRouter
 from routers.configurationRouter import getGroupConfigurationRouter
@@ -119,6 +119,7 @@ def main():
         initializeToken()
 
     api = create_api(ENABLE_PREDICTION,ENABLE_DEMO)
+    api.mount("/storage", StaticFiles(directory="storage"), name="storage")
     add_log([("System","Startup","DTAPI","{}",datetime.datetime.now().replace(microsecond=0).timestamp())])
     uvicorn.run(api, host=HOST,port=PORT,log_level="debug")
 

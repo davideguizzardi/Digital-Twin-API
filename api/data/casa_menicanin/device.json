@@ -514,20 +514,5 @@
       "room": null
     },
     "groups": []
-  },
-  {
-    "device_class": "media_player",
-    "device_id": "ffe5dc7e1c8fe6d14b651a33480d20d1",
-    "energy_entity_id": "media_player.tv",
-    "list_of_entities": [],
-    "manufacturer": "Changhong",
-    "model": "AI PONT",
-    "name": "TV",
-    "power_entity_id": "",
-    "state": "off",
-    "state_entity_id": "media_player.tv",
-    "category": "media_player",
-    "show": true,
-    "groups": []
   }
 ]

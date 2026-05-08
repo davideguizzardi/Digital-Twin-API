@@ -1,6 +1,5 @@
 fastapi==0.111.0
 joblib==1.4.2
-keras==3.6.0
 numpy==2.0.1
 pandas==2.2.2
 pydantic==2.7.4
@@ -9,7 +8,7 @@ Requests==2.31.0
 uvicorn==0.30.1
 tensorflow==2.18.0
 pymongo==4.13.2
-pymysql==1.1.2
-pyjwt==2.10.2
+pymysql
+pyjwt
 bcrypt==5.0.0
 python-dotenv==1.1.1

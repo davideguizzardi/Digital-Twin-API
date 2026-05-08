@@ -96,7 +96,8 @@ def getDeviceRouter(enable_demo=False):
             res=getDevicesFast()
         
         if res["status_code"]==200:
-            entities_list=get_configured_devices()
+            entities_list = []
+            #entities_list=get_configured_devices() TODO: do something about this
             for dev in res['data']:
                 if len(entities_list)>0:
                     dev["list_of_entities"] = [e for e in dev["list_of_entities"] if e["entity_id"] in entities_list]

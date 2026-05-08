@@ -178,7 +178,7 @@ def initialize_database():
         "Map_file": 'CREATE TABLE "Map_file" ("id" INTEGER PRIMARY KEY AUTOINCREMENT, "floor" INTEGER NOT NULL UNIQUE, "url" TEXT NOT NULL)', 
         "Service_logs": 'CREATE TABLE "Service_logs" ("user" TEXT NOT NULL, "service" TEXT NOT NULL, "target" TEXT, "payload" TEXT, "timestamp" INTEGER NOT NULL);',
         "User_Preferences": 'CREATE TABLE "User_Preferences" ("user_id" TEXT NOT NULL, "preferences" TEXT, "data_collection" INTEGER, "data_disclosure" INTEGER, PRIMARY KEY("user_id"));',
-        "User": 'CREATE TABLE "User" ("id" INTEGER PRIMARY KEY AUTOINCREMENT, "username" TEXT NOT NULL, "email" TEXT NOT NULL UNIQUE, "email_verified_at" TEXT, "password" TEXT NOT NULL, "remember_token" TEXT, "created_at" TEXT, "updated_at" TEXT, "preference" TEXT, "url_photo" TEXT, "privacy_1" INTEGER, "privacy_2" INTEGER);'
+        "User": 'CREATE TABLE "User" ("id" INTEGER PRIMARY KEY AUTOINCREMENT, "username" TEXT NOT NULL UNIQUE, "created_at" TEXT, "preferences" TEXT, "data_collection" INTEGER, "data_disclosure" INTEGER, "url_photo" TEXT);'
     }
 
     consumption_db_tables = {
@@ -323,67 +323,61 @@ def add_user_privacy_settings(settings_list:list):
 
 
 def get_all_user_preferences():
-    return fetch_multiple_elements(DbPathEnum.CONFIGURATION,"SELECT user_id,preferences FROM User_Preferences")
+    return fetch_multiple_elements(DbPathEnum.CONFIGURATION,"SELECT username,preferences FROM User")
 
 
 def get_all_user_privacy_settings():
-    return fetch_multiple_elements(DbPathEnum.CONFIGURATION,"SELECT user_id,data_collection,data_disclosure FROM User_Preferences")
+    return fetch_multiple_elements(DbPathEnum.CONFIGURATION,"SELECT username,data_collection,data_disclosure FROM User")
 
-def get_user_preferences_by_user(user_id:str):
-    query = "SELECT user_id,preferences FROM User_Preferences WHERE user_id = ?"
-    params = (user_id,) 
+def get_user_preferences_by_user(username:str):
+    query = "SELECT username,preferences FROM User WHERE username = ?"
+    params = (username,) 
     return fetch_one_element(DbPathEnum.CONFIGURATION,query,params)
 
-def get_user_privacy_settings_by_user(user_id:str):
-    query = "SELECT user_id,data_collection,data_disclosure FROM User_Preferences WHERE user_id = ?"
-    params = (user_id,) 
+def get_user_privacy_settings_by_user(username:str):
+    query = "SELECT username,data_collection,data_disclosure FROM User WHERE username = ?"
+    params = (username,) 
     return fetch_one_element(DbPathEnum.CONFIGURATION,query,params)
 
-def delete_user_preferences_by_user(user_id:str):
-    query = "DELETE FROM User_Preferences WHERE user_id = ?"
-    params = (user_id,)
+def delete_user(username:str):
+    query = "DELETE FROM User WHERE username = ?"
+    params = (username,)
     return execute_one_query(DbPathEnum.CONFIGURATION,query,params)
 
 #endregion
 
 #region User authentication
 
-def get_user_by_email(email:str):
-    query = "SELECT id, password FROM User WHERE email = ?"
+def get_all_users():
+    return fetch_multiple_elements(DbPathEnum.CONFIGURATION,"SELECT * FROM User")
+
+def get_user(email:str):
+    query = "SELECT * FROM User WHERE username = ?"
     return fetch_one_element(DbPathEnum.CONFIGURATION, query, (email,))
 
-def add_user(username:str, email:str,password:str):
-    # Hash password and convert to Laravel $2y$ format
-    hashed_pw = bcrypt.hashpw(password.encode(), bcrypt.gensalt(rounds=12)).decode()
-    laravel_hash = "$2y$" + hashed_pw[4:]
-
+def add_user(username:str):
     # Default values
-    now_iso = datetime.utcnow().isoformat()
-    email_verified_at = None
-    remember_token = None
+    now_iso = datetime.datetime.now().isoformat()
+
     preference = "Health;Security;Entertainment;Study"
     url_photo = None
-    privacy_1 = 0
-    privacy_2 = 0
     query = (
-        "INSERT INTO User (username, email, email_verified_at, password, remember_token, "
-        "created_at, updated_at, preference, url_photo, privacy_1, privacy_2) "
-        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+        "INSERT INTO User (username, created_at, preferences, data_collection, data_disclosure, url_photo)"
+        "VALUES (?, ?, ?, ?, ?, ?)"
     )
     values = (
         username,
-        email,
-        email_verified_at,
-        laravel_hash,
-        remember_token,
-        now_iso,
         now_iso,
         preference,
+        0,
+        0,
         url_photo,
-        privacy_1,
-        privacy_2,
     )
     return add_multiple_elements(DbPathEnum.CONFIGURATION, query, [values])
+
+def add_user_photo_files(photo_files_list:list):
+    query="UPDATE User SET url_photo=? WHERE username=?"
+    return add_multiple_elements(DbPathEnum.CONFIGURATION,query,photo_files_list)
 
 #endregion
 
@@ -408,7 +402,7 @@ def get_service_logs_by_user(user:str):
 #region Map files
 
 def add_map_files(map_files_list:list):
-    query="INSERT or REPLACE into Map_file VALUES (?,?)"
+    query="INSERT or REPLACE into Map_file(floor,url) VALUES (?,?)"
     return add_multiple_elements(DbPathEnum.CONFIGURATION,query,map_files_list)
 
 def get_all_map_files():
