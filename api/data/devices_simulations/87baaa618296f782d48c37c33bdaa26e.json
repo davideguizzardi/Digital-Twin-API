@@ -3,7 +3,7 @@
   "k_best": 2,
   "clusters": [
     {
-      "id": 0,
+      "id": "Giornaliero",
       "medoid": [
         11.1,
         139.1,
@@ -63,7 +63,7 @@
       "percent": 81
     },
     {
-      "id": 1,
+      "id": "Rapido",
       "medoid": [
         10.0,
         79.0,

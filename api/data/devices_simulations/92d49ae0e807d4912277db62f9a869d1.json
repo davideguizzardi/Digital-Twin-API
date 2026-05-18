@@ -3,7 +3,7 @@
   "k_best": 2,
   "clusters": [
     {
-      "id": 0,
+      "id": "Film",
       "medoid": [
         32.4,
         54.3,
@@ -125,7 +125,7 @@
       "percent": 30
     },
     {
-      "id": 1,
+      "id": "Serie TV",
       "medoid": [
         55.7,
         54.5,

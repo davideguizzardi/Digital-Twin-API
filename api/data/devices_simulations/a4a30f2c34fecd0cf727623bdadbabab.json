@@ -3,17 +3,16 @@
   "k_best": 2,
   "clusters": [
     {
-      "id": 0,
+      "id": "Uso breve",
       "medoid": [
         1137.1,
-        1143.1,
-        1139.2
+        1143.1
       ],
       "count": 8,
       "percent": 67
     },
     {
-      "id": 1,
+      "id": "Uso prolungato",
       "medoid": [
         1201.1,
         1193.1,

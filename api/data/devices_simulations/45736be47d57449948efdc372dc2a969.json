@@ -3,7 +3,7 @@
   "k_best": 2,
   "clusters": [
     {
-      "id": 0,
+      "id": "Rapida",
       "medoid": [
         178.7,
         413.1,
@@ -87,7 +87,7 @@
       "percent": 35
     },
     {
-      "id": 1,
+      "id": "Giornaliera",
       "medoid": [
         187.5,
         426.0,
