@@ -181,7 +181,7 @@ def getMapFileRouter():
         return {"success":delete_map_file(id)}
     
     @map_file_router.post("/upload")
-    async def Upload_Map_Files(files: List[UploadFile] = File(...), floors: List[int] = Form(...)):
+    async def Upload_Map_Files(files: List[UploadFile] = File(...), floors: List[str] = Form(...)):
         """
         Riceve una lista di file e i corrispondenti piani,
         salva i file su disco e inserisce i record nel DB.

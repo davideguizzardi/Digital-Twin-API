@@ -144,6 +144,11 @@ class UserInfo(BaseModel):
 class UserCreateRequest(BaseModel):
     username: str
 
+class AdminCreateRequest(BaseModel):
+    username: str
+    email: str
+    password: str
+
 
 
 triggers={

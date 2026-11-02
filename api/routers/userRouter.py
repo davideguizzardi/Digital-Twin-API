@@ -11,7 +11,7 @@ from database_functions import (
 from schemas import (
     Operation_Out,
     User_Preference_List,User_Privacy_List,
-    UserCreateRequest
+    AdminCreateRequest
     )
 
 PHOTO_DIR = "storage/user"
@@ -22,7 +22,7 @@ def getUserRouter():
     user_router=APIRouter(tags=["User"],prefix="/user")
 
     @user_router.post("")
-    def Add_user(user_data: UserCreateRequest):
+    def Add_user(user_data: AdminCreateRequest):
         return {"success":add_user(user_data.username)}
     
     @user_router.get("")

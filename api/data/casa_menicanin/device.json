@@ -149,14 +149,14 @@
         "entity_class": "temperature",
         "entity_id": "sensor.sensore_h_t_camera_matrimoniale_temperature",
         "name": " Temperature",
-        "state": "unknown",
+        "state": "20",
         "unit_of_measurement": "°C"
       },
       {
         "entity_class": "humidity",
         "entity_id": "sensor.sensore_h_t_camera_matrimoniale_humidity",
         "name": " Humidity",
-        "state": "unknown",
+        "state": "40",
         "unit_of_measurement": "%"
       }
     ],
@@ -238,7 +238,7 @@
         "entity_class": "power",
         "entity_id": "sensor.lavatrice_power",
         "name": "Power",
-        "state": "0",
+        "state": "450",
         "unit_of_measurement": "W"
       },
       {
@@ -254,7 +254,7 @@
     "name": "Lavatrice",
     "name_en": "Washing machine",
     "power_entity_id": "sensor.lavatrice_power",
-    "state": "off",
+    "state": "on",
     "state_entity_id": "switch.lavatrice",
     "category": "washing_machine",
     "show": true,
@@ -388,6 +388,13 @@
         "name": "",
         "state": "off",
         "unit_of_measurement": null
+      },
+            {
+        "entity_class": "power",
+        "entity_id": "sensor.shellycolorbulb_08f9e0701c78_power",
+        "name": "Power",
+        "state": "8",
+        "unit_of_measurement": "W"
       }
     ],
     "manufacturer": "Shelly",
@@ -395,7 +402,7 @@
     "name": "Luce letto",
     "name_en": "Bedroom light",
     "power_entity_id": "sensor.shellycolorbulb_08f9e0701c78_power",
-    "state": "off",
+    "state": "on",
     "state_entity_id": "light.shellycolorbulb_08f9e0701c78",
     "category": "light",
     "show": true,

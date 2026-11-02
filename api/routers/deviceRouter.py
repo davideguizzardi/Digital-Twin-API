@@ -101,7 +101,7 @@ def getDeviceRouter(enable_demo=False):
             for dev in res['data']:
                 if len(entities_list)>0:
                     dev["list_of_entities"] = [e for e in dev["list_of_entities"] if e["entity_id"] in entities_list]
-                dev["name"]=dev["name_by_user"] if dev["name_by_user"] else dev["name"]
+                dev["name"]=dev["name_by_user"] if dev.get("name_by_user",None) else dev["name"]
                 dev["category"]=dev["device_class"]
                 dev["show"]=True
                 dev.pop("name_by_user",None)
@@ -124,7 +124,7 @@ def getDeviceRouter(enable_demo=False):
                 group_data=get_groups_for_device(dev["device_id"])
                 dev["groups"]=group_data or []
 
-                if len(dev["state_entity_id"])>0:
+                if len(dev["state_entity_id"])>0 and not enable_demo:
                     last_local_log = get_last_event_for_target(dev["state_entity_id"])
                     last_ha_log=getLastLogbookEntry(dev["state_entity_id"]) #TODO:unify functions notations
                     dev["last_event"]=merge_last_event_and_logbook(last_local_log,last_ha_log)

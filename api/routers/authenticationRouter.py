@@ -3,8 +3,8 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import pymysql, bcrypt, jwt
 from datetime import datetime, timedelta
 
-from database_functions import get_mysql_connection,add_configuration_values,get_configuration_value_by_key
-from schemas import LoginRequest, TokenResponse, UserInfo,UserCreateRequest
+from database_functions import get_mysql_connection,add_configuration_values,get_configuration_value_by_key,add_user
+from schemas import LoginRequest, TokenResponse, UserInfo,AdminCreateRequest,UserCreateRequest
 from config_loader import JWT_SECRET_KEY,JWT_TOKEN_EXPIRE_MINUTES,JWT_ALGORITHM
 
 
@@ -74,22 +74,20 @@ def getAuthenticationRouter():
         return {"access_token": token, "token_type": "bearer"}
 
     @auth_router.post("/register")
-    def register(user_data: UserCreateRequest):
+    def register_user(user_data: UserCreateRequest):
+        success= add_user(user_data.username)
+        if not success:
+            raise HTTPException(status_code=500, detail="Failed to insert user into SQLite")
+        return {"status": "success", "message": f"User '{user_data.username}' added to SQLite"}
+
+    @auth_router.post("/create_admin")
+    def register(user_data: AdminCreateRequest):
         # Hash password and convert to Laravel $2y$ format
         hashed_pw = bcrypt.hashpw(user_data.password.encode(), bcrypt.gensalt(rounds=12)).decode()
         laravel_hash = "$2y$" + hashed_pw[4:]
 
-        # Default values
-        now_iso = datetime.now().isoformat()
-        email_verified_at = None
-        remember_token = None
-        preference = "Health;Security;Entertainment;Study"
-        url_photo = None
-        privacy_1 = 0
-        privacy_2 = 0
-
         # SQLite path
-        if user_data.use_sqlite:
+        if True:
             success= add_configuration_values([("admin_username",user_data.username,""),("admin_email",user_data.email,""),("admin_password",laravel_hash,"")])
             if not success:
                 raise HTTPException(status_code=500, detail="Failed to insert user into SQLite")
@@ -99,6 +97,14 @@ def getAuthenticationRouter():
         else:
             conn = get_mysql_connection()
             try:
+                # Default values
+                now_iso = datetime.now().isoformat()
+                email_verified_at = None
+                remember_token = None
+                preference = "Health;Security;Entertainment;Study"
+                url_photo = None
+                privacy_1 = 0
+                privacy_2 = 0
                 with conn.cursor() as cursor:
                     cursor.execute(
                         "INSERT INTO users (username, email, email_verified_at, password, remember_token, created_at, updated_at, preference, url_photo, privacy_1, privacy_2) "
